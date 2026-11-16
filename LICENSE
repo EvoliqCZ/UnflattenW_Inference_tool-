@@ -1,0 +1,83 @@
+EVOLIQ Personal Use and Commercial License 1.0
+Unflatten W Dense 1.0
+Copyright (c) 2026 EVOLIQ s.r.o. All rights reserved except as granted below.
+Licensor: EVOLIQ s.r.o.
+Commercial licensing contact: https://www.evoliq.cz/sk (contact form)
+
+1. Scope
+
+This license applies to EVOLIQ's original Unflatten model contributions,
+including its trained adapter, document decoder and property-head weights,
+and EVOLIQ-authored code and documentation supplied in this release
+(the "Covered Materials"), only to the extent EVOLIQ holds the relevant rights.
+It also applies to modifications of those Covered Materials to the extent
+permission from EVOLIQ is required. Third-party materials are excluded as
+described in section 5.
+
+2. Free personal use
+
+An individual may download, copy, run and privately modify the Covered
+Materials, without a license fee, solely for Personal Use.
+
+"Personal Use" means private, non-commercial use by a natural person for
+their own purposes. It excludes use for or on behalf of an employer, client,
+business or other organization; professional work; and any use intended to
+obtain a direct or indirect commercial advantage or monetary compensation.
+Private learning and hobby experimentation that meet this definition are free.
+
+You may share unmodified copies without charge for Personal Use, provided
+this entire license and all applicable third-party notices are preserved.
+No commercial rights may be granted to recipients under this permission.
+Distribution of modified Covered Materials requires EVOLIQ's written permission.
+
+3. Paid commercial license required
+
+Commercial, professional and organizational use of the Covered Materials is
+not granted by this personal-use license. It requires a separate written,
+paid commercial license agreement with EVOLIQ s.r.o. before such use begins.
+The commercial agreement specifies the price, permitted scope and other terms.
+Downloading the model or paying an arbitrary amount does not create such an
+agreement.
+
+Examples requiring a commercial agreement include internal business
+operations, work for an employer or client, integration into a product or
+service, hosted inference or API services, and using the model to produce
+documents or other outputs for a commercial activity. A free-to-end-user
+product or service is not Personal Use merely because it charges no fee.
+
+4. Rights reserved
+
+Except as expressly granted, EVOLIQ reserves its rights in the Covered
+Materials. This license does not grant a right to use EVOLIQ or Unflatten
+trademarks to imply endorsement. It does not claim ownership of your input
+documents or outputs; the restrictions above govern use of the Covered
+Materials, including use to generate outputs for commercial purposes.
+
+5. Third-party materials retain their own licenses
+
+The unmodified Qwen/Qwen3-VL-4B-Instruct backbone, revision
+ebb281ec70b05090aa6165b016eac8ec08e71b17, is provided under Apache License 2.0.
+Its license is reproduced in LICENSE-APACHE-2.0 and its attribution is in
+NOTICE. This EVOLIQ license does not restrict or replace rights granted
+directly under that license in the Qwen materials independently of EVOLIQ's
+Covered Materials.
+
+Other third-party components, including vendored schemas and separately
+installed dependencies, retain their own applicable licenses and notices.
+No third-party rights are represented as being owned by EVOLIQ.
+
+6. Termination
+
+The permissions granted by this license terminate if you breach its terms.
+Upon termination you must stop using and distributing the Covered Materials
+under this license. Termination does not affect independent third-party
+license rights or any separate commercial agreement.
+
+7. No warranty; limitation of liability
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE COVERED MATERIALS ARE PROVIDED
+"AS IS", WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NON-INFRINGEMENT. EVOLIQ IS NOT LIABLE FOR DAMAGES ARISING FROM THEIR USE
+OR INABILITY TO USE THEM, EXCEPT WHERE SUCH EXCLUSION IS PROHIBITED BY LAW
+OR A SEPARATE WRITTEN AGREEMENT PROVIDES OTHERWISE.

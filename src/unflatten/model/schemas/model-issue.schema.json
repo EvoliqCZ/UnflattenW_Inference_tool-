@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/model-issue.schema.json",
+  "title": "RFC004 §42.1 ModelIssue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "category",
+    "severity",
+    "stage",
+    "page_ordinal",
+    "fragment_sequence_index",
+    "local_node_id",
+    "node_id",
+    "node_property_pointer",
+    "ast_pointer",
+    "message",
+    "details",
+    "recoverability",
+    "policy_action"
+  ],
+  "properties": {
+    "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "category": {
+      "enum": [
+        "INPUT", "PREPROCESS", "PROFILE", "COMPONENT_LOCK", "BACKBONE",
+        "VISUAL_MEMORY", "COMPRESSOR", "ALIGNMENT", "DECODER", "GRAMMAR",
+        "TEXT", "MOE_ROUTER", "TYPED_PROPERTY", "TABLE", "RESOURCE",
+        "FRAGMENT", "ASSEMBLY", "AST_SCHEMA", "AST_SEMANTIC", "CAPABILITY",
+        "RENDERER", "CALIBRATION", "ACCEPTANCE", "LIMIT", "SECURITY",
+        "DETERMINISM", "RUNTIME"
+      ]
+    },
+    "severity": { "enum": ["info", "warning", "error", "fatal"] },
+    "stage": {
+      "enum": [
+        "input", "preprocess", "component_load", "backbone", "visual_memory",
+        "compress", "context_encode", "decode", "align", "typed_property",
+        "table", "resource", "fragment", "assemble", "ast_build",
+        "canonicalize", "ast_validate", "renderer_gate", "render",
+        "calibrate", "accept", "package_result"
+      ]
+    },
+    "page_ordinal": { "type": ["integer", "null"], "minimum": 0 },
+    "fragment_sequence_index": { "type": ["integer", "null"], "minimum": 0 },
+    "local_node_id": { "type": ["string", "null"] },
+    "node_id": { "type": ["string", "null"] },
+    "node_property_pointer": { "type": ["string", "null"] },
+    "ast_pointer": { "type": ["string", "null"] },
+    "message": { "type": "string" },
+    "details": { "type": "object" },
+    "recoverability": {
+      "enum": ["none", "same_config", "larger_window", "primary_decoder", "human_review"]
+    },
+    "policy_action": {
+      "enum": [
+        "continue", "continue_with_warning", "retry", "return_review_candidate",
+        "return_partial", "set_acceptance_review_required", "reject", "fail_request"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "severity": { "const": "fatal" } } },
+      "then": { "properties": { "policy_action": { "const": "fail_request" } } }
+    }
+  ]
+}

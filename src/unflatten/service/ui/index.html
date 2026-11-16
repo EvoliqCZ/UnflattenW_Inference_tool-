@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unflatten — diagnostický nástroj</title>
+<style nonce="__NONCE__">
+  :root { color-scheme: light dark; --bg:#fff; --fg:#111; --muted:#666; --line:#ccc; --accent:#0b5fff; --bad:#b00020; --good:#0a7a2f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111; --fg:#eee; --muted:#aaa; --line:#333; --accent:#5b9dff; --bad:#ff6b6b; --good:#5fd08a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 1rem; }
+  h1 { font-size: 1.3rem; }
+  .banner { background:var(--bad); color:#fff; padding:.5rem 1rem; text-align:center; font-weight:bold; }
+  section { border:1px solid var(--line); border-radius:8px; padding:1rem; margin-bottom:1rem; }
+  label { display:block; margin-bottom:.25rem; font-weight:600; }
+  input[type=password], select { width:100%; padding:.5rem; margin-bottom:.75rem; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--fg); }
+  #drop { border:2px dashed var(--line); border-radius:8px; padding:1.5rem; text-align:center; cursor:pointer; }
+  #file-input { display:none; }
+  #drop.drag { border-color: var(--accent); }
+  button { padding:.5rem 1rem; border-radius:4px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; margin-right:.5rem; margin-top:.5rem; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  button.secondary { background:transparent; color:var(--fg); border-color:var(--line); }
+  .ok { color:var(--good); }
+  .bad { color:var(--bad); }
+  .muted { color:var(--muted); font-size:.9rem; }
+  ul#history, ul#readiness-list, ul#file-list, ul#page-list { list-style:none; padding:0; }
+  ul#history li, ul#readiness-list li, ul#page-list li { padding:.4rem 0; border-bottom:1px solid var(--line); }
+  ul#file-list li { display:flex; align-items:center; gap:.5rem; padding:.4rem 0; border-bottom:1px solid var(--line); }
+  ul#file-list img { width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid var(--line); }
+  ul#file-list .file-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  ul#file-list button, ul#page-list .page-code { padding:.2rem .5rem; margin:0; font-size:.85rem; }
+  pre { white-space:pre-wrap; word-break:break-word; background:transparent; border:1px solid var(--line); padding:.5rem; border-radius:4px; }
+  progress { width:100%; margin:.5rem 0; }
+  .preview-nav { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; }
+  .preview-nav input[type=range] { width:8rem; margin:0; }
+  .preview-panes { display:flex; gap:.5rem; }
+  @media (max-width: 640px) { .preview-panes { flex-direction:column; } }
+  .preview-pane { flex:1; min-width:0; }
+  .preview-pane .pane-label { font-size:.8rem; color:var(--muted); margin:.25rem 0; }
+  .preview-viewport { position:relative; height:300px; overflow:hidden; border:1px solid var(--line); border-radius:8px; cursor:grab; touch-action:none; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+  .preview-viewport.empty { color:var(--muted); font-size:.85rem; text-align:center; padding:1rem; }
+  .preview-viewport img { position:absolute; top:0; left:0; transform-origin:0 0; max-width:none; user-select:none; -webkit-user-drag:none; }
+  .preview-panes.overlay { position:relative; }
+  .preview-panes.overlay .preview-pane#preview-pane-docx { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
+  .preview-panes.overlay .preview-pane#preview-pane-docx .pane-label { display:none; }
+  .preview-panes.overlay #preview-viewport-docx { border:none; background:transparent; }
+  .preview-panes.overlay #preview-img-docx { opacity: var(--overlay-opacity, .5); }
+</style>
+</head>
+<body>
+<p class="banner">Diagnostický nástroj — nie produktová kvalita</p>
+<main>
+  <h1>Unflatten — súkromný diagnostický prevodník PDF→Word</h1>
+
+  <section id="auth-section">
+    <label for="token">Prístupový token (bearer)</label>
+    <input type="password" id="token" autocomplete="off" placeholder="vlož token">
+    <p class="muted">Token sa uchováva iba v pamäti tejto karty (sessionStorage), nikdy trvalo.</p>
+    <p id="ready-summary" class="muted">Pripravenosť: neznáma.</p>
+    <ul id="readiness-list"></ul>
+  </section>
+
+  <section id="submit-section">
+    <label for="model" id="model-label" hidden>Model</label>
+    <select id="model" hidden></select>
+    <p id="model-note" class="muted" hidden></p>
+    <label for="output">Výstup</label>
+    <select id="output">
+      <option value="diagnostic_docx" selected>diagnostic_docx (Word)</option>
+      <option value="prediction_ir">prediction_ir (JSON)</option>
+    </select>
+    <div id="drop" tabindex="0" role="button" aria-label="Nahrať PDF alebo obrázky strán">
+      Presuň sem PDF (viacstranové) alebo jeden či viac obrázkov strán, alebo klikni pre výber
+      <input type="file" id="file-input" accept="application/pdf,image/png,image/jpeg" multiple>
+    </div>
+    <ul id="file-list"></ul>
+    <p id="image-note" class="muted" hidden>Pri obrázkoch (fotografiách) meranie S5 ukázalo pokles textovej podobnosti
+      ~2 %; pri skenoch ~0,1 %.</p>
+    <p id="upload-error" class="bad" role="alert"></p>
+    <button id="submit-btn" disabled>Odoslať na spracovanie</button>
+    <p id="submit-error" class="bad" role="alert"></p>
+  </section>
+
+  <section id="jobs-section">
+    <h2>Aktuálna úloha</h2>
+    <p id="job-empty" class="muted">Zatiaľ žiadna úloha v tejto relácii.</p>
+    <div id="job-active" hidden>
+      <p>Job: <span id="job-id"></span> <span id="job-model" class="muted"></span></p>
+      <p>Stav: <span id="job-state"></span> · fáza: <span id="job-stage"></span> · uplynulo: <span id="job-elapsed"></span>s</p>
+      <progress id="job-progress" hidden></progress>
+      <p id="page-progress-text" class="muted" hidden></p>
+      <ul id="page-list" hidden></ul>
+      <p id="assembler-summary" class="muted" hidden></p>
+      <p id="job-error" class="bad"></p>
+      <pre id="job-chain" hidden></pre>
+      <button id="cancel-btn" class="secondary">Zrušiť</button>
+      <button id="dl-docx" hidden>Stiahnuť DOCX</button>
+      <button id="dl-ir" hidden>Stiahnuť IR (JSON)</button>
+      <div id="artifacts-list"></div>
+    </div>
+  </section>
+
+  <section id="preview-section" hidden>
+    <h2>Náhľad: originál vs. Word</h2>
+    <div class="preview-nav">
+      <button id="preview-prev" type="button" class="secondary" aria-label="predchádzajúca strana">←</button>
+      <span id="preview-page-label" class="muted"></span>
+      <button id="preview-next" type="button" class="secondary" aria-label="nasledujúca strana">→</button>
+      <button id="preview-zoom-out" type="button" class="secondary" aria-label="oddialiť">−</button>
+      <span id="preview-zoom-label" class="muted">100%</span>
+      <button id="preview-zoom-in" type="button" class="secondary" aria-label="priblížiť">+</button>
+      <label><input type="checkbox" id="preview-overlay"> prekrytie</label>
+      <input type="range" id="preview-opacity" min="0" max="100" value="50" hidden aria-label="priehľadnosť prekrytia">
+    </div>
+    <p id="preview-note" class="muted" hidden></p>
+    <div id="preview-panes" class="preview-panes">
+      <div class="preview-pane" id="preview-pane-source">
+        <div class="preview-viewport" id="preview-viewport-source"><img id="preview-img-source" alt="originál strany"></div>
+        <p class="pane-label">originál</p>
+      </div>
+      <div class="preview-pane" id="preview-pane-docx">
+        <div class="preview-viewport" id="preview-viewport-docx"><img id="preview-img-docx" alt="vykreslený Word"></div>
+        <p class="pane-label">Word</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="history-section">
+    <h2>História tejto relácie</h2>
+    <ul id="history"></ul>
+  </section>
+</main>
+
+<script nonce="__NONCE__">
+(function () {
+  "use strict";
+  var TOKEN_KEY = "unflatten_ui_token";
+  var HISTORY_KEY = "unflatten_ui_history";
+  var MODEL_KEY = "unflatten_ui_model";
+  var pollTimer = null;
+  var pollStartedAt = null;
+  var activeJobId = null;
+  var modelsAvailable = false;
+
+  var previewJobId = null;
+  var previewPageIndices = [];
+  var previewCurrent = 0;
+  var previewByIndex = {};
+  var previewObjectUrls = [];
+  var previewZoom = 1;
+  var previewPanX = 0;
+  var previewPanY = 0;
+  var lastPreviewOutcome = null;
+
+  var ERROR_MESSAGES = {
+    UNKNOWN_MODEL_VARIANT: "Neznámy model.",
+    MODEL_VARIANT_DOES_NOT_FIT: "Model sa nezmestí do dostupnej pamäte GPU.",
+    MODEL_DOWNLOAD_FAILED: "Stiahnutie modelu zlyhalo.",
+    MODEL_BUNDLE_INVALID: "Balík modelu je neplatný.",
+    TOO_MANY_PAGES: "Príliš veľa strán.",
+    UNSUPPORTED_MEDIA_TYPE: "Nepodporovaný typ súboru.",
+    PREVIEW_RENDER_FAILED: "Náhľad Wordu sa nevykreslil."
+  };
+  function errorMessage(code) {
+    if (!code) return "neznáma chyba";
+    var base = String(code).split("|")[0];
+    return ERROR_MESSAGES[base] || code;
+  }
+
+  var STAGE_LABELS = {
+    loading_model: "načítavam model…"
+  };
+  function stageLabel(stage) { return STAGE_LABELS[stage] || stage || "-"; }
+
+  function readToken() { try { return sessionStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
+  function writeToken(v) { try { sessionStorage.setItem(TOKEN_KEY, v); } catch (e) { /* storage unavailable */ } }
+  function readHistory() { try { return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || "[]"); } catch (e) { return []; } }
+  function writeHistory(list) { try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch (e) { /* storage unavailable */ } }
+  function readModelChoice() { try { return sessionStorage.getItem(MODEL_KEY) || ""; } catch (e) { return ""; } }
+  function writeModelChoice(v) { try { sessionStorage.setItem(MODEL_KEY, v); } catch (e) { /* storage unavailable */ } }
+
+  function authHeaders() { return { "Authorization": "Bearer " + readToken() }; }
+
+  function setText(id, text) { document.getElementById(id).textContent = text; }
+
+  function renderHistory() {
+    var ul = document.getElementById("history");
+    ul.textContent = "";
+    readHistory().slice().reverse().forEach(function (entry) {
+      var li = document.createElement("li");
+      li.textContent = entry.job_id + " — " + entry.requested_output +
+        (entry.model_variant ? " — " + entry.model_variant : "") + " — " + entry.state;
+      ul.appendChild(li);
+    });
+  }
+
+  function addHistory(job) {
+    var list = readHistory().filter(function (e) { return e.job_id !== job.job_id; });
+    list.push({
+      job_id: job.job_id,
+      requested_output: job.requested_output,
+      state: job.state,
+      model_variant: job.model_variant || null
+    });
+    writeHistory(list);
+    renderHistory();
+  }
+
+  function fetchModels() {
+    var select = document.getElementById("model");
+    var label = document.getElementById("model-label");
+    var note = document.getElementById("model-note");
+    if (!readToken()) {
+      modelsAvailable = false;
+      select.hidden = true; label.hidden = true; note.hidden = true;
+      return;
+    }
+    fetch("/v1/models", { headers: authHeaders() }).then(function (r) {
+      if (r.status === 404) return null;
+      return r.json().then(function (b) { return { r: r, b: b }; });
+    }).then(function (res) {
+      if (!res || res.r.status !== 200) {
+        modelsAvailable = false;
+        select.hidden = true; label.hidden = true; note.hidden = true;
+        return;
+      }
+      populateModels(res.b);
+    }).catch(function () {
+      modelsAvailable = false;
+      select.hidden = true; label.hidden = true; note.hidden = true;
+    });
+  }
+
+  function populateModels(body) {
+    var select = document.getElementById("model");
+    var label = document.getElementById("model-label");
+    var note = document.getElementById("model-note");
+    modelsAvailable = true;
+    select.textContent = "";
+    var remembered = readModelChoice();
+    var variants = body.variants || [];
+    variants.forEach(function (variant) {
+      var option = document.createElement("option");
+      option.value = variant.variant_id;
+      var parts = [variant.label, variant.precision, variant.kv_cache];
+      if (typeof variant.estimated_peak_vram_mib === "number") {
+        parts.push(Math.round(variant.estimated_peak_vram_mib) + " MiB");
+      }
+      if (variant.downloaded === true) {
+        parts.push("stiahnutý");
+      } else if (typeof variant.download_size_bytes === "number") {
+        parts.push("stiahne sa (" + (variant.download_size_bytes / 1e9).toFixed(1) + " GB)");
+      }
+      if (variant.resident) parts.push("aktuálne v pamäti");
+      option.textContent = parts.filter(Boolean).join(" · ");
+      if (variant.fits === false) option.disabled = true;
+      select.appendChild(option);
+    });
+    var defaultId = body.default_variant;
+    var validIds = variants.map(function (v) { return v.variant_id; });
+    select.value = (remembered && validIds.indexOf(remembered) !== -1) ? remembered : (defaultId || "");
+    select.hidden = false; label.hidden = false;
+    note.hidden = false;
+    note.textContent = "Prepnutie modelu vyžaduje opätovné načítanie (desiatky sekúnd).";
+  }
+
+  function refreshReadiness() {
+    fetch("/health/ready").then(function (r) { return r.json().then(function (b) { return { r: r, b: b }; }); })
+      .then(function (res) {
+        setText("ready-summary", "Služba: " + (res.b.service_ready ? "pripravená" : "nepripravená") + (res.r.status !== 200 ? " (HTTP " + res.r.status + ")" : ""));
+        var list = document.getElementById("readiness-list");
+        list.textContent = "";
+        (res.b.components || []).forEach(function (c) {
+          var li = document.createElement("li");
+          li.textContent = c.code + ": " + (c.ready ? "OK" : "nedostupné");
+          li.className = c.ready ? "ok" : "bad";
+          list.appendChild(li);
+        });
+        if (readToken()) {
+          fetch("/v1/readiness", { headers: authHeaders() }).then(function (r) { return r.json(); }).then(function (d) {
+            var blockers = d.docx_blockers || [];
+            var li = document.createElement("li");
+            li.textContent = "docx blokátory: " + (blockers.length ? blockers.join(", ") : "žiadne");
+            list.appendChild(li);
+            serviceLimits = d.limits || null;
+          }).catch(function () { /* ignore transient readiness errors */ });
+        }
+      }).catch(function () { setText("ready-summary", "Pripravenosť sa nepodarilo zistiť."); });
+  }
+
+  var chosenFiles = [];
+  var chosenKind = null;
+  var thumbUrls = [];
+  var serviceLimits = null;
+
+  function clearThumbs() {
+    thumbUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+    thumbUrls = [];
+  }
+
+  function updateSubmitEnabled() {
+    document.getElementById("submit-btn").disabled = !chosenFiles.length || !readToken();
+  }
+
+  function validateFiles(files) {
+    var accepted = (serviceLimits && serviceLimits.accepted_media_types) || null;
+    var pdfCount = files.filter(function (f) { return f.type === "application/pdf"; }).length;
+    var imageCount = files.filter(function (f) { return f.type === "image/png" || f.type === "image/jpeg"; }).length;
+    if (pdfCount + imageCount !== files.length) {
+      return { ok: false, message: "Nepodporovaný typ súboru (iba PDF, PNG alebo JPEG)." };
+    }
+    if (accepted && files.some(function (f) { return accepted.indexOf(f.type) === -1; })) {
+      return { ok: false, message: "Nepodporovaný typ súboru pre túto službu." };
+    }
+    if (pdfCount > 0 && imageCount > 0) {
+      return { ok: false, message: "Vyber buď jedno PDF, alebo jeden či viac obrázkov, nie oboje naraz." };
+    }
+    if (pdfCount > 1) {
+      return { ok: false, message: "Vyber iba jedno PDF." };
+    }
+    var kind = pdfCount > 0 ? "pdf" : "image";
+    if (kind === "image" && serviceLimits && typeof serviceLimits.max_pages === "number" &&
+        files.length > serviceLimits.max_pages) {
+      return { ok: false, message: "Príliš veľa strán (limit " + serviceLimits.max_pages + ")." };
+    }
+    if (serviceLimits && typeof serviceLimits.max_upload_bytes === "number") {
+      var total = files.reduce(function (sum, f) { return sum + f.size; }, 0);
+      if (total > serviceLimits.max_upload_bytes) {
+        return { ok: false, message: "Súbory prekračujú povolenú veľkosť nahrávania." };
+      }
+    }
+    return { ok: true, kind: kind };
+  }
+
+  function handleFiles(fileList) {
+    setText("upload-error", "");
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+    var result = validateFiles(files);
+    if (!result.ok) {
+      setText("upload-error", result.message);
+      return;
+    }
+    clearThumbs();
+    chosenFiles = files;
+    chosenKind = result.kind;
+    document.getElementById("image-note").hidden = chosenKind !== "image";
+    renderFileList();
+    updateSubmitEnabled();
+  }
+
+  function moveFile(index, delta) {
+    var target = index + delta;
+    if (target < 0 || target >= chosenFiles.length) return;
+    var tmp = chosenFiles[index];
+    chosenFiles[index] = chosenFiles[target];
+    chosenFiles[target] = tmp;
+    renderFileList();
+  }
+
+  function removeFile(index) {
+    chosenFiles.splice(index, 1);
+    if (!chosenFiles.length) {
+      chosenKind = null;
+      clearThumbs();
+      document.getElementById("image-note").hidden = true;
+    }
+    renderFileList();
+    updateSubmitEnabled();
+  }
+
+  function renderFileList() {
+    var ul = document.getElementById("file-list");
+    ul.textContent = "";
+    chosenFiles.forEach(function (file, index) {
+      var li = document.createElement("li");
+      if (chosenKind === "image") {
+        var url = URL.createObjectURL(file);
+        thumbUrls.push(url);
+        var img = document.createElement("img");
+        img.src = url; img.alt = "";
+        li.appendChild(img);
+      }
+      var name = document.createElement("span");
+      name.className = "file-name";
+      name.textContent = (index + 1) + ". " + file.name;
+      li.appendChild(name);
+      if (chosenKind === "image" && chosenFiles.length > 1) {
+        var up = document.createElement("button");
+        up.type = "button"; up.className = "secondary"; up.textContent = "↑"; up.disabled = index === 0;
+        up.addEventListener("click", function () { moveFile(index, -1); });
+        var down = document.createElement("button");
+        down.type = "button"; down.className = "secondary"; down.textContent = "↓";
+        down.disabled = index === chosenFiles.length - 1;
+        down.addEventListener("click", function () { moveFile(index, 1); });
+        li.appendChild(up); li.appendChild(down);
+      }
+      var remove = document.createElement("button");
+      remove.type = "button"; remove.className = "secondary"; remove.textContent = "×";
+      remove.setAttribute("aria-label", "odstrániť súbor");
+      remove.addEventListener("click", function () { removeFile(index); });
+      li.appendChild(remove);
+      ul.appendChild(li);
+    });
+  }
+
+  function setupDropzone() {
+    var drop = document.getElementById("drop");
+    var input = document.getElementById("file-input");
+    drop.addEventListener("click", function () { input.click(); });
+    drop.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
+    input.addEventListener("change", function () { handleFiles(input.files); });
+    ["dragenter", "dragover"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) { e.preventDefault(); drop.classList.add("drag"); });
+    });
+    ["dragleave", "drop"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) { e.preventDefault(); drop.classList.remove("drag"); });
+    });
+    drop.addEventListener("drop", function (e) {
+      if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+    });
+  }
+
+  function submitJob() {
+    setText("submit-error", "");
+    if (!chosenFiles.length) return;
+    var output = document.getElementById("output").value;
+    document.getElementById("submit-btn").disabled = true;
+    var headers = Object.assign({
+      "Idempotency-Key": (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+      "X-Unflatten-Profile": "word-core-v0",
+      "X-Unflatten-Output": output
+    }, authHeaders());
+    if (modelsAvailable) {
+      var chosenModel = document.getElementById("model").value;
+      if (chosenModel) {
+        headers["X-Unflatten-Model"] = chosenModel;
+        writeModelChoice(chosenModel);
+      }
+    }
+    var body;
+    if (chosenKind === "pdf" || chosenFiles.length === 1) {
+      headers["Content-Type"] = chosenFiles[0].type;
+      body = chosenFiles[0];
+    } else {
+      // Multiple images: multipart/form-data, one "page" part per file, in
+      // upload order. Leave Content-Type unset so the browser adds the
+      // multipart boundary itself.
+      var form = new FormData();
+      chosenFiles.forEach(function (file) { form.append("page", file, file.name); });
+      body = form;
+    }
+    fetch("/v1/conversions", { method: "POST", headers: headers, body: body })
+      .then(function (r) { return r.json().then(function (b) { return { r: r, b: b }; }); })
+      .then(function (res) {
+        document.getElementById("submit-btn").disabled = false;
+        if (res.r.status !== 202) {
+          setText("submit-error", "Chyba " + res.r.status + ": " + errorMessage(res.b.code));
+          return;
+        }
+        activeJobId = res.b.job_id;
+        addHistory(res.b);
+        showJob(res.b);
+        startPolling(res.b.status_url);
+      }).catch(function () {
+        document.getElementById("submit-btn").disabled = false;
+        setText("submit-error", "Požiadavka zlyhala (sieť).");
+      });
+  }
+
+  function showJob(status) {
+    document.getElementById("job-empty").hidden = true;
+    document.getElementById("job-active").hidden = false;
+    setText("job-id", status.job_id);
+    setText("job-model", status.model_variant ? "(" + status.model_variant + ")" : "");
+    setText("job-state", status.state);
+    setText("job-stage", stageLabel(status.stage));
+    var progress = document.getElementById("job-progress");
+    if (status.stage === "loading_model") {
+      progress.hidden = false;
+      progress.removeAttribute("value");
+    } else {
+      progress.hidden = true;
+    }
+    renderPageProgress(status);
+    var chain = document.getElementById("job-chain");
+    var outcome = status.diagnostic_outcome;
+    renderAssemblerSummary(outcome);
+    if (outcome && outcome.docx_chain) {
+      chain.hidden = false;
+      chain.textContent = JSON.stringify(outcome.docx_chain, null, 2);
+    } else {
+      chain.hidden = true;
+      chain.textContent = "";
+    }
+    var errBox = document.getElementById("job-error");
+    if (status.error) {
+      errBox.textContent = "Chyba: " + (status.error.code ? errorMessage(status.error.code) : JSON.stringify(status.error));
+    } else if (outcome && outcome.docx_produced === false && outcome.reason_codes && outcome.reason_codes.length) {
+      errBox.textContent = "docx_produced=false, dôvod: " + outcome.reason_codes.join(", ");
+    } else {
+      errBox.textContent = "";
+    }
+    renderArtifacts(status.artifacts || []);
+    renderPreviewSection(status);
+    var terminal = ["succeeded", "failed", "cancelled", "expired"].indexOf(status.state) !== -1;
+    document.getElementById("cancel-btn").disabled = terminal;
+    if (terminal) stopPolling();
+  }
+
+  function findPreviewFailureReason(outcome) {
+    if (!outcome) return null;
+    var reasons = outcome.reason_codes || [];
+    var reasonMatch = reasons.filter(function (r) { return r.indexOf("PREVIEW_RENDER_FAILED") !== -1; })[0];
+    if (reasonMatch) return reasonMatch;
+    var codes = (outcome.docx_chain && outcome.docx_chain.failure_codes) || [];
+    return codes.filter(function (c) { return c.indexOf("PREVIEW_RENDER_FAILED") !== -1; })[0] || null;
+  }
+
+  function revokePreviewUrls() {
+    previewObjectUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+    previewObjectUrls = [];
+  }
+
+  function renderPreviewSection(status) {
+    var section = document.getElementById("preview-section");
+    var artifacts = (status.artifacts || []).filter(function (a) {
+      return a && typeof a === "object" && (a.role === "source_preview" || a.role === "docx_preview")
+        && typeof a.page_index === "number";
+    });
+    if (!artifacts.length) {
+      section.hidden = true;
+      previewPageIndices = [];
+      return;
+    }
+    var byIndex = {};
+    artifacts.forEach(function (a) {
+      byIndex[a.page_index] = byIndex[a.page_index] || {};
+      byIndex[a.page_index][a.role] = a.url;
+    });
+    var indices = Object.keys(byIndex).map(Number).sort(function (a, b) { return a - b; });
+    if (previewJobId !== status.job_id) { previewCurrent = 0; previewJobId = status.job_id; }
+    if (previewCurrent >= indices.length) previewCurrent = 0;
+    previewByIndex = byIndex;
+    previewPageIndices = indices;
+    lastPreviewOutcome = status.diagnostic_outcome || null;
+    section.hidden = false;
+    loadPreviewPage();
+  }
+
+  function setPreviewPane(kind, url, emptyMessage) {
+    var viewport = document.getElementById("preview-viewport-" + kind);
+    var img = document.getElementById("preview-img-" + kind);
+    if (!url) {
+      viewport.classList.add("empty");
+      viewport.textContent = emptyMessage;
+      return;
+    }
+    viewport.classList.remove("empty");
+    viewport.textContent = "";
+    viewport.appendChild(img);
+    fetch(url, { headers: authHeaders() }).then(function (r) {
+      if (!r.ok) throw new Error("preview fetch failed");
+      return r.blob();
+    }).then(function (blob) {
+      var objectUrl = URL.createObjectURL(blob);
+      previewObjectUrls.push(objectUrl);
+      img.src = objectUrl;
+      applyPreviewTransform();
+    }).catch(function () {
+      viewport.classList.add("empty");
+      viewport.textContent = "Náhľad sa nepodarilo načítať.";
+    });
+  }
+
+  function loadPreviewPage() {
+    if (!previewPageIndices.length) return;
+    var index = previewPageIndices[previewCurrent];
+    var sourceCount = previewPageIndices.filter(function (i) { return previewByIndex[i].source_preview; }).length;
+    var docxCount = previewPageIndices.filter(function (i) { return previewByIndex[i].docx_preview; }).length;
+    setText(
+      "preview-page-label",
+      "strana " + (index + 1) + " (" + (previewCurrent + 1) + "/" + previewPageIndices.length +
+      ") · zdroj: " + sourceCount + " str. · Word: " + docxCount + " str."
+    );
+    document.getElementById("preview-prev").disabled = previewCurrent === 0;
+    document.getElementById("preview-next").disabled = previewCurrent === previewPageIndices.length - 1;
+    var entry = previewByIndex[index] || {};
+    revokePreviewUrls();
+    resetPreviewTransform();
+    setPreviewPane("source", entry.source_preview, "Originál chýba pre túto stranu.");
+    if (entry.docx_preview) {
+      setPreviewPane("docx", entry.docx_preview, "");
+    } else {
+      var reason = findPreviewFailureReason(lastPreviewOutcome);
+      setPreviewPane("docx", null, reason
+        ? "Word sa nevykreslil: " + errorMessage(reason)
+        : "Word chýba pre túto stranu.");
+    }
+  }
+
+  function applyPreviewTransform() {
+    var t = "translate(" + previewPanX + "px," + previewPanY + "px) scale(" + previewZoom + ")";
+    document.getElementById("preview-img-source").style.transform = t;
+    document.getElementById("preview-img-docx").style.transform = t;
+    setText("preview-zoom-label", Math.round(previewZoom * 100) + "%");
+  }
+
+  function resetPreviewTransform() {
+    previewZoom = 1; previewPanX = 0; previewPanY = 0;
+    applyPreviewTransform();
+  }
+
+  function updatePreviewOverlay() {
+    var overlay = document.getElementById("preview-overlay").checked;
+    var opacityInput = document.getElementById("preview-opacity");
+    opacityInput.hidden = !overlay;
+    document.getElementById("preview-panes").classList.toggle("overlay", overlay);
+    document.getElementById("preview-img-docx").style.setProperty(
+      "--overlay-opacity", String(opacityInput.value / 100)
+    );
+  }
+
+  function setupPreviewInteractions() {
+    ["preview-viewport-source", "preview-viewport-docx"].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener("wheel", function (e) {
+        if (!previewPageIndices.length) return;
+        e.preventDefault();
+        previewZoom = Math.min(8, Math.max(0.25, previewZoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+        applyPreviewTransform();
+      }, { passive: false });
+      var dragging = false, startX = 0, startY = 0, originX = 0, originY = 0;
+      el.addEventListener("pointerdown", function (e) {
+        if (!previewPageIndices.length) return;
+        dragging = true;
+        el.setPointerCapture(e.pointerId);
+        startX = e.clientX; startY = e.clientY; originX = previewPanX; originY = previewPanY;
+        el.style.cursor = "grabbing";
+      });
+      el.addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        previewPanX = originX + (e.clientX - startX);
+        previewPanY = originY + (e.clientY - startY);
+        applyPreviewTransform();
+      });
+      function endDrag() { dragging = false; el.style.cursor = "grab"; }
+      el.addEventListener("pointerup", endDrag);
+      el.addEventListener("pointercancel", endDrag);
+    });
+    document.getElementById("preview-prev").addEventListener("click", function () {
+      if (previewCurrent > 0) { previewCurrent--; loadPreviewPage(); }
+    });
+    document.getElementById("preview-next").addEventListener("click", function () {
+      if (previewCurrent < previewPageIndices.length - 1) { previewCurrent++; loadPreviewPage(); }
+    });
+    document.getElementById("preview-zoom-in").addEventListener("click", function () {
+      previewZoom = Math.min(8, previewZoom * 1.2); applyPreviewTransform();
+    });
+    document.getElementById("preview-zoom-out").addEventListener("click", function () {
+      previewZoom = Math.max(0.25, previewZoom / 1.2); applyPreviewTransform();
+    });
+    document.getElementById("preview-overlay").addEventListener("change", updatePreviewOverlay);
+    document.getElementById("preview-opacity").addEventListener("input", updatePreviewOverlay);
+    document.addEventListener("keydown", function (e) {
+      var tag = (document.activeElement && document.activeElement.tagName) || "";
+      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" || !previewPageIndices.length) return;
+      if (e.key === "ArrowLeft" && previewCurrent > 0) { previewCurrent--; loadPreviewPage(); }
+      if (e.key === "ArrowRight" && previewCurrent < previewPageIndices.length - 1) { previewCurrent++; loadPreviewPage(); }
+    });
+  }
+
+  function renderPageProgress(status) {
+    var text = document.getElementById("page-progress-text");
+    var list = document.getElementById("page-list");
+    if (typeof status.pages_total === "number") {
+      text.hidden = false;
+      var current = typeof status.current_page === "number" ? status.current_page : status.pages_done;
+      text.textContent = "strana " + (current != null ? current : "?") + " / " + status.pages_total;
+    } else {
+      text.hidden = true;
+    }
+    var pages = status.pages;
+    list.textContent = "";
+    if (Array.isArray(pages) && pages.length) {
+      list.hidden = false;
+      pages.forEach(function (page) {
+        var li = document.createElement("li");
+        var label = "strana " + (typeof page.index === "number" ? page.index + 1 : "?") + ": " + (page.state || "-");
+        if (typeof page.seconds === "number") label += " (" + page.seconds.toFixed(1) + "s)";
+        li.textContent = label;
+        if (page.error_code) {
+          li.classList.add("bad");
+          var codeSpan = document.createElement("span");
+          codeSpan.className = "page-code";
+          codeSpan.textContent = " " + errorMessage(page.error_code);
+          li.appendChild(codeSpan);
+        }
+        list.appendChild(li);
+      });
+    } else {
+      list.hidden = true;
+    }
+  }
+
+  function renderAssemblerSummary(outcome) {
+    var summary = document.getElementById("assembler-summary");
+    var assembler = outcome && outcome.docx_chain && outcome.docx_chain.assembler;
+    if (!assembler) { summary.hidden = true; summary.textContent = ""; return; }
+    var joined = assembler.joins_accepted;
+    var rejected = assembler.joins_refused;
+    var refusalCodes = assembler.refusal_codes || {};
+    var codes = Object.keys(refusalCodes).sort().map(function (code) {
+      return code + " ×" + refusalCodes[code];
+    });
+    if (typeof joined !== "number" && typeof rejected !== "number") {
+      summary.hidden = true; summary.textContent = "";
+      return;
+    }
+    summary.hidden = false;
+    summary.textContent = "spojené zlomy: " + (typeof joined === "number" ? joined : "?") +
+      ", odmietnuté: " + (typeof rejected === "number" ? rejected : "?") +
+      (codes.length ? " (" + codes.join(", ") + ")" : "");
+  }
+
+  function renderArtifacts(artifacts) {
+    var container = document.getElementById("artifacts-list");
+    container.textContent = "";
+    var isDetailed = artifacts.length > 0 && typeof artifacts[0] === "object" && artifacts[0] !== null;
+    if (!isDetailed) {
+      document.getElementById("dl-docx").hidden = artifacts.indexOf("diagnostic_docx") === -1;
+      document.getElementById("dl-ir").hidden = artifacts.indexOf("prediction_ir") === -1;
+      return;
+    }
+    document.getElementById("dl-docx").hidden = true;
+    document.getElementById("dl-ir").hidden = true;
+    artifacts.forEach(function (artifact) {
+      if (!artifact || typeof artifact.url !== "string" || artifact.url.charAt(0) !== "/") return;
+      var label = artifact.role + (typeof artifact.page_index === "number" ? " (strana " + (artifact.page_index + 1) + ")" : "");
+      var button = document.createElement("button");
+      button.type = "button"; button.className = "secondary";
+      button.textContent = "Stiahnuť: " + label;
+      var extension = artifact.role === "diagnostic_docx" ? ".docx"
+        : (artifact.role === "source_preview" || artifact.role === "docx_preview") ? ".png"
+        : ".json";
+      var filename = label.replace(/\s+/g, "_") + extension;
+      button.addEventListener("click", function () { downloadUrl(artifact.url, filename); });
+      container.appendChild(button);
+    });
+  }
+
+  function startPolling(statusUrl) {
+    stopPolling();
+    pollStartedAt = Date.now();
+    function tick() {
+      setText("job-elapsed", Math.round((Date.now() - pollStartedAt) / 1000));
+      fetch(statusUrl, { headers: authHeaders() }).then(function (r) {
+        if (!r.ok) throw new Error("poll failed");
+        return r.json();
+      }).then(function (body) {
+        showJob(body);
+        addHistory(body);
+      }).catch(function () { /* transient poll failure, keep polling */ });
+    }
+    tick();
+    pollTimer = setInterval(tick, 1500);
+  }
+
+  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+  function cancelJob() {
+    if (!activeJobId) return;
+    fetch("/v1/conversions/" + activeJobId, { method: "DELETE", headers: authHeaders() })
+      .then(function (r) {
+        if (!r.ok) throw new Error("cancel failed");
+        return r.json();
+      }).then(function (body) { showJob(body); addHistory(body); })
+      .catch(function () { /* ignore cancel network failure, polling continues */ });
+  }
+
+  function download(role, filename) {
+    if (!activeJobId) return;
+    downloadUrl("/v1/conversions/" + activeJobId + "/artifacts/" + role, filename);
+  }
+
+  function downloadUrl(url, filename) {
+    fetch(url, { headers: authHeaders() })
+      .then(function (r) {
+        if (!r.ok) throw new Error("download failed");
+        return r.blob();
+      }).then(function (blob) {
+        var objectUrl = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = objectUrl; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(objectUrl);
+      }).catch(function () { setText("submit-error", "Stiahnutie zlyhalo."); });
+  }
+
+  document.getElementById("token").addEventListener("input", function (e) {
+    writeToken(e.target.value);
+    updateSubmitEnabled();
+    refreshReadiness();
+    fetchModels();
+  });
+  document.getElementById("submit-btn").addEventListener("click", submitJob);
+  document.getElementById("cancel-btn").addEventListener("click", cancelJob);
+  document.getElementById("dl-docx").addEventListener("click", function () { download("diagnostic_docx", "diagnostic.docx"); });
+  document.getElementById("dl-ir").addEventListener("click", function () { download("prediction_ir", "prediction_ir.json"); });
+
+  document.getElementById("token").value = readToken();
+  setupDropzone();
+  setupPreviewInteractions();
+  renderHistory();
+  refreshReadiness();
+  fetchModels();
+  setInterval(refreshReadiness, 5000);
+})();
+</script>
+</body>
+</html>

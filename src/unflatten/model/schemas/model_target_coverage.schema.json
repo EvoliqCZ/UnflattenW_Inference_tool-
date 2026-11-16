@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/model_target_coverage.schema.json",
+  "title": "RFC005 §9.3 ModelTargetCoverageReport",
+  "$comment": "Closed envelope for the artefact `model_target_coverage_hash` names. RFC005 §9.3 requires raw AND independent-lineage counts over eight axes, bound to the dataset release, the RFC004 Component Lock, the TrainingTargetMaterializer and the loss policy, and states in its own last sentence that RFC003 AST coverage does not imply coverage of model tokens/heads -- so this document counts MODEL features, never AST node types. The load-bearing shape decision is the four-valued `state`: `covered`, `zero_capability_excluded`, `zero_not_excluded` and `unmeasured` must never collapse into one printed `0`, because a zero that was never measured reads exactly like a zero that was. `unmeasured` therefore carries NO counts at all -- the schema makes the count fields optional so that absence stays expressible, and the producer forbids them on that state. Axis domains that do not exist in code yet are `axis_state: domain_undefined` with an empty entry list and a named missing upstream artefact; an empty entry list on an `enumerated` axis is a producer error, since it would read as 'nothing to cover'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_target_coverage_schema_version",
+    "report_version",
+    "stage_id",
+    "bindings",
+    "scope",
+    "axes"
+  ],
+  "properties": {
+    "model_target_coverage_schema_version": { "$ref": "#/$defs/semver" },
+    "report_version": { "$ref": "#/$defs/semver" },
+    "stage_id": {
+      "$comment": "The RFC005 §12 stage this report was produced for. Named, never inferred from a run class.",
+      "type": "string",
+      "pattern": "^S[0-9]+$"
+    },
+    "bindings": {
+      "$comment": "§9.3's four named bindings, plus the composite S1 cache identity. `release_root_hash` must come from `admission.evidence.load_release`, which recomputes it, not from reading the manifest key. `training_target_materializer_hash` is the DESCRIPTOR domain `rfc005.training-target-materializer/v1` (semantic), not `...-impl/v1`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_root_hash",
+        "component_lock_hash",
+        "training_target_materializer_hash",
+        "stage_policy_hash",
+        "exact_text_cache_identity_hash"
+      ],
+      "properties": {
+        "release_root_hash": { "$ref": "#/$defs/sha256" },
+        "component_lock_hash": { "$ref": "#/$defs/sha256" },
+        "training_target_materializer_hash": { "$ref": "#/$defs/sha256" },
+        "stage_policy_hash": { "$ref": "#/$defs/sha256" },
+        "exact_text_cache_identity_hash": {
+          "$comment": "Optional fifth binding: it moves when any of the cache identity's own inputs move. `null` records 'no cache was bound', which must be written, not omitted.",
+          "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+        }
+      }
+    },
+    "scope": {
+      "$comment": "What was counted. Without it every number is unreadable: 'raw_count 12' over one split of one release is a different claim from the same number over all of them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "splits",
+        "eligibility",
+        "bundles_counted",
+        "fragments_counted",
+        "lineage_roots_counted"
+      ],
+      "properties": {
+        "splits": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+        },
+        "eligibility": {
+          "$comment": "The release eligibility tier counted. `train_ready` is what trains by default; counting a wider tier is a different claim and must be readable as one.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "bundles_counted": { "type": "integer", "minimum": 0 },
+        "fragments_counted": {
+          "$comment": "Page fragments encoded. A training sample is one page, so this is the surface the token-occurrence axes were counted over; it is NOT the unit of every axis -- see each axis's own `count_unit`.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "lineage_roots_counted": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "axes": {
+      "$comment": "All ten axis ids exactly once, checked by the producer. Ten, not eight: §9.3's third bullet (Property Head Registry pointer AND categorical value) and its eighth (supervised prediction status WITH label authority) each name two things whose coverage state differs today, and one axis record cannot carry two axis states. `rfc005_clause` maps each back to its §9.3 bullet.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "axis_id",
+          "rfc005_clause",
+          "axis_state",
+          "domain_source",
+          "count_unit",
+          "missing_upstream_artefact",
+          "entries"
+        ],
+        "properties": {
+          "axis_id": { "$ref": "#/$defs/axis_id" },
+          "rfc005_clause": {
+            "$comment": "The §9.3 bullet this axis serves, verbatim enough to be found in the RFC.",
+            "type": "string",
+            "minLength": 1
+          },
+          "domain_source": {
+            "$comment": "Where the axis domain is enumerated FROM, as a code reference. An axis whose domain nobody can point at is not an axis.",
+            "type": "string",
+            "minLength": 1
+          },
+          "count_unit": {
+            "$comment": "What one unit of `raw_count` IS on this axis. Required because the axes do not share a unit: a structural symbol counts token occurrences over page fragments, label authority counts document bundles, and in a real report 5543 sits next to 295940 under the same field name. `not_counted` is the honest unit of an axis that carries no counts.",
+            "type": "string",
+            "enum": [
+              "token_occurrence",
+              "typed_property_occurrence",
+              "document_bundle",
+              "not_counted"
+            ]
+          },
+          "axis_state": { "type": "string", "enum": ["enumerated", "domain_undefined"] },
+          "missing_upstream_artefact": {
+            "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+          },
+          "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "axis_id": {
+      "type": "string",
+      "enum": [
+        "structural_symbols",
+        "tokenizer_routes",
+        "property_head_pointers",
+        "property_categorical_values",
+        "numeric_bins",
+        "repeated_field_variants",
+        "table_plan_variants",
+        "resource_recovery_modes",
+        "supervised_prediction_status",
+        "label_authority"
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feature_key", "state"],
+      "properties": {
+        "feature_key": { "type": "string", "minLength": 1 },
+        "state": {
+          "$comment": "`covered` carries counts > 0. Both zero states carry an explicit 0/0 AND their reason field. `unmeasured` carries neither count key -- absence is the only representation that cannot be misread as a measured zero.",
+          "type": "string",
+          "enum": [
+            "covered",
+            "zero_capability_excluded",
+            "zero_not_excluded",
+            "unmeasured"
+          ]
+        },
+        "raw_count": { "type": "integer", "minimum": 0 },
+        "lineage_count": {
+          "$comment": "Distinct `lineage_root_id`s contributing at least one occurrence. RFC003 §42 also asks for `independent_lineage_families`; no family field exists on a document bundle, so this is a lineage-root count and must not be reported as families.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "zero_class": {
+          "$comment": "Why a `zero_not_excluded` is zero, as data rather than as prose. A gate reading only `state` would see every such zero as one blocker class; `target_unit_incompatible` is not closable by a wider release at all, only by changing the target unit, and `no_supervision_channel` needs a loss family. Required exactly on `zero_not_excluded`.",
+          "type": "string",
+          "enum": [
+            "absent_from_release",
+            "target_unit_incompatible",
+            "no_supervision_channel"
+          ]
+        },
+        "capability_exclusion_ref": { "type": "string", "minLength": 1 },
+        "missing_upstream_artefact": { "type": "string", "minLength": 1 },
+        "unmeasured_reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

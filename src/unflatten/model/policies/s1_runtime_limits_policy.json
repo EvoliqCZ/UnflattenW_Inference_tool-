@@ -1,0 +1,17 @@
+{
+  "max_byte_frames_per_sample": 256,
+  "max_cache_row_bytes": 134217728,
+  "max_cache_rows_per_shard": 32,
+  "max_cache_shard_bytes": 4294967296,
+  "max_cbor_nesting_depth": 32,
+  "max_controller_steps_per_sample": 8192,
+  "max_json_nesting_depth": 32,
+  "max_materialized_tokens_per_sample": 8192,
+  "max_scalars_per_sample": 33554432,
+  "max_structural_events_per_sample": 8192,
+  "max_tokenizer_file_bytes": 33554432,
+  "max_tokenizer_probes_per_range": 10000,
+  "policy_version": "1.0.0",
+  "runtime_limits_policy_schema_version": "1.0.0",
+  "text_encoding_budget_ops": 10000
+}

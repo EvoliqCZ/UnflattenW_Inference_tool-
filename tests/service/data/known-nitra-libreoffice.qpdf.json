@@ -1,0 +1,43 @@
+{
+  "qpdf": [
+    {
+      "jsonversion": 2
+    },
+    {
+      "obj:3 0 R": {
+        "value": {
+          "/Type": "/Page",
+          "/MediaBox": [
+            0,
+            0,
+            600,
+            840
+          ],
+          "/Contents": "4 0 R",
+          "/Resources": {
+            "/Font": {
+              "/F1": "5 0 R"
+            }
+          }
+        }
+      }
+    },
+    {
+      "obj:4 0 R": {
+        "stream": {
+          "dict": {},
+          "data": "cQowIDAgNjAwIDg0MCByZSBXKiBuCjAgZwpCVAovRjEgMTIgVGYKNzEgODAwIFRkClsoUykgNDAgKHkpIDQwIChuKSA0MCAodCkgNDAgKGgpIDQwIChlKSA0MCAodCkgNDAgKGkpIDQwIChjKSA0MCAoICkgNDAgKHMpIDQwIChjKSA0MCAoYSkgNDAgKG4pIDQwIChuKSA0MCAoZSkgNDAgKHIpIDQwICggKSA0MCAoZikgNDAgKGkpIDQwICh4KSA0MCAodCkgNDAgKHUpIDQwIChyKSA0MCAoZSldIFRKCjAgLTI4IFRkCihTeW50aGV0aWMgc2Nhbm5lciBmaXh0dXJlKSBUagpFVAowIGcgNjQgNzYwIDQgNjAgcmUgZgpxIDAuNSB3CjUwIDc1MCBtIDUwMCA3NTAgbCBTCjUwIDc1MCBtIDUwIDgyMCBsIFMKNTAwIDc1MCBtIDUwMCA4MjAgbCBTCjUwIDgyMCBtIDUwMCA4MjAgbCBTClEKUQo="
+        }
+      }
+    },
+    {
+      "obj:5 0 R": {
+        "value": {
+          "/Type": "/Font",
+          "/Subtype": "/Type1",
+          "/BaseFont": "/Helvetica"
+        }
+      }
+    }
+  ]
+}

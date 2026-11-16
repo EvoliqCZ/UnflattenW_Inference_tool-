@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "NESTED_TABLE_UNSUPPORTED",
+      "path": "/sections/0/children/0/rows/0/cells/0/children/1"
+    }
+  ]
+}

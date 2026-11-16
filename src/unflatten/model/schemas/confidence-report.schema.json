@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/confidence-report.schema.json",
+  "title": "RFC004 §35/§36 Confidence report",
+  "$comment": "§35.5: confidence_report is diagnostics only, never a status field, and must be non-null whenever the acceptance policy used a confidence/OOD gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["confidence_report_schema_version", "calibrator_id", "overall_score", "ood_flag", "per_axis"],
+  "properties": {
+    "confidence_report_schema_version": { "const": "0.1.0" },
+    "calibrator_id": { "type": "string" },
+    "overall_score": { "type": "integer", "minimum": 0, "maximum": 1000 },
+    "ood_flag": { "type": "boolean" },
+    "per_axis": {
+      "type": "object",
+      "propertyNames": { "enum": ["ast", "renderer", "typed_property", "alignment"] },
+      "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 1000 }
+    }
+  }
+}

@@ -1,0 +1,892 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/canonical_ast.schema.json",
+  "title": "Unflatten Canonical Document AST — profiles word-core-v0, word-visual-v1, word-visual-v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ast_version", "profile", "document_id", "metadata", "resources", "sections", "extensions"],
+  "properties": {
+    "ast_version": { "type": "string" },
+    "profile": { "enum": ["word-core-v0", "word-visual-v1", "word-visual-v1.1"] },
+    "document_id": { "type": "string", "minLength": 1 },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "resources": { "type": "array", "items": { "$ref": "#/$defs/resource" } },
+    "sections": { "type": "array", "items": { "$ref": "#/$defs/section" } },
+    "footnotes": { "type": "array", "items": { "$ref": "#/$defs/footnote" } },
+    "endnotes": { "type": "array", "items": { "$ref": "#/$defs/endnote" } },
+    "extensions": { "type": "object" }
+  },
+  "$defs": {
+    "node_id": { "type": "string", "minLength": 1 },
+    "length_mpt": { "type": "integer" },
+    "length_mpt_nonneg": { "type": "integer", "minimum": 0 },
+    "angle_mdeg": { "type": "integer" },
+    "ratio_ppm": { "type": "integer" },
+    "color": {
+      "oneOf": [
+        { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        { "const": "auto" }
+      ]
+    },
+    "nullable_color": {
+      "oneOf": [
+        { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        { "const": "auto" },
+        { "type": "null" }
+      ]
+    },
+
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "language": { "type": ["string", "null"] },
+        "title": { "type": ["string", "null"] },
+        "subject": { "type": ["string", "null"] }
+      }
+    },
+
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "mime_type", "sha256", "path", "pixel_width", "pixel_height"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^res_[a-f0-9]+$" },
+        "kind": { "const": "image" },
+        "mime_type": { "enum": ["image/png", "image/jpeg", "image/gif", "image/bmp", "image/tiff"], "$comment": "RFC002 §12.1 (RATIFIED 2026-09-02) names exactly these five as the V0 MIME whitelist, and renderer/resources.py:MIME_EXTENSION already carried all five. The schema and the importer knowing only two was drift from a ratified RFC, not a profile boundary — RFC001 §42.1 says nothing about image formats. EMF/WMF stay out: they are vector, absent from §12.1, and rasterizing them in the admission path is a product decision, not a defect fix." },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "path": { "type": "string", "minLength": 1 },
+        "pixel_width": { "type": "integer", "exclusiveMinimum": 0 },
+        "pixel_height": { "type": "integer", "exclusiveMinimum": 0 }
+      }
+    },
+
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "break_type", "page", "margins", "columns", "children"],
+      "$comment": "word-visual-v1 adds `headers`/`footers` and `margins.header_mpt`/`footer_mpt`. They are OPTIONAL and omitted when empty, never required-with-an-empty-array: a required key would enter the canonical JSON of every document and move 100 % of `ast_hash` (and with it every document_bundle_id / fragment_id / target_bundle_hash, RFC003-ERRATA-001 E4) the moment the schema ships, destroying the pinned-golden regression net that proves this extension additive. Same rule for the root `footnotes`.",
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "section" },
+        "break_type": { "enum": ["next_page", "continuous", "even_page", "odd_page", "next_column"] },
+        "page": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width_mpt", "height_mpt", "orientation"],
+          "properties": {
+            "width_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "height_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "orientation": { "enum": ["portrait", "landscape"] }
+          }
+        },
+        "margins": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["top_mpt", "right_mpt", "bottom_mpt", "left_mpt", "gutter_mpt"],
+          "properties": {
+            "top_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "right_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "bottom_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "left_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "gutter_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "header_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "footer_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+          }
+        },
+        "columns": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["count", "equal_width", "gap_mpt", "widths_mpt"],
+          "properties": {
+            "count": { "type": "integer", "exclusiveMinimum": 0 },
+            "equal_width": { "type": "boolean" },
+            "gap_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "widths_mpt": { "type": "array", "items": { "$ref": "#/$defs/length_mpt_nonneg" } }
+          }
+        },
+        "vertical_alignment": { "enum": ["top", "center", "both", "bottom"] },
+        "page_numbering": { "$ref": "#/$defs/page_numbering" },
+        "line_numbering": { "$ref": "#/$defs/line_numbering" },
+        "page_borders": { "$ref": "#/$defs/page_borders" },
+        "headers": { "type": "array", "items": { "$ref": "#/$defs/header" } },
+        "footers": { "type": "array", "items": { "$ref": "#/$defs/footer" } },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/block_node" } }
+      }
+    },
+
+    "block_node": {
+      "oneOf": [
+        { "$ref": "#/$defs/paragraph" },
+        { "$ref": "#/$defs/list" },
+        { "$ref": "#/$defs/table" },
+        { "$ref": "#/$defs/text_frame" },
+        { "$ref": "#/$defs/page_break" },
+        { "$ref": "#/$defs/column_break" }
+      ]
+    },
+
+    "inline_node": {
+      "oneOf": [
+        { "$ref": "#/$defs/run" },
+        { "$ref": "#/$defs/hyperlink" },
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/line_break" },
+        { "$ref": "#/$defs/inline_image" },
+        { "$ref": "#/$defs/floating_image" },
+        { "$ref": "#/$defs/note_ref" },
+        { "$ref": "#/$defs/field" }
+      ]
+    },
+
+    "story_block_node": {
+      "$comment": "Story content (header/footer/footnote): the body block set minus page_break and column_break, which are syntactically admissible and semantically meaningless inside a story.",
+      "oneOf": [
+        { "$ref": "#/$defs/paragraph" },
+        { "$ref": "#/$defs/list" },
+        { "$ref": "#/$defs/table" },
+        { "$ref": "#/$defs/text_frame" }
+      ]
+    },
+
+    "hyperlink_child": {
+      "oneOf": [
+        { "$ref": "#/$defs/run" },
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/line_break" },
+        { "$ref": "#/$defs/inline_image" }
+      ]
+    },
+
+    "line_spacing": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "single" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "multiplier_ppm"],
+          "properties": {
+            "mode": { "const": "multiple" },
+            "multiplier_ppm": { "$ref": "#/$defs/ratio_ppm" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "value_mpt"],
+          "properties": {
+            "mode": { "const": "exact" },
+            "value_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "value_mpt"],
+          "properties": {
+            "mode": { "const": "at_least" },
+            "value_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+          }
+        }
+      ]
+    },
+
+    "tab_stop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position_mpt", "alignment", "leader"],
+      "properties": {
+        "position_mpt": { "$ref": "#/$defs/length_mpt" },
+        "alignment": { "enum": ["left", "center", "right", "decimal", "bar"] },
+        "leader": { "enum": ["none", "dots", "hyphen", "underscore", "middle_dot"] }
+      }
+    },
+
+    "border_side": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["style", "width_mpt", "color"],
+      "properties": {
+        "style": { "enum": ["none", "single", "double", "dotted", "dashed"] },
+        "width_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+        "color": { "$ref": "#/$defs/color" }
+      }
+    },
+
+    "borders": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "top": { "$ref": "#/$defs/border_side" },
+        "right": { "$ref": "#/$defs/border_side" },
+        "bottom": { "$ref": "#/$defs/border_side" },
+        "left": { "$ref": "#/$defs/border_side" }
+      }
+    },
+
+    "paragraph_style": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["background", "borders"],
+      "properties": {
+        "background": { "$ref": "#/$defs/nullable_color" },
+        "borders": { "$ref": "#/$defs/borders" }
+      }
+    },
+
+    "paragraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "semantic", "layout", "style", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "paragraph" },
+        "semantic": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["role", "heading_level", "outline_level"],
+          "properties": {
+            "role": { "enum": ["body", "title", "subtitle", "heading", "caption", "quote", "code", "signature", "unknown"] },
+            "heading_level": { "type": ["integer", "null"], "minimum": 1, "maximum": 9 },
+            "outline_level": { "type": ["integer", "null"], "minimum": 1, "maximum": 9 }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["alignment", "direction", "indent", "spacing", "pagination", "tabs"],
+          "properties": {
+            "alignment": { "enum": ["left", "center", "right", "justify", "distributed"] },
+            "direction": { "enum": ["ltr", "rtl"] },
+            "indent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["left_mpt", "right_mpt", "first_line_mpt", "hanging_mpt"],
+              "properties": {
+                "left_mpt": { "$ref": "#/$defs/length_mpt" },
+                "right_mpt": { "$ref": "#/$defs/length_mpt" },
+                "first_line_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "hanging_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+              }
+            },
+            "spacing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["before_mpt", "after_mpt", "line"],
+              "properties": {
+                "before_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "after_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "line": { "$ref": "#/$defs/line_spacing" }
+              }
+            },
+            "pagination": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["keep_with_next", "keep_lines", "page_break_before", "widow_control"],
+              "properties": {
+                "keep_with_next": { "type": "boolean" },
+                "keep_lines": { "type": "boolean" },
+                "page_break_before": { "type": "boolean" },
+                "widow_control": { "type": "boolean" }
+              }
+            },
+            "tabs": { "type": "array", "items": { "$ref": "#/$defs/tab_stop" } }
+          }
+        },
+        "style": { "$ref": "#/$defs/paragraph_style" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/inline_node" } }
+      }
+    },
+
+    "run_style": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "font_family", "font_size_mpt", "bold", "italic", "underline", "strike",
+        "color", "highlight", "superscript", "subscript", "character_spacing_mpt",
+        "small_caps", "all_caps"
+      ],
+      "properties": {
+        "font_family": { "type": "string", "minLength": 1 },
+        "font_size_mpt": { "type": "integer", "exclusiveMinimum": 0 },
+        "bold": { "type": "boolean" },
+        "italic": { "type": "boolean" },
+        "underline": { "enum": ["none", "single", "double", "dotted", "dashed", "wave"] },
+        "strike": { "type": "boolean" },
+        "color": { "$ref": "#/$defs/color" },
+        "highlight": { "$ref": "#/$defs/nullable_color" },
+        "superscript": { "type": "boolean" },
+        "subscript": { "type": "boolean" },
+        "character_spacing_mpt": { "$ref": "#/$defs/length_mpt" },
+        "small_caps": { "type": "boolean" },
+        "all_caps": { "type": "boolean" }
+      }
+    },
+
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "text", "language", "style"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "run" },
+        "text": { "type": "string" },
+        "language": { "type": ["string", "null"] },
+        "style": { "$ref": "#/$defs/run_style" }
+      }
+    },
+
+    "tab": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": { "id": { "$ref": "#/$defs/node_id" }, "type": { "const": "tab" } }
+    },
+    "line_break": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": { "id": { "$ref": "#/$defs/node_id" }, "type": { "const": "line_break" } }
+    },
+    "page_break": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": { "id": { "$ref": "#/$defs/node_id" }, "type": { "const": "page_break" } }
+    },
+    "column_break": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": { "id": { "$ref": "#/$defs/node_id" }, "type": { "const": "column_break" } }
+    },
+
+    "hyperlink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "target", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "hyperlink" },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "uri"],
+          "properties": {
+            "kind": { "enum": ["external", "internal_anchor", "email", "file"] },
+            "uri": { "type": "string", "minLength": 1 }
+          }
+        },
+        "children": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/hyperlink_child" } }
+      }
+    },
+
+    "list": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "list_kind", "marker", "layout", "items"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "list" },
+        "list_kind": { "enum": ["ordered", "unordered"] },
+        "marker": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["format", "start", "suffix"],
+          "properties": {
+            "format": { "enum": ["decimal", "lower_alpha", "upper_alpha", "lower_roman", "upper_roman", "bullet", "circle", "square", "custom_text"] },
+            "start": { "type": ["integer", "null"] },
+            "suffix": { "type": ["string", "null"] },
+            "text": { "type": "string", "minLength": 1 }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "format": { "const": "custom_text" } },
+                "required": ["format"]
+              },
+              "then": { "required": ["text"] },
+              "else": { "not": { "required": ["text"] } }
+            }
+          ]
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left_indent_mpt", "hanging_mpt"],
+          "properties": {
+            "left_indent_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "hanging_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+          }
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/list_item" } }
+      }
+    },
+
+    "list_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "list_item" },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/paragraph" },
+              { "$ref": "#/$defs/list" },
+              { "$ref": "#/$defs/table" },
+              { "$ref": "#/$defs/text_frame" },
+              { "$ref": "#/$defs/page_break" },
+              { "$ref": "#/$defs/column_break" }
+            ]
+          }
+        }
+      }
+    },
+
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "layout", "columns", "style", "rows"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "table" },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["alignment", "indent_mpt", "width", "autofit"],
+          "properties": {
+            "alignment": { "enum": ["left", "center", "right"] },
+            "indent_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "width": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["mode", "value_mpt"],
+                  "properties": {
+                    "mode": { "const": "absolute" },
+                    "value_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["mode", "value_ppm"],
+                  "properties": {
+                    "mode": { "const": "percent" },
+                    "value_ppm": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["mode"],
+                  "properties": {
+                    "mode": { "const": "auto" },
+                    "value_mpt": { "const": 0 }
+                  }
+                }
+              ]
+            },
+            "autofit": { "type": "boolean" }
+          }
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["width_mpt"],
+            "properties": { "width_mpt": { "$ref": "#/$defs/length_mpt_nonneg" } }
+          }
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["background", "borders"],
+          "properties": {
+            "background": { "$ref": "#/$defs/nullable_color" },
+            "borders": { "$ref": "#/$defs/borders" }
+          }
+        },
+        "rows": { "type": "array", "items": { "$ref": "#/$defs/row" } }
+      }
+    },
+
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "layout", "cells"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "row" },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["height", "repeat_header", "cant_split"],
+          "properties": {
+            "height": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mode", "value_mpt"],
+              "properties": {
+                "mode": { "enum": ["auto", "exact", "at_least"] },
+                "value_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+              }
+            },
+            "repeat_header": { "type": "boolean" },
+            "cant_split": { "type": "boolean" }
+          }
+        },
+        "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" } }
+      }
+    },
+
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "grid_column", "col_span", "row_span", "layout", "style", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "cell" },
+        "grid_column": { "type": "integer", "minimum": 0 },
+        "col_span": { "type": "integer", "minimum": 1 },
+        "row_span": { "type": "integer", "minimum": 1 },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width_mpt", "padding", "vertical_alignment", "text_direction"],
+          "properties": {
+            "width_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+            "padding": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["top_mpt", "right_mpt", "bottom_mpt", "left_mpt"],
+              "properties": {
+                "top_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "right_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "bottom_mpt": { "$ref": "#/$defs/length_mpt_nonneg" },
+                "left_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+              }
+            },
+            "vertical_alignment": { "enum": ["top", "center", "bottom"] },
+            "text_direction": { "enum": ["horizontal", "vertical"] }
+          }
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["background", "borders"],
+          "properties": {
+            "background": { "$ref": "#/$defs/nullable_color" },
+            "borders": { "$ref": "#/$defs/borders" }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/paragraph" },
+              { "$ref": "#/$defs/list" },
+              { "$ref": "#/$defs/table" },
+              { "$ref": "#/$defs/text_frame" },
+              { "$ref": "#/$defs/page_break" },
+              { "$ref": "#/$defs/column_break" }
+            ]
+          }
+        }
+      }
+    },
+
+    "inline_image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "resource_ref", "size", "crop", "rotation_mdeg", "alt_text"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "inline_image" },
+        "resource_ref": { "type": "string", "pattern": "^res_[a-f0-9]+$" },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width_mpt", "height_mpt"],
+          "properties": {
+            "width_mpt": { "type": "integer", "exclusiveMinimum": 0 },
+            "height_mpt": { "type": "integer", "exclusiveMinimum": 0 }
+          }
+        },
+        "crop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left_ppm", "top_ppm", "right_ppm", "bottom_ppm"],
+          "properties": {
+            "left_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "top_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "right_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "bottom_ppm": { "$ref": "#/$defs/ratio_ppm" }
+          }
+        },
+        "rotation_mdeg": { "$ref": "#/$defs/angle_mdeg" },
+        "alt_text": { "type": ["string", "null"] }
+      }
+    },
+
+    "header": {
+      "$comment": "A header is a container, not a leaf with a text property: over 1500 originals, 51 % of content-bearing headers carry an image and 17 % a table (DEC-003 §1.2). `kind` mirrors Word's default/first/even variants — `first` is what titlePg selects (102 occurrences in the same sample), and a section with no `first` story simply has no title-page override.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "kind", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "header" },
+        "kind": { "enum": ["default", "first", "even"] },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/story_block_node" } }
+      }
+    },
+
+    "footer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "kind", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "footer" },
+        "kind": { "enum": ["default", "first", "even"] },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/story_block_node" } }
+      }
+    },
+
+    "footnote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "footnote" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/story_block_node" } }
+      }
+    },
+
+    "endnote": {
+      "$comment": "Same story shape as `footnote`; the two are distinct node types because they render in different places (bottom of the page vs end of the document), which is a render-fidelity difference, and because the source carries them in separate parts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "endnote" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/story_block_node" } }
+      }
+    },
+
+    "field": {
+      "$comment": "Word field, whitelisted per RFC001 §42.2 (\"fields z whitelistu\"). THE ENUM IS THE WHITELIST: §30 forbids hallucinating a field code, so a type outside it must fail validation rather than pass as free text. Membership is measured, not chosen: over 1500 raw originals PAGE occurs in 34.5 % of documents and NUMPAGES in 9.1 % (83.3 % and 22.0 % of field-bearing documents), and they are the two that break running headers. TOC/PAGEREF/STYLEREF (<= 3.9 % each) remain [OPEN]. Carries NO cached result text: a page number differs on every page, so a stored result would be a second source of truth wrong on all pages but one — exactly the defect this node removes. That is why it differs from `note_ref`, whose `marker_text` is stable per reference. Switches are NOT modelled: the node carries the field's identity, and the numbering scheme comes from `section.page_numbering`. An instruction that does not parse to a whitelisted type falls back to flattening (IMPORT_FIELD_FLATTENED); a cosmetic switch (\\* MERGEFORMAT, 21.5 % of documents) is dropped as invisible; a numeric-format switch that disagrees with the section format is dropped as a typed approximation, because a per-page-correct number in the wrong numerals beats the same number on every page.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "field_type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "field" },
+        "field_type": { "enum": ["page", "num_pages"] }
+      }
+    },
+
+    "page_numbering": {
+      "$comment": "w:pgNumType (CT_PageNumber) fmt + start. Lands with `field` and not before: its only visible effect is through a PAGE result, so correct field results in the wrong numbering scheme would be a half-fix. `start: null` means continue the previous section. Chapter numbering (chapStyle/chapSep) is not modelled.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "start"],
+      "properties": {
+        "format": { "enum": ["decimal", "lower_alpha", "upper_alpha", "lower_roman", "upper_roman"] },
+        "start": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+
+    "line_numbering": {
+      "$comment": "w:lnNumType (ECMA-376 CT_LineNumber). Visible: printed line numbers in the margin.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count_by", "start", "restart", "distance_mpt"],
+      "properties": {
+        "count_by": { "type": "integer", "exclusiveMinimum": 0 },
+        "start": { "type": "integer", "minimum": 0 },
+        "restart": { "enum": ["continuous", "new_page", "new_section"] },
+        "distance_mpt": { "$ref": "#/$defs/length_mpt_nonneg" }
+      }
+    },
+
+    "page_borders": {
+      "$comment": "w:pgBorders (CT_PageBorders). `display` and `offset_from` decide whether and where the frame is drawn, so both are visible; zOrder (front/back relative to text) is not modelled.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sides", "display", "offset_from"],
+      "properties": {
+        "sides": { "$ref": "#/$defs/borders" },
+        "display": { "enum": ["all_pages", "first_page", "not_first_page"] },
+        "offset_from": { "enum": ["page", "text"] }
+      }
+    },
+
+    "note_ref": {
+      "$comment": "Inline reference to a root-level `footnote` or `endnote`. `marker_text` is the visible mark as rendered, so the renderer emits an explicit custom mark and never depends on Word's automatic numbering.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "note_id", "marker_text"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "note_ref" },
+        "note_id": { "$ref": "#/$defs/node_id" },
+        "marker_text": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "anchor_position_h": {
+      "$comment": "wp:anchor/wp:positionH (ECMA-376 CT_PosH, vendor/ecma376/transitional/dml-wordprocessingDrawing.xsd): relativeFrom plus a choice of align or posOffset. Word-native, never a pixel box (RFC001 §0.1).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["relative_from", "mode", "align"],
+          "properties": {
+            "relative_from": { "enum": ["margin", "page", "column", "character", "left_margin", "right_margin", "inside_margin", "outside_margin"] },
+            "mode": { "const": "align" },
+            "align": { "enum": ["left", "right", "center", "inside", "outside"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["relative_from", "mode", "offset_mpt"],
+          "properties": {
+            "relative_from": { "enum": ["margin", "page", "column", "character", "left_margin", "right_margin", "inside_margin", "outside_margin"] },
+            "mode": { "const": "offset" },
+            "offset_mpt": { "$ref": "#/$defs/length_mpt" }
+          }
+        }
+      ]
+    },
+
+    "anchor_position_v": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["relative_from", "mode", "align"],
+          "properties": {
+            "relative_from": { "enum": ["margin", "page", "paragraph", "line", "top_margin", "bottom_margin", "inside_margin", "outside_margin"] },
+            "mode": { "const": "align" },
+            "align": { "enum": ["top", "bottom", "center", "inside", "outside"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["relative_from", "mode", "offset_mpt"],
+          "properties": {
+            "relative_from": { "enum": ["margin", "page", "paragraph", "line", "top_margin", "bottom_margin", "inside_margin", "outside_margin"] },
+            "mode": { "const": "offset" },
+            "offset_mpt": { "$ref": "#/$defs/length_mpt" }
+          }
+        }
+      ]
+    },
+
+    "anchor_wrap": {
+      "$comment": "DELIBERATE OMISSION, not an oversight — do not add wrapTight/wrapThrough. Both REQUIRE a wp:wrapPolygon (CT_WrapTight/CT_WrapThrough, wrapPolygon minOccurs=1), which is pixel geometry, and RFC001 §0.1 [DECIDED] keeps bounding boxes out of the authoritative AST. Honouring them would be an architectural regression, not a feature. The importer maps tight/through to `square` as a declared approximation (DEC-003 F1).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "none" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "top_and_bottom" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "side"],
+          "properties": {
+            "mode": { "const": "square" },
+            "side": { "enum": ["both_sides", "left", "right", "largest"] }
+          }
+        }
+      ]
+    },
+
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["horizontal", "vertical", "wrap", "behind_text", "allow_overlap", "z_order"],
+      "properties": {
+        "horizontal": { "$ref": "#/$defs/anchor_position_h" },
+        "vertical": { "$ref": "#/$defs/anchor_position_v" },
+        "wrap": { "$ref": "#/$defs/anchor_wrap" },
+        "behind_text": { "type": "boolean" },
+        "allow_overlap": { "type": "boolean" },
+        "z_order": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "text_frame": {
+      "$comment": "An anchored block-content container (RFC001-ERRATA-004), deliberately named for its document role rather than the OOXML w:txbxContent spelling. It reuses the floating-image anchor contract verbatim; no pixel geometry or separate anchor dialect is introduced. Nested text frames are schema-representable but rejected by semantic validation.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "anchor", "children"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "text_frame" },
+        "anchor": { "$ref": "#/$defs/anchor" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/story_block_node" } }
+      }
+    },
+
+    "floating_image": {
+      "$comment": "An anchored w:drawing (18.3 % of documents carry one in the body, DEC-003 §1.2). Identical geometry to inline_image plus the Word-native `anchor`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "resource_ref", "size", "crop", "rotation_mdeg", "alt_text", "anchor"],
+      "properties": {
+        "id": { "$ref": "#/$defs/node_id" },
+        "type": { "const": "floating_image" },
+        "resource_ref": { "type": "string", "pattern": "^res_[a-f0-9]+$" },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width_mpt", "height_mpt"],
+          "properties": {
+            "width_mpt": { "type": "integer", "exclusiveMinimum": 0 },
+            "height_mpt": { "type": "integer", "exclusiveMinimum": 0 }
+          }
+        },
+        "crop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left_ppm", "top_ppm", "right_ppm", "bottom_ppm"],
+          "properties": {
+            "left_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "top_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "right_ppm": { "$ref": "#/$defs/ratio_ppm" },
+            "bottom_ppm": { "$ref": "#/$defs/ratio_ppm" }
+          }
+        },
+        "rotation_mdeg": { "$ref": "#/$defs/angle_mdeg" },
+        "alt_text": { "type": ["string", "null"] },
+        "anchor": { "$ref": "#/$defs/anchor" }
+      }
+    }
+  }
+}

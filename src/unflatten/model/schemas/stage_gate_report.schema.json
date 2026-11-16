@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/stage_gate_report.schema.json",
+  "title": "RFC005 Stage Gate Report (§14.4, plan spec-stage-gate-report-c5)",
+  "$comment": "Closed envelope, v1. Unlike stage_gate_policy, this document DOES carry its own self-hash (stage_gate_report_hash, domain rfc005.stage-gate-report/v1) over the projection of every OTHER field -- mirrors checkpoint_ancestry/candidate_track, not runtime_limits_policy. gates is verbatim from s1_runner.stage_gate_report_payload; gate_12_negative_control and lineage_evidence are DERIVED by stage_gate_report.py from gates[11] (gate 12) and gates[8] (gate 9) evidence, never re-declared by a caller. promoted is derived = no promotion_blockers present (7 kinds: gate_not_pass:<n>, run_class_discovery, run_id_not_rfc005_44_1, evaluated_candidate_not_run_output, ancestry_rights_status_not_approved, ancestry_privacy_status_not_approved, gate_12_no_negative_control) -- never the runner's own GateResult-only promoted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stage_gate_report_schema_version",
+    "stage",
+    "run_stage",
+    "notes",
+    "run_class",
+    "runner_report_sha256",
+    "bindings",
+    "evaluated_candidate",
+    "gates",
+    "gate_12_negative_control",
+    "lineage_evidence",
+    "gates_all_pass",
+    "promotion_blockers",
+    "missing_evidence_outcomes",
+    "promoted",
+    "stage_gate_report_hash"
+  ],
+  "properties": {
+    "stage_gate_report_schema_version": { "$ref": "#/$defs/semver" },
+    "stage": {
+      "$comment": "The LOSS POLICY stage this report is bound to (== bindings.loss_policy_stage_id == the frozen stage_policy.json's stage_id == the stage gate policy's own 'stage'). Not necessarily the stage the run executed under -- see run_stage.",
+      "enum": ["S1", "S2"]
+    },
+    "run_stage": {
+      "$comment": "The stage the evaluated run actually executed under. DEC-009 runs S2 under the frozen S1 loss policy, so run_stage=S2 while stage=S1 is the expected shape today; notes must explain any such disagreement.",
+      "enum": ["S1", "S2"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "run_class": { "enum": ["discovery", "promotion"] },
+    "runner_report_sha256": { "$ref": "#/$defs/sha256" },
+    "bindings": { "$ref": "#/$defs/bindings" },
+    "evaluated_candidate": { "$ref": "#/$defs/evaluated_candidate" },
+    "gates": {
+      "type": "array",
+      "minItems": 15,
+      "maxItems": 15,
+      "items": { "$ref": "#/$defs/gate_result" }
+    },
+    "gate_12_negative_control": { "$ref": "#/$defs/gate_12_negative_control" },
+    "lineage_evidence": { "$ref": "#/$defs/lineage_evidence" },
+    "gates_all_pass": { "type": "boolean" },
+    "promotion_blockers": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "pattern": "^gate_not_pass:([1-9]|1[0-5])$" },
+          { "const": "run_class_discovery" },
+          { "const": "run_id_not_rfc005_44_1" },
+          { "const": "evaluated_candidate_not_run_output" },
+          { "const": "ancestry_rights_status_not_approved" },
+          { "const": "ancestry_privacy_status_not_approved" },
+          { "const": "gate_12_no_negative_control" }
+        ]
+      }
+    },
+    "missing_evidence_outcomes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate", "action"],
+        "properties": {
+          "gate": { "type": "integer", "minimum": 1, "maximum": 15 },
+          "action": { "const": "blocked" }
+        }
+      }
+    },
+    "promoted": { "type": "boolean" },
+    "stage_gate_report_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "gate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "name", "status", "detail", "evidence"],
+      "properties": {
+        "number": { "type": "integer", "minimum": 1, "maximum": 15 },
+        "name": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pass", "fail", "blocked"] },
+        "detail": { "type": "string" },
+        "evidence": { "type": "object" }
+      }
+    },
+    "gate_12_negative_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ran", "status"],
+      "properties": {
+        "ran": { "type": "boolean" },
+        "status": {
+          "anyOf": [{ "enum": ["pass", "fail", "blocked"] }, { "type": "null" }]
+        }
+      }
+    },
+    "lineage_evidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "overlap_count",
+            "cohort_lineage_root_count",
+            "requested_document_count",
+            "resolved_document_count"
+          ],
+          "properties": {
+            "status": { "const": "evidenced" },
+            "overlap_count": { "type": "integer", "minimum": 0 },
+            "cohort_lineage_root_count": { "type": "integer", "minimum": 0 },
+            "requested_document_count": { "anyOf": [{ "type": "integer" }, { "type": "null" }] },
+            "resolved_document_count": { "anyOf": [{ "type": "integer" }, { "type": "null" }] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": { "const": "not_evidenced" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "status": { "enum": ["approved", "unresolved", "prohibited"] },
+    "exposure_state": {
+      "$comment": "Mirrors checkpoint_ancestry/candidate_track's own exposure_state union -- copied verbatim from the ancestry document, never re-derived here.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reason"],
+          "properties": {
+            "kind": { "const": "not_produced" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root_hash"],
+          "properties": {
+            "kind": { "const": "root" },
+            "root_hash": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "evaluated_candidate": {
+      "$comment": "Which weights gate results actually cover. base_weights_only means gates were evaluated over the untrained base candidate -- promoted is refused whenever this is the branch present (evaluated_candidate_not_run_output).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "weights_set_sha256"],
+          "properties": {
+            "kind": { "const": "base_weights_only" },
+            "weights_set_sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "checkpoint_id", "checkpoint_sha256"],
+          "properties": {
+            "kind": { "const": "checkpoint" },
+            "checkpoint_id": { "type": "string", "pattern": "^ckpt_[0-9a-f]{64}$" },
+            "checkpoint_sha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "s0_report_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "report_schema_version", "admitted_tracks"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "report_schema_version": { "type": "string", "minLength": 1 },
+        "admitted_tracks": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "roundtrip_corpus_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "checked_case_count",
+        "codec_mode",
+        "byte_len_route",
+        "budget_ops",
+        "tokenizer_artifact_set_hash",
+        "composite_vocabulary_hash"
+      ],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "checked_case_count": { "type": "integer", "minimum": 1 },
+        "codec_mode": { "enum": ["qwen", "byte_fallback_only"] },
+        "byte_len_route": { "const": "byte_fallback" },
+        "budget_ops": { "type": "integer", "minimum": 1 },
+        "tokenizer_artifact_set_hash": { "$ref": "#/$defs/sha256" },
+        "composite_vocabulary_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "roundtrip_corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["descriptor", "check"],
+      "properties": {
+        "descriptor": { "type": "object" },
+        "check": { "$ref": "#/$defs/roundtrip_corpus_check" }
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_hash",
+        "run_id",
+        "s1_run_manifest_hash",
+        "component_lock_hash",
+        "candidate_track_id",
+        "admission_track_name",
+        "ancestry_hash",
+        "exact_text_cache_identity_hash",
+        "dataset_release_root_hash",
+        "loss_policy_stage_id",
+        "stage_policy_hash",
+        "ancestry_rights_status",
+        "ancestry_privacy_status",
+        "exposure_ledger",
+        "s0_report",
+        "roundtrip_corpus"
+      ],
+      "properties": {
+        "policy_hash": { "$ref": "#/$defs/sha256" },
+        "run_id": { "type": "string", "minLength": 1 },
+        "s1_run_manifest_hash": { "$ref": "#/$defs/sha256" },
+        "component_lock_hash": { "$ref": "#/$defs/sha256" },
+        "candidate_track_id": { "type": "string", "pattern": "^track_[0-9a-f]{64}$" },
+        "admission_track_name": { "type": "string", "minLength": 1 },
+        "ancestry_hash": { "$ref": "#/$defs/sha256" },
+        "exact_text_cache_identity_hash": { "$ref": "#/$defs/sha256" },
+        "dataset_release_root_hash": { "$ref": "#/$defs/sha256" },
+        "loss_policy_stage_id": { "enum": ["S1", "S2"] },
+        "stage_policy_hash": { "$ref": "#/$defs/sha256" },
+        "ancestry_rights_status": { "$ref": "#/$defs/status" },
+        "ancestry_privacy_status": { "$ref": "#/$defs/status" },
+        "exposure_ledger": { "$ref": "#/$defs/exposure_state" },
+        "s0_report": { "$ref": "#/$defs/s0_report_binding" },
+        "roundtrip_corpus": { "$ref": "#/$defs/roundtrip_corpus" }
+      }
+    }
+  }
+}

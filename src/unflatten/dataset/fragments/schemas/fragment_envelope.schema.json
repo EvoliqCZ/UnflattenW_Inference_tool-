@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.invalid/schemas/fragment_envelope.schema.json",
+  "title": "Page Fragment Envelope (RFC003 §26)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fragment_schema_version",
+    "fragment_id",
+    "ast_hash",
+    "document_bundle_id",
+    "task_view_id",
+    "target_bundle_hash",
+    "observation_sidecar_hash",
+    "builder",
+    "window_policy",
+    "sequence_index",
+    "page_indices",
+    "pages",
+    "ancestor_context",
+    "slices",
+    "control_event_ownership"
+  ],
+  "properties": {
+    "fragment_schema_version": { "const": "0.2.0" },
+    "fragment_id": { "type": "string", "pattern": "^fragment_[0-9a-f]{64}$" },
+    "ast_hash": { "$ref": "#/$defs/sha256" },
+    "document_bundle_id": {
+      "type": ["string", "null"],
+      "pattern": "^bundle_[0-9a-f]{64}$"
+    },
+    "task_view_id": { "type": ["string", "null"], "pattern": "^task_[0-9a-f]{64}$" },
+    "target_bundle_hash": { "$ref": "#/$defs/sha256" },
+    "observation_sidecar_hash": { "$ref": "#/$defs/sha256" },
+    "builder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "config_hash"],
+      "properties": {
+        "name": { "const": "page-fragment-builder" },
+        "version": { "type": "string", "minLength": 1 },
+        "config_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "window_policy": {
+      "enum": ["single_page", "two_page_overlap", "bounded_multi_page", "full_document"]
+    },
+    "sequence_index": { "type": "integer", "minimum": 0 },
+    "page_indices": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "integer", "minimum": 0 }
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/page" }
+    },
+    "ancestor_context": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node_ref" }
+    },
+    "slices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/slice" }
+    },
+    "control_event_ownership": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/control_entry" }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "node_id": { "type": "string", "minLength": 1 },
+    "node_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "node_type"],
+      "properties": {
+        "node_id": { "$ref": "#/$defs/node_id" },
+        "node_type": { "type": "string", "minLength": 1 }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["page_index", "width_px", "height_px"],
+      "properties": {
+        "page_index": { "type": "integer", "minimum": 0 },
+        "width_px": { "type": "integer", "minimum": 1 },
+        "height_px": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "event_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "char_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id",
+        "node_type",
+        "continuation",
+        "structure_owner",
+        "typed_target_owner",
+        "text_range_owner",
+        "page_evidence",
+        "placement_origin",
+        "observable_mask",
+        "supervision_mask",
+        "structural_event_ranges",
+        "char_ranges"
+      ],
+      "properties": {
+        "node_id": { "$ref": "#/$defs/node_id" },
+        "node_type": { "type": "string", "minLength": 1 },
+        "continuation": { "enum": ["complete", "start", "middle", "end"] },
+        "structure_owner": { "type": "boolean" },
+        "typed_target_owner": { "type": "boolean" },
+        "text_range_owner": { "type": "boolean" },
+        "page_evidence": { "enum": ["observed", "structural", "unresolved"] },
+        "placement_origin": { "enum": ["mapping_deterministic", "imputed_for_render"] },
+        "observable_mask": { "type": "boolean" },
+        "supervision_mask": { "type": "boolean" },
+        "structural_event_ranges": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/event_range" }
+        },
+        "char_ranges": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/char_range" }
+        }
+      }
+    },
+    "control_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "node_type", "structural_event_range"],
+      "properties": {
+        "node_id": { "$ref": "#/$defs/node_id" },
+        "node_type": { "enum": ["tab", "line_break", "page_break", "column_break"] },
+        "structural_event_range": { "$ref": "#/$defs/event_range" }
+      }
+    }
+  }
+}

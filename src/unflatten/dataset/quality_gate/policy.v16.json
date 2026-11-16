@@ -1,0 +1,78 @@
+{
+  "policy_id": "data-quality-gate.v16",
+  "status": "PROVISIONAL",
+  "status_note": "DEC-057 addendum A: zero flagged known-defect pages are allowed in train and val_iid; earlier v15b allowances are revoked. Per-page detector applicability thresholds remain provisional pending the first v16 measurement. G-C requires 300 reviewed stratified pages with zero blocking findings.",
+  "splits": ["train", "val_iid"],
+  "ga": {
+    "unobservable_images": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "DEC-057 addendum A: zero known defects; each image token must match one observed, observable and supervised positive bounded region at its own anchor; missing region channel or unresolved image cannot render under ratified V-A, never a fabricated image label; nonwaivable strict standalone renderer refusal"},
+    "unsupported_list_continuations": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "DEC-057 addendum A: RFC002 section 47 requires a paragraph as first list-item child; standalone nested-first continuation is counted unsupported, never repaired by inserting a synthetic paragraph; nonwaivable strict standalone renderer refusal; DEC-057 zero known defects"},
+    "table_grid_invalid": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1000, "basis": "DEC-057 addendum A and point 5: table rows that do not close the strict grid (gap, overlap, column past the grid; semantic_validator._check_table) are refused by the strict standalone builder; GC i6 found 13 of 300 sampled pages (continuation rows whose leading cells belong to the prior page); nonwaivable counted exclusion, never a synthetic cell"},
+    "unpaired_notes": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "Standalone exact-text cache page admission matches ast_builder.bind_note_refs: NOTE_REF count must equal FOOTNOTE_OPEN plus ENDNOTE_OPEN count; gallery page 048 has a body section and 8 notes without references, escaping footnote_only_page because source paragraphs/references are missing; legitimate cross-page continuation needs separate assembly, never silent note deletion; nonwaivable strict standalone bind_note_refs refusal; DEC-057 addendum A: zero flagged known-defect pages, repair or counted exclusion required"},
+    "spill": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 500, "basis": "audit §3 signature; v15b 125 train / 18 val; expected 0 after the v16 exclusion list + builder spill refusal; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "skeleton_rows": {"page_max": 20, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "audit rule 2 x p99.9 of cleaned v15b train (10) -> 20; blank forms require applicability review, not a defect allowance; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "textless_table_cells": {"page_max": 40, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "audit rule (p99.99 cleaned = 38) -> 40; checkbox grids such as codice fiscale require applicability review (audit §3 #17); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "cells_per_row": {"page_max": 60, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 50, "basis": "audit §5 recommended cardinality cap 60 (4 legitimate train pages have 53-56); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "rows_per_table": {"page_max": 84, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 50, "basis": "audit §5 recommended cardinality cap 84; expected lower after spill removal; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "empty_cell_streak": {"page_max": 40, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 50, "basis": "audit rule 2 x p99.9 cleaned (20) -> 40; header grid 56 and Gantt legend 53 require applicability review (audit §3 #4/#5); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "empty_row_streak": {"page_max": 28, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "audit rule on cleaned v15b -> 28; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "empty_run_chain": {"page_max": 1, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 2000, "basis": "invariant after V1b: no two adjacent withdrawn runs remain (audit §6); v15b has 35 689 train pages over it; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "lone_withdrawn_runs": {"page_max": 572, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 100, "basis": "audit rule 2 x p99.9 cleaned v15b (286) -> 572; V1a should lower the distribution, re-measure on v16; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "empty_text_frames": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1000, "basis": "invariant after I2 (empty text frames are not emitted); v15b 1 091 train pages; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "repeat_textless": {"page_max": 152, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 50, "basis": "audit rule on cleaned v15b -> 152; expected 0 after V1b; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "repeat_textful": {"page_max": 24, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 50, "basis": "audit rule on cleaned v15b -> 24; fill-in lines require applicability review (audit §3 #26); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "empty_paragraph_streak": {"page_max": 3, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 10, "basis": "DEC-033 projection invariant (cap 3); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "tab_run": {"page_max": 3, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 10, "basis": "DEC-033 projection invariant (cap 3); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "noteref_textless_paragraphs": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1000, "basis": "G-C trial [noteref]: 4/4 body pages, 0/12 clean (docs/runs/target-defects-root-cause-2026-09-30.md); v15b train 1 920 of 78 470 pages (2 957 paragraphs); invariant 0 only once the aligner note-marker fix (v16-align.v1) is in the store; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "footnote_only_page": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 500, "basis": "G-C trial [noteref] ORPHAN_FOOTNOTE: 3/3 pages, 0/12 clean; v15b train 486 pages; the body of such a page is lost entirely, so excluding them is safe if the fix does not land; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "hf_withdrawn_runs": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1200, "basis": "G-C trial [hftext]: 3/3 pages have 3-4, 3 other pages 1-2 (whitespace runs V1a grants), 0/12 clean; v15b train 6 400 pages over 0 (1 516 over 2); page_max 0 per DEC-057 addendum A (zero tolerance), the 1-2 whitespace-run pages must be fixed by V1a or excluded; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "bodyless_sections": {"page_max": 0, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1000, "basis": "G-C trial [section] (058): a header/footer-only section beside a section with body; 200-document m2a-v7 sample 123 pages before V1d, 149 of 152 such stories inherited by a body section on the page (docs/runs/target-defects-iteration2-2026-09-30.md); invariant 0 once v16-targets.v1 V1d re-homes them, zero tolerance per DEC-057 addendum A; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"}
+  },
+  "manifest": {
+    "train": {
+      "min_pages": 70000,
+      "min_text_coverage_milli": 500,
+      "min_text_coverage_median_milli": 990,
+      "max_skip_share_milli": {
+        "skipped_projection_invariant": 1,
+        "skipped_realisation_mismatch": 1,
+        "skipped_replay": 1,
+        "skipped_text_coverage": 50,
+        "skipped_grammar": 20,
+        "skipped_defect_listed": 5,
+        "skipped_defect_spill": 5
+      },
+      "basis": "v15b train: 78 470 pages, median coverage 0.999, 18 text-coverage skips (0 milli); ceilings are provisional"
+    },
+    "val_iid": {
+      "min_pages": 9000,
+      "min_text_coverage_milli": 500,
+      "min_text_coverage_median_milli": 990,
+      "max_skip_share_milli": {
+        "skipped_projection_invariant": 1,
+        "skipped_realisation_mismatch": 1,
+        "skipped_replay": 1,
+        "skipped_text_coverage": 50,
+        "skipped_grammar": 20,
+        "skipped_defect_listed": 5,
+        "skipped_defect_spill": 5
+      },
+      "basis": "v15b val_iid: 10 214 pages; ceilings are provisional"
+    }
+  },
+  "gb": {
+    "min_row_height_milli": 12,
+    "grid_rows": {"min_excess_rows": 3, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 2000, "basis": "validation sample 2026-09-29: 46/125 audited spill pages, 12/250 clean-labelled pages (all in the trailing-rows stratum; >= 7 of them show target rows the image does not have); DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "visible_text": {"min_chars": 300, "max_milli": 400, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 4000, "basis": "validation sample: 1/3 manual defects, 7/250 clean-labelled (5 inspected, all real missing visible paragraphs, V1c class); the threshold is the owner's V1c decision; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "target_text": {"min_chars": 200, "max_milli": 300, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 500, "basis": "validation sample: 0/378 flagged; recall only proven by mutation; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "text_ink": {"max_words_without_ink": 2, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 1000, "basis": "validation sample: 4/250 clean-labelled (3 inspected: text the image does not show); mutation recall in the run report; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "page_number": {"max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 3000, "basis": "G-C trial [pagenum]: 22/22 pages, 0/12 clean, 0 other pages; 37 % of the stratified sample, so it cannot be excluded away -- it needs the aligner field fix (v16-align.v1) or counted exclusion; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"},
+    "edge_lines": {"min_coverage_milli": 500, "max_flagged_pages": {"train": 0, "val_iid": 0}, "exclude_up_to_pages": 12000, "basis": "G-C trial [boundary]: 8/9 pages (033's loss is not on the edge line), 0/12 clean; also fires on 10 pages of other blocking classes (noteref, unowned, hftext, textless-table), all real edge-line losses; a >= 3-word line whose words all occur in the target counts as covered (merged table cells/columns, corpus check 2026-09-30); GB 3: a line of >= 12 letters/digits the target spells contiguously is covered (small caps / raised ordinals split words, the one false alarm of 40 random hits on the 200-document m2a-v7 sample, 7 of 344 hits); precision on 40 random hits: 39/40 before GB 3, see docs/runs/target-defects-iteration2-2026-09-30.md for the after sample; DEC-057 addendum A: zero flagged known-defect pages; earlier allowances revoked, repair or counted exclusion required"}
+  },
+  "gc": {
+    "sample_pages": 300,
+    "min_sample_pages": 300,
+    "blocking_classes": ["target_rows_not_on_image", "visible_text_missing", "target_text_not_on_page", "invisible_text", "wrong_structure", "wrong_page_content"],
+    "non_blocking_classes": ["ok", "cosmetic", "genuine_keep", "render_limit"],
+    "basis": "DEC-057 addendum A supersedes point 4: 300 stratified random pages, all reviewed with zero blocking findings; never evaluation pages or personal-data control scans"
+  }
+}

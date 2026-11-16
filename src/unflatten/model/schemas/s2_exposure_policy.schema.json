@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s2_exposure_policy.schema.json",
+  "title": "RFC005 §30.6 S2 Exposure Policy",
+  "$comment": "Closed envelope for the five §30.6 caps a run policy 'musí pinovať': maximum views per lineage per virtual epoch, maximum fragment overlap exposure, maximum augmentation variants, P5 repeat cap, and the synthetic recipe/family cap. A SEPARATE policy artefact from s2_sampler_policy on purpose (§45 lists sampler-policy.json and exposure-policy.json as distinct files): the sampler policy pins HOW a lineage is weighted, the exposure policy pins HOW OFTEN any lineage may be seen. Mixing them would let a weight change silently re-price exposure, which is exactly the drift this split exists to prevent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s2_exposure_policy_schema_version",
+    "policy_version",
+    "stage_id",
+    "max_views_per_lineage_per_virtual_epoch",
+    "max_fragment_overlap_exposure",
+    "max_augmentation_variants",
+    "p5_repeat_cap",
+    "synthetic_recipe_family_cap"
+  ],
+  "properties": {
+    "s2_exposure_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage_id": {
+      "$comment": "The S2 policy shape, reused by S3 (as S2) and by S4 with its own budget (owner 2026-09-21: 15 000 draws, 2 views); any other stage is a schema error rather than a silent cross-wire.",
+      "enum": ["S2", "S4"]
+    },
+    "max_views_per_lineage_per_virtual_epoch": {
+      "$comment": "§30.6 cap 1. The sampler refuses to build a plan whose pool cannot satisfy the epoch under this cap rather than silently over-exposing a lineage.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_fragment_overlap_exposure": {
+      "$comment": "§30.6 cap 2: the maximum number of times one fragment's content may be re-exposed through overlapping fragments within the run. 0 forbids any overlap.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_augmentation_variants": {
+      "$comment": "§30.6 cap 3: at most this many augmentation variants of one source may enter the run.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "p5_repeat_cap": {
+      "$comment": "§30.6 cap 4: the maximum number of times a P5 full-document lineage may repeat in the run. 0 forbids P5 repeats entirely; §30.7 forbids the dataloader from topping a shortfall up with P2/P4.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "synthetic_recipe_family_cap": {
+      "$comment": "§30.6 cap 5: the maximum number of documents from one synthetic recipe/family in the run — 'žiadna jedna lineage alebo template family nesmie dominovať' (§30.4).",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    }
+  }
+}

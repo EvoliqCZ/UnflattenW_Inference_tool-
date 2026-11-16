@@ -1,0 +1,43 @@
+{
+  "dynamic_weighting": null,
+  "loss_weights_milli": {
+    "L_structure": 1000,
+    "L_text": 1500,
+    "L_typed": 1000
+  },
+  "policy_version": "1.0.0",
+  "reads_validation_or_test_metrics": false,
+  "stage_id": "S3",
+  "stage_policy_schema_version": "1.0.0",
+  "task_view_allowlist": [
+    {
+      "head_ids": [],
+      "loss_family": "L_structure",
+      "output_locators": [
+        "decoder_step.structure"
+      ],
+      "task_kind": "structure_v0"
+    },
+    {
+      "head_ids": [],
+      "loss_family": "L_text",
+      "output_locators": [
+        "decoder_step.text"
+      ],
+      "task_kind": "structure_v0"
+    },
+    {
+      "head_ids": [
+        "expert_adapter.dense",
+        "table_plan",
+        "typed_heads.anchor",
+        "typed_heads.inline_image",
+        "typed_heads.row_cell",
+        "typed_heads.table"
+      ],
+      "loss_family": "L_typed",
+      "output_locators": [],
+      "task_kind": "structure_v0"
+    }
+  ]
+}

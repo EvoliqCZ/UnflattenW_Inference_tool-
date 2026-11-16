@@ -1,0 +1,802 @@
+{
+  "artifact": {
+    "role": {
+      "diagnostic_docx": "Word document",
+      "docx_preview": "Word document preview",
+      "prediction_ir": "Prediction IR",
+      "source_preview": "Source preview"
+    }
+  },
+  "codes": {
+    "approximation": {
+      "FONT_FALLBACK": "Font fallback"
+    },
+    "blocker": {
+      "AST_PROMOTER_UNAVAILABLE": "AST promoter unavailable",
+      "PRODUCT_CHECKPOINT_UNAVAILABLE": "Product checkpoint unavailable",
+      "RESOURCE_BRANCH_UNAVAILABLE": "Resource recovery branch unavailable",
+      "RFC004_RENDERER_GATE_UNAVAILABLE": "RFC004 renderer gate unavailable",
+      "TYPED_PROPERTY_HEADS_UNAVAILABLE": "Typed property heads unavailable"
+    },
+    "capability": {
+      "cancel_own_job": "Cancel own job",
+      "download_docx": "Download DOCX",
+      "download_prediction_ir": "Download prediction IR",
+      "read_status": "Read status",
+      "submit_diagnostic": "Submit conversion"
+    },
+    "commandKind": {
+      "delete": "Delete",
+      "download": "Download",
+      "load": "Load"
+    },
+    "commandPhase": {
+      "deleting": "Deleting",
+      "downloading": "Downloading",
+      "loading": "Loading",
+      "verifying": "Verifying"
+    },
+    "commandState": {
+      "failed": "Failed",
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Succeeded"
+    },
+    "component": {
+      "artifact_store": {
+        "hint": "Storage for jobs' output files.",
+        "label": "Artifact store"
+      },
+      "job_store": {
+        "hint": "Durable record of job state.",
+        "label": "Job store"
+      },
+      "pdf_sandbox": {
+        "hint": "Isolated environment for processing PDFs.",
+        "label": "PDF sandbox"
+      },
+      "principal_store": {
+        "hint": "Record of login accounts.",
+        "label": "Principal store"
+      },
+      "runtime_policy": {
+        "hint": "Policy constraining how the service runs.",
+        "label": "Runtime policy"
+      },
+      "worker": {
+        "hint": "The process that executes jobs.",
+        "label": "Worker"
+      }
+    },
+    "engine": {
+      "native": "Native"
+    },
+    "engineUnavailable": {
+      "worker_not_published": "Worker not published"
+    },
+    "fitsReason": {
+      "compute_capability": "GPU compute capability",
+      "vram": "GPU memory"
+    },
+    "inputKind": {
+      "image": "Image",
+      "pdf": "PDF"
+    },
+    "problem": {
+      "ARTIFACT_EXPIRED": {
+        "hint": "The job's output has already been removed under the retention window.",
+        "title": "Artifact expired"
+      },
+      "AST_PROMOTION_FAILED": {
+        "hint": "The predicted structure could not be converted to the canonical AST.",
+        "title": "AST promotion failed"
+      },
+      "AST_PROMOTION_UNAVAILABLE": {
+        "hint": "This service component is currently unavailable.",
+        "title": "AST promotion unavailable"
+      },
+      "AUTHENTICATION_FAILED": {
+        "hint": "The credentials did not match.",
+        "title": "Authentication failed"
+      },
+      "CAPABILITY_DENIED": {
+        "hint": "The account is not permitted to perform this action.",
+        "title": "Capability denied"
+      },
+      "CAPABILITY_NOT_READY": {
+        "hint": "This service capability is not yet available.",
+        "title": "Capability not ready"
+      },
+      "HOST_NOT_ALLOWED": {
+        "hint": "The request arrived from a host outside the allow-list.",
+        "title": "Host not allowed"
+      },
+      "IDEMPOTENCY_KEY_REUSED": {
+        "hint": "The same idempotency key was already submitted with different data.",
+        "title": "Idempotency key reused"
+      },
+      "IMAGE_INPUT_INVALID": {
+        "hint": "The uploaded image could not be processed.",
+        "title": "Image input invalid"
+      },
+      "INTERNAL_ERROR": {
+        "hint": "The service hit an unexpected error.",
+        "title": "Internal error"
+      },
+      "JOB_ACTIVE": {
+        "hint": "This action cannot be performed while the job is running.",
+        "title": "Job active"
+      },
+      "JOB_CANCELLED": {
+        "hint": "The job was cancelled before it finished.",
+        "title": "Job cancelled"
+      },
+      "JOB_TERMINAL": {
+        "hint": "The job is already in a final state and cannot be changed further.",
+        "title": "Job terminal"
+      },
+      "MODEL_CHECKPOINT_UNVERIFIED": {
+        "hint": "The downloaded model file does not match the expected digest.",
+        "title": "Model checkpoint unverified"
+      },
+      "MODEL_COMMAND_CONFLICT": {
+        "hint": "Another operation is already running for this model variant.",
+        "title": "Model command conflict"
+      },
+      "MODEL_COMPONENT_LOCK_MISMATCH": {
+        "hint": "The shared model component's state changed in the meantime.",
+        "title": "Model component lock mismatch"
+      },
+      "MODEL_DECODE_MAX_STEPS": {
+        "hint": "The model did not finish the page within the maximum step count.",
+        "title": "Model decode exceeded step limit"
+      },
+      "MODEL_DECODE_VOCABULARY_EXHAUSTED": {
+        "hint": "The model requested a token outside the supported vocabulary.",
+        "title": "Decode vocabulary exhausted"
+      },
+      "MODEL_DOWNLOAD_FAILED": {
+        "hint": "Check the network connection and your Hugging Face token access to this model. Restart the application after correcting access.",
+        "title": "Model download failed"
+      },
+      "MODEL_ENGINE_UNAVAILABLE": {
+        "hint": "Check that a supported NVIDIA GPU, driver and NVIDIA Container Toolkit are available, then restart the application.",
+        "title": "Model engine unavailable"
+      },
+      "MODEL_INPUT_FORBIDDEN_CHANNEL": {
+        "hint": "The input uses a channel this deployment does not accept for the model.",
+        "title": "Model input forbidden channel"
+      },
+      "MODEL_VARIANT_DOES_NOT_FIT": {
+        "hint": "Free GPU memory by closing other workloads, then retry loading the model.",
+        "title": "Model variant does not fit"
+      },
+      "MODEL_VARIANT_NOT_DOWNLOADABLE": {
+        "hint": "This model variant is not currently available for download.",
+        "title": "Model variant not downloadable"
+      },
+      "MODEL_VARIANT_NOT_PUBLISHED": {
+        "hint": "This variant's Hugging Face repository is not public yet; it can be downloaded and used once it is published.",
+        "title": "Model variant not published yet"
+      },
+      "MODEL_VARIANT_PLANNED": {
+        "hint": "This model does not exist yet; it is in preparation. It cannot be downloaded or used yet.",
+        "title": "Model in preparation"
+      },
+      "PDF_ACTIVE_CONTENT": {
+        "hint": "The document contains JavaScript or another active element and was refused.",
+        "title": "PDF active content"
+      },
+      "PDF_ANNOTATION_UNSUPPORTED": {
+        "hint": "The document contains an annotation type the service does not process.",
+        "title": "PDF annotation unsupported"
+      },
+      "PDF_EMBEDDED_FILE": {
+        "hint": "The document contains an embedded file and was refused for safety.",
+        "title": "PDF embedded file"
+      },
+      "PDF_ENCRYPTED": {
+        "hint": "The document is password-protected or encrypted.",
+        "title": "PDF encrypted"
+      },
+      "PDF_HIDDEN_TEXT": {
+        "hint": "The document contains text that is not visible on the page.",
+        "title": "PDF hidden text"
+      },
+      "PDF_MALFORMED": {
+        "hint": "The file could not be read as a valid PDF.",
+        "title": "PDF malformed"
+      },
+      "PDF_PAGE_DIMENSIONS_EXCEEDED": {
+        "hint": "At least one page exceeds the supported dimensions.",
+        "title": "PDF page dimensions exceeded"
+      },
+      "PDF_SIGNATURE_INVALID": {
+        "hint": "The document's digital signature could not be verified.",
+        "title": "PDF signature invalid"
+      },
+      "PDF_TEXT_VISIBILITY_AMBIGUOUS": {
+        "hint": "Whether the document's text is visible could not be reliably determined.",
+        "title": "PDF text visibility ambiguous"
+      },
+      "PNG_INVALID": {
+        "hint": "The generated or uploaded PNG image is not valid.",
+        "title": "PNG invalid"
+      },
+      "POPPLER_RESOURCE_LIMIT": {
+        "hint": "The PDF-processing tool exceeded its allowed resources.",
+        "title": "Poppler resource limit"
+      },
+      "POPPLER_TIMEOUT": {
+        "hint": "Processing the document took longer than the allowed limit.",
+        "title": "Poppler timeout"
+      },
+      "PREDICTION_IR_INVALID": {
+        "hint": "The internal prediction representation does not satisfy its contract.",
+        "title": "Prediction IR invalid"
+      },
+      "QUEUE_CAPACITY_EXCEEDED": {
+        "hint": "The service is not accepting further jobs right now.",
+        "title": "Queue capacity exceeded"
+      },
+      "RASTER_OUTPUT_INVALID": {
+        "hint": "Rasterizing the page produced an invalid image.",
+        "title": "Raster output invalid"
+      },
+      "RASTER_PIXEL_LIMIT_EXCEEDED": {
+        "hint": "The rasterized page exceeds the supported pixel count.",
+        "title": "Raster pixel limit exceeded"
+      },
+      "RATE_LIMITED": {
+        "hint": "The allowed number of requests in this window was exceeded.",
+        "title": "Rate limited"
+      },
+      "RENDERER_FAILED": {
+        "hint": "Converting to the Word document failed.",
+        "title": "Renderer failed"
+      },
+      "REQUEST_INVALID": {
+        "hint": "The request body or parameters do not match the expected shape.",
+        "title": "Request invalid"
+      },
+      "RESOURCE_NOT_FOUND": {
+        "hint": "The requested item does not exist or is no longer available.",
+        "title": "Resource not found"
+      },
+      "RUNTIME_POLICY_MISMATCH": {
+        "hint": "The current runtime configuration does not match the required policy.",
+        "title": "Runtime policy mismatch"
+      },
+      "SETUP_ALREADY_COMPLETE": {
+        "hint": "Initial service setup has already been performed.",
+        "title": "Setup already complete"
+      },
+      "SETUP_REQUIRED": {
+        "hint": "The service must be set up first.",
+        "title": "Setup required"
+      },
+      "TOO_MANY_PAGES": {
+        "hint": "The document exceeds the allowed number of pages.",
+        "title": "Too many pages"
+      },
+      "UNKNOWN_MODEL_VARIANT": {
+        "hint": "The given model variant is not registered.",
+        "title": "Unknown model variant"
+      },
+      "UNSUPPORTED_MEDIA_TYPE": {
+        "hint": "The uploaded file is not of a supported type.",
+        "title": "Unsupported media type"
+      },
+      "UNSUPPORTED_PAGE_COUNT": {
+        "hint": "The input's page count is outside the supported range.",
+        "title": "Unsupported page count"
+      },
+      "UPLOAD_TOO_LARGE": {
+        "hint": "The file size exceeds the allowed limit.",
+        "title": "Upload too large"
+      },
+      "WEB_REQUEST_REJECTED": {
+        "hint": "This operation is not permitted from the web interface.",
+        "title": "Web request rejected"
+      }
+    },
+    "reason": {
+      "DIAGNOSTIC_DOCX_NOT_REQUESTED": "Word output was not requested",
+      "DOCX_AST_NOT_STRICT": "The AST does not satisfy the strict profile",
+      "DOCX_CHAIN_ERROR": "Error in the DOCX assembly chain",
+      "DOCX_FONT_SUBSTITUTED": "A font was replaced with a substitute",
+      "DOCX_OUTPUT_TOO_LARGE": "The output DOCX is too large",
+      "DOCX_PAGE_NOT_TERMINATED": "The page was not terminated",
+      "DOCX_PAGE_STREAM_INVALID": "Invalid page data stream",
+      "DOCX_RENDER_NOT_READY": "Rendering is not yet ready",
+      "HEADLESS_DEFAULTS_V0_APPLIED": "Headless default values were applied",
+      "PREVIEW_RENDER_FAILED": "Rendering the preview failed"
+    },
+    "stage": {
+      "admission_complete": "Admission complete",
+      "artifact_finalization": "Artifact finalization",
+      "ast_promotion": "AST promotion",
+      "feature_extraction": "Feature extraction",
+      "loading_model": "Loading model",
+      "model_decode": "Model decode",
+      "model_input_projection": "Model input projection",
+      "pdf_inspection": "PDF inspection",
+      "pdf_rasterization": "PDF rasterization",
+      "png_validation": "PNG validation",
+      "prediction_ir_sealing": "Prediction IR sealing",
+      "renderer_gate": "Renderer gate"
+    },
+    "state": {
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "failed": "Failed",
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Succeeded"
+    },
+    "unknown": "Unknown code"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "copied": "Copied",
+    "copy": "Copy",
+    "delete": "Delete",
+    "download": "Download",
+    "loading": "Loading…",
+    "next": "Next",
+    "retry": "Retry",
+    "unknown": "Unknown"
+  },
+  "compare": {
+    "alt": {
+      "docx": "Word (preview), page {{index}} of {{total}}",
+      "source": "Original, page {{index}} of {{total}}"
+    },
+    "diffTint": "Difference highlight",
+    "legend": "Legend",
+    "link": "Link scrolling",
+    "linkPages": "Link pages",
+    "maximize": "Maximize",
+    "mismatch": "Different page counts",
+    "mismatchNotice": "The original has {{sourceCount}} pages, Word rendered as {{docxCount}} pages. Pages may not correspond one to one.",
+    "missing": {
+      "docxNotProduced": "Word was not produced: {{reasons}}.",
+      "loadFailed": "The preview could not be loaded.",
+      "noSource": "The original preview for page {{index}} is missing.",
+      "outOfRangeDocx": "Word has no page {{index}}.",
+      "outOfRangeSource": "The original has no page {{index}}.",
+      "pageFailed": "Page {{index}} failed ({{error}}). The document has a placeholder paragraph.",
+      "previewFailed": "The Word preview could not be rendered. Word is still available for download."
+    },
+    "mode": {
+      "overlay": "Overlay",
+      "side": "Side by side",
+      "swipe": "Swipe"
+    },
+    "modeLabel": "Comparison mode",
+    "opacity": "Opacity",
+    "pageInputLabel": "Page",
+    "pageInputLabelDocx": "Page (Word)",
+    "pageInputLabelSource": "Page (original)",
+    "pageOf": "Page {{current}} of {{total}}",
+    "paneDocx": "Word",
+    "paneSource": "Original",
+    "restore": "Restore view",
+    "shortcuts": {
+      "actualSize": "100%",
+      "diffToggle": "Toggle colour diff (Overlay)",
+      "firstLast": "First / last page",
+      "fit": "Fit page",
+      "help": "Open this dialog",
+      "lock": "Sync lock",
+      "maximizeToggle": "Maximize / restore",
+      "mode": "Side by side / Overlay / Swipe mode",
+      "opacityStep": "Opacity −/+ 10%",
+      "open": "Keyboard shortcuts",
+      "page": "Previous / next page",
+      "title": "Keyboard shortcuts",
+      "zoomStep": "Zoom in / out"
+    },
+    "zoom": {
+      "actual": "Actual size",
+      "fitPage": "Fit page",
+      "fitWidth": "Fit width",
+      "in": "Zoom in",
+      "out": "Zoom out",
+      "reset": "Reset"
+    },
+    "zoomGroup": "Zoom controls",
+    "zoomLevel": "Zoom {{percent}}%"
+  },
+  "convert": {
+    "blocked": {
+      "noFiles": "Choose a file first.",
+      "notReady": "The service is not ready."
+    },
+    "dropzone": {
+      "choose": "Choose files",
+      "hint": "or click to choose a file",
+      "invalidType": "This file type is not supported.",
+      "label": "Drop a PDF or images here"
+    },
+    "label": {
+      "counter": "{{count}}/{{max}}",
+      "hint": "Saved with the job on this PC and removed with it.",
+      "invalid": "The label contains a character that is not allowed.",
+      "job": "Job label"
+    },
+    "limits": "PDF up to {{maxPages}} pages, or PNG/JPEG (one file = one page) · {{maxBytes}} in total",
+    "model": {
+      "default": "Default",
+      "label": "Model",
+      "manage": "Manage models",
+      "single": "Model: {{label}}"
+    },
+    "note": {
+      "photo": "A photo of the document instead of a scan may reduce accuracy."
+    },
+    "output": {
+      "docx": {
+        "hint": "Word document for review.",
+        "label": "Word document"
+      },
+      "ir": {
+        "hint": "Internal prediction representation.",
+        "label": "Prediction IR"
+      },
+      "legend": "Output"
+    },
+    "queue": {
+      "moveDown": "Move down",
+      "moveUp": "Move up",
+      "remove": "Remove",
+      "title": "Queued"
+    },
+    "recentJobs": {
+      "title": "Recent jobs",
+      "viewAll": "All jobs"
+    },
+    "submit": "Submit",
+    "submitting": "Submitting…",
+    "title": "Convert a document",
+    "warning": {
+      "smallImage": "Low resolution: ~{{dpi}} DPI at A4 (the model was measured at 300 DPI, ~3,500 px). Text may be recognised less well."
+    }
+  },
+  "diagnostics": {
+    "fontSubstituted": "A font was substituted",
+    "headlessDefaults": "Headless default values applied",
+    "no": "No",
+    "policyNoEdits": "This policy does not change content, only fills in default values.",
+    "rawJson": "Raw data (JSON)",
+    "unavailable": "Diagnostics are not available yet.",
+    "yes": "Yes"
+  },
+  "domainComponents": {
+    "fontSubstitutionNotice": {
+      "text": "A font was replaced with a metrically compatible one (FONT_FALLBACK) when rendering the Word document. The preview may therefore not exactly match what you see in Word on your own PC."
+    },
+    "photoQualityNote": {
+      "text": "For photos, the S5 measurement showed a text-similarity drop of about 2%; for scans, about 0.1%."
+    }
+  },
+  "job": {
+    "artifacts": {
+      "downloadWord": "Download Word",
+      "page": "Page {{n}}",
+      "predictionIr": "Prediction IR (JSON, {{n}} pages)"
+    },
+    "cancel": {
+      "alreadyTerminal": "The job has already finished.",
+      "body": "Cancel this job?",
+      "confirm": "Cancel",
+      "keep": "Keep",
+      "title": "Cancel job"
+    },
+    "compareExpired": "The comparison is not available -- the job's artefacts have already expired.",
+    "duration": "Duration",
+    "elapsed": "Elapsed",
+    "expiry": {
+      "expired": "Expired",
+      "in": "Expires in {{time}}",
+      "soon": "Expires soon"
+    },
+    "header": {
+      "back": "Back to jobs",
+      "reupload": "Upload again",
+      "title": "Job"
+    },
+    "notFound": "The job does not exist or was deleted.",
+    "progress": {
+      "eta": "Estimated time",
+      "etaMinutes": "estimate ~{{minutes}} min",
+      "page": {
+        "done": "Done",
+        "failed": "Failed",
+        "running": "Running",
+        "waiting": "Waiting"
+      },
+      "pageSummary": "Page {{current}} of {{total}} · done {{done}} · failed {{failed}}",
+      "step": {
+        "assembly": "Assembly",
+        "assemblyIr": "IR sealing",
+        "input": "Input",
+        "model": "Model",
+        "other": "Other",
+        "receipt": "Receipt",
+        "recognition": "Recognition",
+        "state": {
+          "cancelled": "Cancelled",
+          "current": "In progress",
+          "done": "Done",
+          "failed": "Failed",
+          "upcoming": "Waiting"
+        }
+      },
+      "summary": "Progress",
+      "pages": "Page progress"
+    },
+    "purge": {
+      "body": "The job's outputs will be permanently deleted.",
+      "confirm": "Delete",
+      "keep": "Keep",
+      "title": "Delete job",
+      "toast": "The job was permanently deleted."
+    },
+    "queue": {
+      "waitingDownload": "Waiting for the model download: {{label}}",
+      "waitingJob": "Waiting in the job queue",
+      "waitingWorker": "Waiting for a worker"
+    },
+    "result": {
+      "docxMissing": "The Word document could not be produced.",
+      "irOnly": "Only the prediction IR is available.",
+      "zip": "Download all (ZIP)",
+      "zipHint": "Contains every produced file."
+    },
+    "tab": {
+      "compare": "Compare",
+      "diagnostics": "Diagnostics",
+      "result": "Result"
+    },
+    "terminalToast": "Job {{label}}: {{state}}"
+  },
+  "jobs": {
+    "action": {
+      "cancel": "Cancel",
+      "open": "Open",
+      "purge": "Delete permanently"
+    },
+    "column": {
+      "actions": "Actions",
+      "created": "Created",
+      "expires": "Deletes in",
+      "label": "Label",
+      "model": "Model",
+      "pages": "Pages",
+      "state": "State"
+    },
+    "empty": "No jobs yet.",
+    "emptyFilter": "No job matches this filter.",
+    "filter": {
+      "active": "Active",
+      "all": "All",
+      "ended": "Ended",
+      "failed": "Failed",
+      "succeeded": "Succeeded"
+    },
+    "loadMore": "Load more",
+    "search": "Search by label",
+    "title": "Jobs"
+  },
+  "login": {
+    "forgot": "Forgot your password?",
+    "forgotBody": "Reset the password from the server's command line.",
+    "hidePassword": "Hide password",
+    "networkError": "Could not reach the service. Try again.",
+    "password": "Password",
+    "rateLimited": "Too many attempts. Try again in {{seconds}} s.",
+    "resetCommand": "./Spustit.sh reset-password",
+    "showPassword": "Show password",
+    "submit": "Log in",
+    "title": "Log in",
+    "wrong": "Incorrect password."
+  },
+  "models": {
+    "action": {
+      "delete": "Delete copy",
+      "download": "Download",
+      "load": "Load onto GPU",
+      "retry": "Retry",
+      "retryDownload": "Download again",
+      "setDefault": "Set as default"
+    },
+    "availability": {
+      "planned": {
+        "badge": "In preparation",
+        "reason": "This model does not exist yet; it is in preparation. It cannot be downloaded yet.",
+        "vram": "There is nothing to estimate its memory need from yet."
+      },
+      "unpublished": {
+        "badge": "Not yet published on Hugging Face",
+        "reason": "This variant's Hugging Face repository is not public yet. Download becomes available once it is published."
+      }
+    },
+    "badge": {
+      "default": "Default",
+      "resident": "On GPU"
+    },
+    "card": {
+      "label": "Description"
+    },
+    "confirm": {
+      "delete": {
+        "body": "The model can be downloaded again at any time.",
+        "deniedLocal": "A local bundle has nothing to remove from disk.",
+        "deniedResident": "The model is currently loaded on the GPU; load another one first.",
+        "title": "Delete {{size}} from disk?"
+      },
+      "load": {
+        "title": "Load {{label}} onto the GPU?"
+      }
+    },
+    "device": {
+      "label": "Device",
+      "summary": "GPU · {{total}} VRAM · {{free}} free (as of {{observed}}) · compute capability {{cc}}",
+      "unknown": "The worker has not reported a GPU yet."
+    },
+    "download": {
+      "waiting": "Download running on the worker; jobs using this model wait in the queue."
+    },
+    "empty": "No model is configured.",
+    "fits": {
+      "exceedsComputeCapability": "FP8 requires compute capability ≥ 8.9 (this GPU: {{cc}}).",
+      "exceedsVram": "The estimated peak {{est}} exceeds this GPU's {{total}} VRAM.",
+      "no": "Does not fit",
+      "noFp8": "FP8 not supported",
+      "unknown": "Unknown",
+      "unknownNote": "The worker has not reported a GPU yet; if the model does not fit, the service will refuse the job before it starts.",
+      "yes": "Fits"
+    },
+    "footer": "Models are downloaded from Hugging Face at a pinned commit, and the manifest SHA is verified before load.",
+    "state": {
+      "absent": "Not downloaded",
+      "downloading": "Downloading",
+      "failed": "Failed",
+      "loading": "Loading",
+      "ready": "Ready",
+      "verifying": "Verifying"
+    },
+    "switch": {
+      "loaded": "Loaded",
+      "noneResident": "No model loaded",
+      "notLoaded": "Not loaded"
+    },
+    "switchNotice": {
+      "downloaded": "{{resident}} is currently on the GPU. The job will release it and load {{selected}} -- this takes tens of seconds.",
+      "noneResident": "No model is loaded on the GPU yet; the first job will load it.",
+      "notDownloaded": "{{size}} will be downloaded first; the job waits in the queue until then."
+    },
+    "title": "Models",
+    "vram": {
+      "freeOfTotal": "{{free}} free of {{total}}",
+      "label": "GPU memory usage"
+    }
+  },
+  "nav": {
+    "convert": "Convert",
+    "jobs": "Jobs",
+    "logout": "Log out",
+    "models": "Models",
+    "settings": "Settings",
+    "skipToContent": "Skip to content",
+    "mainNavigation": "Main navigation",
+    "openNavigation": "Open navigation",
+    "settingsAndTheme": "Settings and theme"
+  },
+  "session": {
+    "expired": {
+      "body": "Log in again to continue.",
+      "title": "Session expired"
+    }
+  },
+  "settings": {
+    "about": {
+      "apiVersion": "API version",
+      "sandboxRootful": "The sandbox runs through the host's docker socket (root privileges).",
+      "sessionIdle": "Session idle timeout: {{seconds}} s",
+      "sessionMax": "Maximum session length: {{seconds}} s",
+      "title": "About",
+      "version": "Version"
+    },
+    "account": {
+      "changePassword": "Change password",
+      "title": "Account"
+    },
+    "changePasswordDialog": {
+      "confirmLabel": "Confirm new password",
+      "currentPasswordLabel": "Current password",
+      "mismatch": "Passwords do not match.",
+      "newPasswordLabel": "New password",
+      "submit": "Change password",
+      "success": "Password changed.",
+      "title": "Change password",
+      "tooShort": "Password must be at least 12 characters.",
+      "wrongCurrentPassword": "Current password is incorrect."
+    },
+    "defaultModel": {
+      "auto": "Automatic",
+      "excludedNote": "Variants that do not fit cannot be set as default.",
+      "label": "Default model"
+    },
+    "language": "Language",
+    "theme": {
+      "dark": "Dark",
+      "label": "Theme",
+      "light": "Light",
+      "system": "System"
+    }
+  },
+  "setup": {
+    "continue": "Continue",
+    "continueAnyway": "Continue anyway",
+    "link": {
+      "invalid": "The setup link is not valid. Open the setup link printed by run-local.sh again.",
+      "missing": "Open the setup link printed by run-local.sh."
+    },
+    "step": {
+      "model": {
+        "body": "Choose the default model.",
+        "chooseOther": "Choose a different model ({{count}})",
+        "finishLater": "Finish later",
+        "title": "Model"
+      },
+      "password": {
+        "alreadyComplete": "Setup is already complete. Redirecting to login.",
+        "body": "Set a password for the web interface.",
+        "confirmLabel": "Confirm password",
+        "mismatch": "Passwords do not match.",
+        "passwordLabel": "Password",
+        "submit": "Create password",
+        "title": "Password",
+        "tooShort": "Password must be at least 12 characters."
+      },
+      "ready": {
+        "body": "Setup is complete.",
+        "title": "Done",
+        "tryDemo": "Try the sample document",
+        "uploadOwn": "Upload your own file"
+      },
+      "system": {
+        "body": "Checking available resources.",
+        "checking": "Checking the system…",
+        "notReady": "Some components are not ready.",
+        "ready": "The system is ready.",
+        "title": "System"
+      }
+    },
+    "title": "Initial setup"
+  },
+  "status": {
+    "service": {
+      "notReady": "Not ready",
+      "partial": "Partially ready",
+      "ready": "Ready",
+      "unreachable": "Unreachable"
+    }
+  },
+  "validation": {
+    "mixed": "Choose either one PDF or page images, not both.",
+    "onePdf": "Only one PDF can be submitted at a time.",
+    "tooLarge": "Total {{size}}, the limit is {{max}}.",
+    "tooManyImages": "{{n}} images exceed the {{max}}-page limit.",
+    "type": "{{name}}: unsupported type. Supported types are PDF, PNG and JPEG.",
+    "undecodable": "{{name}} could not be opened as an image."
+  },
+  "brand": {
+    "companyWebsite": "EVOLIQ website (opens in a new tab)"
+  }
+}

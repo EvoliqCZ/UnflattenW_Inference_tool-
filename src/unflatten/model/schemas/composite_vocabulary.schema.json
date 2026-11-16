@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/composite_vocabulary.schema.json",
+  "title": "M1 Composite Vocabulary (design §4.3)",
+  "$comment": "Closed envelope. Binds the disjoint structural/Qwen/byte-fallback packed token union. Counts/offsets are generated and validated elsewhere; this schema only constrains shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "composite_vocabulary_schema_version",
+    "structural",
+    "qwen",
+    "byte_fallback",
+    "packing_policy_version",
+    "text_encoding_policy_version",
+    "greedy_tie_break"
+  ],
+  "properties": {
+    "composite_vocabulary_schema_version": { "$ref": "#/$defs/semver" },
+    "structural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token_map_version", "token_map_hash", "count", "packed_start"],
+      "properties": {
+        "token_map_version": { "$ref": "#/$defs/semver" },
+        "token_map_hash": { "$ref": "#/$defs/sha256" },
+        "count": { "type": "integer", "minimum": 0 },
+        "packed_start": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "qwen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tokenizer_artifact_set_hash",
+        "text_allowlist_hash",
+        "native_vocab_size",
+        "packed_start"
+      ],
+      "properties": {
+        "tokenizer_artifact_set_hash": { "$ref": "#/$defs/sha256" },
+        "text_allowlist_hash": { "$ref": "#/$defs/sha256" },
+        "native_vocab_size": { "type": "integer", "minimum": 0 },
+        "packed_start": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "byte_fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_version",
+        "encoding",
+        "scalar_normalization",
+        "frame",
+        "byte_controls",
+        "byte_value_count",
+        "packed_start"
+      ],
+      "properties": {
+        "policy_version": { "$ref": "#/$defs/semver" },
+        "encoding": { "type": "string", "minLength": 1 },
+        "scalar_normalization": { "type": "string", "minLength": 1 },
+        "frame": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "byte_controls": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              { "type": "string", "minLength": 1 },
+              { "type": "integer", "minimum": 0 }
+            ]
+          }
+        },
+        "byte_value_count": { "type": "integer", "minimum": 0 },
+        "packed_start": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "packing_policy_version": { "$ref": "#/$defs/semver" },
+    "text_encoding_policy_version": { "$ref": "#/$defs/semver" },
+    "greedy_tie_break": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

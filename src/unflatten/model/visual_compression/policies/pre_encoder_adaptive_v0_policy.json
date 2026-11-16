@@ -1,0 +1,6 @@
+{
+  "policy_version": "pre-encoder-adaptive-v0-policy-v1",
+  "scout_grid": 8,
+  "scout_hidden": 16,
+  "global_downsample": 4
+}

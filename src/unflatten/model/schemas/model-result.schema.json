@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/model-result.schema.json",
+  "title": "RFC004 §35.2 Model Result Envelope (W2-1, boundary-safe subset)",
+  "$comment": "Deliberately reduced from the full §35 envelope: `ast.status` is restricted to {strict_valid, failed} and `review_candidate`/`partial_hypothesis` are always null, matching what `promotion.py`'s PromotionEnvelope (Literal['strict_valid','failed']) can produce today -- this schema wraps that output, it does not extend promotion.py's own domain. A full review_candidate/partial branch requires promotion.py itself to grow those statuses first (out of scope here, see the W2-1 report).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_result_schema_version", "result_id", "architecture_id", "model_release_id",
+    "model_component_lock_hash", "runtime_lock_hash", "inference_config_hash",
+    "input_fingerprint", "profile", "inference_mode", "ast", "renderer",
+    "acceptance", "confidence_report", "prediction_ir", "issues"
+  ],
+  "properties": {
+    "model_result_schema_version": { "const": "0.1.0" },
+    "result_id": { "type": "string", "pattern": "^result_[0-9a-f]{64}$" },
+    "architecture_id": { "type": "string" },
+    "model_release_id": { "type": "string", "pattern": "^model_[0-9a-f]{64}$" },
+    "model_component_lock_hash": { "$ref": "#/$defs/sha256" },
+    "runtime_lock_hash": { "$ref": "#/$defs/sha256" },
+    "inference_config_hash": { "$ref": "#/$defs/sha256" },
+    "input_fingerprint": { "$ref": "#/$defs/sha256" },
+    "profile": { "type": "string" },
+    "inference_mode": {
+      "enum": ["single_page", "full_document", "bounded_multi_page", "region_diagnostic"]
+    },
+    "ast": { "$ref": "#/$defs/ast_branch" },
+    "renderer": { "$ref": "#/$defs/renderer_branch" },
+    "acceptance": { "$ref": "#/$defs/acceptance_branch" },
+    "confidence_report": { "anyOf": [{ "$ref": "#/$defs/artifact_ref" }, { "type": "null" }] },
+    "prediction_ir": { "anyOf": [{ "$ref": "#/$defs/artifact_ref" }, { "type": "null" }] },
+    "issues": { "type": "array", "items": { "type": "object" } }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "size_bytes", "mime_type"],
+      "properties": {
+        "ref": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mime_type": {
+          "enum": [
+            "application/json",
+            "application/vnd.canonical-document-ast+json",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ]
+        }
+      }
+    },
+    "ast_branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "canonical_ast", "ast_hash", "ast_file_hash", "review_candidate",
+        "partial_hypothesis", "failure_report"
+      ],
+      "properties": {
+        "status": { "enum": ["strict_valid", "failed"] },
+        "canonical_ast": { "anyOf": [{ "$ref": "#/$defs/artifact_ref" }, { "type": "null" }] },
+        "ast_hash": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "ast_file_hash": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "review_candidate": { "const": null },
+        "partial_hypothesis": { "const": null },
+        "failure_report": { "type": ["object", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "strict_valid" } } },
+          "then": {
+            "properties": {
+              "canonical_ast": { "type": "object" },
+              "ast_hash": { "type": "string" },
+              "ast_file_hash": { "type": "string" },
+              "failure_report": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "failed" } } },
+          "then": {
+            "properties": {
+              "canonical_ast": { "type": "null" },
+              "ast_hash": { "type": "null" },
+              "ast_file_hash": { "type": "null" },
+              "failure_report": { "type": "object" }
+            }
+          }
+        }
+      ]
+    },
+    "renderer_branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "docx", "failure_report"],
+      "properties": {
+        "status": { "enum": ["not_run", "render_ready", "approximation_required", "failed"] },
+        "reason": {
+          "anyOf": [
+            { "enum": ["not_requested", "ast_not_strict", "capability_approximation", "renderer_error", "capability_unsupported"] },
+            { "type": "null" }
+          ]
+        },
+        "docx": { "anyOf": [{ "$ref": "#/$defs/artifact_ref" }, { "type": "null" }] },
+        "failure_report": { "type": ["object", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "not_run" } } },
+          "then": { "properties": { "docx": { "type": "null" }, "failure_report": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "render_ready" } } },
+          "then": {
+            "properties": {
+              "reason": { "type": "null" },
+              "docx": { "type": "object" },
+              "failure_report": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "failed" } } },
+          "then": { "properties": { "docx": { "type": "null" }, "failure_report": { "type": "object" } } }
+        }
+      ]
+    },
+    "acceptance_branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_codes"],
+      "properties": {
+        "status": { "enum": ["not_evaluated", "auto_accept", "review_required", "rejected"] },
+        "reason_codes": { "type": "array", "items": { "type": "string" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["not_evaluated", "auto_accept"] } } },
+          "then": { "properties": { "reason_codes": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["review_required", "rejected"] } } },
+          "then": { "properties": { "reason_codes": { "minItems": 1 } } }
+        }
+      ]
+    }
+  }
+}

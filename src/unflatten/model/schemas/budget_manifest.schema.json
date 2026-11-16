@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/budget_manifest.schema.json",
+  "title": "Deployment Budget Manifest (RFC004 §45.2)",
+  "$comment": "Closed envelope. Every deployment profile must pin the §45.2 limit list plus the §12.4 overflow policy and the §45.6 OOM escalation order. This is a NEW versioned artefact, independent from the S1-scoped runtime_limits_policy (runtime_limits.py) -- `runtime_limits_policy_hash` only optionally references it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "budget_manifest_schema_version",
+    "profile_id",
+    "hardware",
+    "max_pages_per_request",
+    "max_pixels_per_page",
+    "max_pixels_per_request",
+    "max_visual_tokens_per_page",
+    "max_visual_tokens_per_window",
+    "max_visual_tokens_per_request",
+    "max_decoder_context_tokens",
+    "max_decoder_output_tokens",
+    "max_nodes",
+    "max_depth",
+    "max_tables",
+    "max_cells_per_table",
+    "max_images",
+    "max_resource_bytes",
+    "precision",
+    "kv_cache_policy",
+    "batching_policy",
+    "overflow_policy",
+    "oom_escalation",
+    "timeout_seconds",
+    "max_retries",
+    "runtime_limits_policy_hash"
+  ],
+  "properties": {
+    "budget_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "profile_id": { "type": "string", "minLength": 1 },
+    "hardware": { "enum": ["h200", "rtx4070"] },
+    "max_pages_per_request": { "type": "integer", "minimum": 1 },
+    "max_pixels_per_page": { "type": "integer", "minimum": 1 },
+    "max_pixels_per_request": { "type": "integer", "minimum": 1 },
+    "max_visual_tokens_per_page": { "type": "integer", "minimum": 1 },
+    "max_visual_tokens_per_window": { "type": "integer", "minimum": 1 },
+    "max_visual_tokens_per_request": { "type": "integer", "minimum": 1 },
+    "max_decoder_context_tokens": { "type": "integer", "minimum": 1 },
+    "max_decoder_output_tokens": { "type": "integer", "minimum": 1 },
+    "max_nodes": { "type": "integer", "minimum": 1 },
+    "max_depth": { "type": "integer", "minimum": 1 },
+    "max_tables": { "type": "integer", "minimum": 1 },
+    "max_cells_per_table": { "type": "integer", "minimum": 1 },
+    "max_images": { "type": "integer", "minimum": 1 },
+    "max_resource_bytes": { "type": "integer", "minimum": 1 },
+    "precision": { "enum": ["fp32", "bf16", "fp16", "fp8", "int8"] },
+    "kv_cache_policy": { "enum": ["none", "static", "dynamic"] },
+    "batching_policy": { "enum": ["single", "fixed", "dynamic"] },
+    "overflow_policy": {
+      "$comment": "RFC004 §12.4: exactly one of the four named token-budget-overflow policies.",
+      "enum": [
+        "full_document_to_bounded_multi_page",
+        "bounded_multi_page_to_smaller_windows",
+        "single_page_to_denser_sequential_tiles",
+        "unsupported_extreme_input"
+      ]
+    },
+    "oom_escalation": {
+      "$comment": "RFC004 §45.6 allowed OOM behaviors, in escalation order. The forbidden behaviors (drop page/tile, truncate-and-mark-success, silently disable a required head) are never valid members.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "preflight_reject",
+          "smaller_deterministic_batch",
+          "more_fragments_or_windows",
+          "primary_decoder_fallback",
+          "typed_failure"
+        ]
+      }
+    },
+    "timeout_seconds": { "type": "integer", "minimum": 1 },
+    "max_retries": { "type": "integer", "minimum": 0 },
+    "runtime_limits_policy_hash": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      ]
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    }
+  }
+}

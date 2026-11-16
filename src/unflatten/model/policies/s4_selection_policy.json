@@ -1,0 +1,84 @@
+{
+  "s4_selection_policy_schema_version": "1.0.0",
+  "policy_version": "1.0.0",
+  "note": "PROPOSED skeleton (DEC-041 A / spec-v15-images-selection-promotion T2). cohort.pinned_pages is an ILLUSTRATIVE placeholder set, not a real val_iid pin -- the owner must replace it with a real cohort (RFC005 §40.4: val_iid only, disjoint from the run's s4_eval_pages.json) before this policy selects a real production checkpoint. Every gate's floor_micro is a placeholder (is_placeholder=true, DEC-035 §5): select_checkpoint refuses to declare a 'best' checkpoint under this policy outside --report-only until the owner ratifies real floors from T2's own measurement over checkpoint v14-r4.",
+  "cohort": {
+    "role": "s4_selection_val_iid",
+    "pinned_pages": [
+      ["PLACEHOLDER_BUNDLE_0001", 0],
+      ["PLACEHOLDER_BUNDLE_0002", 0]
+    ],
+    "pages_sha256": "sha256:d3f32e4cd45d7e46223bc94da19b1c176f45ca13ff86729ebe69ca3ee335f95d"
+  },
+  "decode": {
+    "max_steps": 4096,
+    "typed_decode": true,
+    "region_decode": true,
+    "loop_guard": "v2"
+  },
+  "gates": [
+    {
+      "level": 1,
+      "metric_id": "no_typed_failure_rate",
+      "denominator": "attempted",
+      "floor_micro": 1000000,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 2,
+      "metric_id": "exact_match_rate",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 3,
+      "metric_id": "strict_valid_rate",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 4,
+      "metric_id": "critical_slice_min_fidelity",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 5,
+      "metric_id": "typed_head_macro_accuracy_rate",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 6,
+      "metric_id": "p5_development_quality_rate",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    },
+    {
+      "level": 7,
+      "metric_id": "renderer_ready_rate",
+      "denominator": "attempted",
+      "floor_micro": 0,
+      "is_placeholder": true,
+      "missing_evidence_action": "insufficient_evidence"
+    }
+  ],
+  "tie_break": {
+    "metric_id": "mean_decode_seconds_per_page",
+    "direction": "min"
+  },
+  "trial_budget": {
+    "max_candidates": 10
+  }
+}

@@ -1,0 +1,7 @@
+[Unit]
+Description=Unflatten private single-host diagnostic service
+Wants=unflatten-diagnostic-api.service unflatten-diagnostic-worker.service
+After=unflatten-diagnostic-api.service
+
+[Install]
+WantedBy=multi-user.target

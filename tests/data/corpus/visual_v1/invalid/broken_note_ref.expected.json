@@ -1,0 +1,12 @@
+{
+  "expected_issues": [
+    {
+      "code": "BROKEN_NOTE_REF",
+      "path": "/sections/0/children/0/children/1/note_id"
+    },
+    {
+      "code": "ORPHAN_FOOTNOTE",
+      "path": "/footnotes/0"
+    }
+  ]
+}

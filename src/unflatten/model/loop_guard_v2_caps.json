@@ -1,0 +1,283 @@
+{
+ "capability_profile_id": "v15-hyperlink-flat-v1",
+ "close_recovery_variant": "B",
+ "guard": "v2",
+ "measured_by": {
+  "date": "2026-09-24",
+  "git_commit": "0b62f636bfca512a0f939cb2c56a324f44d79cca",
+  "git_dirty": false,
+  "script": "scripts/loop_guard_v2_caps.py"
+ },
+ "period_max": 32,
+ "periodic_cap": {
+  "1": 739,
+  "10": 104,
+  "11": 42,
+  "12": 55,
+  "13": 81,
+  "14": 53,
+  "15": 24,
+  "16": 23,
+  "17": 18,
+  "18": 73,
+  "19": 34,
+  "2": 355,
+  "20": 25,
+  "21": 13,
+  "22": 46,
+  "23": 27,
+  "24": 28,
+  "25": 8,
+  "26": 44,
+  "27": 13,
+  "28": 9,
+  "29": 7,
+  "3": 226,
+  "30": 15,
+  "31": 13,
+  "32": 10,
+  "4": 664,
+  "5": 123,
+  "6": 97,
+  "7": 84,
+  "8": 186,
+  "9": 284
+ },
+ "schema": "loop-guard-v2-caps/1",
+ "semantics": "loop-guard-v2-semantics/1",
+ "source": {
+  "cache_dir": "/mnt/ai-disk/unflatten/data/cache-exact-text-v15b/train",
+  "cache_version": "6.0.0",
+  "manifest_sha256": "sha256:c9e2cb8ba5a5b6ec57956bfd1288f8ade5a1ccfd0bca403f15947c74028ddb53",
+  "pages": 78470,
+  "shards": 2453,
+  "target_identity": {
+   "admission": "strict",
+   "backbone_artifact_hash": "ebb281ec70b05090aa6165b016eac8ec08e71b17",
+   "capability_profile_hash": "sha256:21623dbee8c76e60a44c48cb846a18cf6e9f0ba56739a859e0f3da0cb6df78f6",
+   "component_lock_hash": "sha256:c3700ecc8e7eda836e9b007aad9132f22c6b29fa288d61bfce51c32b0ad31148",
+   "composite_grammar_hash": "sha256:f3eb50c948f25f4fbbfe3e18b037a94b056fa52f1c2900045984de4798661a8b",
+   "composite_vocabulary_hash": "sha256:6ce561b6eb454c3171b605d341f131d5dba728ba0d707f58a8885e380ae7a473",
+   "conditioning_policy_hash": "sha256:b6f660496af302b08797008369b45b4b9e4b9d81b7c943258a61f5527ff537ad",
+   "dataset_release_root_hash": "sha256:f3bdbb1ce178db8fe00a6d589ae5f26e7b6ec8bf98b3a8328e66cef746c9d588",
+   "feature_tap": "candidate_native_no_tap",
+   "fragment_schema_version": "0.2.0",
+   "head_registry_hash": "sha256:1c7ff95e36bfbd8e800b7816a4cc3e00c688f3673e4b219ac1723fc55c3e7e30",
+   "loss_unit_schema_hash": "sha256:7eefb7aa2fc003a53b9b300a375d23529e68dece02fb5bff6898f1b44706d542",
+   "mask_projection_schema_version": "0.3.0",
+   "max_pixels": 0,
+   "processor_artifact_hash": "3a159dfec9978a18",
+   "qwen_text_allowlist_hash": "sha256:79f2958bcaa1cbf059746d31ebd32c994c964a57d776e2566cbe0bcdaf5501f8",
+   "runtime_limits_policy_hash": "sha256:fb1cf60248157ba053cf90fc3c64b12209b9d069d98cd1c8050a2de31161fe80",
+   "stage_policy_hash": "sha256:ae5790782806123a4c6a678dc9989530a93a447f391400de00c4c046009eb3c9",
+   "target_bundle_schema_version": "0.2.0",
+   "target_projector_version": "0.1.0",
+   "task_kind": "structure_v0",
+   "tokenizer_artifact_set_hash": "sha256:d74dc6b6138ea6139f991f554379cb47fe675adc2f7100a8c0fecbdd7f8bcd78",
+   "training_target_materializer_hash": "sha256:13290a0b87398a1d95965dc1625386a922754bc739ab541fcf146d6091e984ff"
+  }
+ },
+ "text_run_cap": 169,
+ "witness": {
+  "periodic_cap": {
+   "1": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "10": {
+    "bundle": "bundle_b073624d6118e93fc547d5938ab0369403c5c2b912cd8801352c4c4db08efbe8",
+    "page_index": 19,
+    "row": 31,
+    "shard": "shard-01668.pt"
+   },
+   "11": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "12": {
+    "bundle": "bundle_9e7010c67130c4da2d46356cc944622fbab67aa06e0b49bdf7cac14310fc995d",
+    "page_index": 123,
+    "row": 20,
+    "shard": "shard-01498.pt"
+   },
+   "13": {
+    "bundle": "bundle_87f5e7edd4de12657c7c0905ccb4fe1bd4bd67d4d47fd4ed5c8afd03691396e6",
+    "page_index": 13,
+    "row": 0,
+    "shard": "shard-01306.pt"
+   },
+   "14": {
+    "bundle": "bundle_8132ecb09ee23b826c5c2a62e0fd6214550a0b8d6a8d2f177bd67626d5193d50",
+    "page_index": 0,
+    "row": 6,
+    "shard": "shard-01246.pt"
+   },
+   "15": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "16": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "17": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "18": {
+    "bundle": "bundle_e399c6f56625046db3a5fb7644cbfdf0d5f02fb15e7b2d41aae525b2426d2be8",
+    "page_index": 1,
+    "row": 1,
+    "shard": "shard-02203.pt"
+   },
+   "19": {
+    "bundle": "bundle_1cef9f76cd0c9b979ceec57b3e8d07f1483402cc82144b96d3cebd0008c1abff",
+    "page_index": 5,
+    "row": 3,
+    "shard": "shard-00271.pt"
+   },
+   "2": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "20": {
+    "bundle": "bundle_0211ffd1680d20307436dd9955d868ee4796bfcaed61e8f8411acc7b0fa587fb",
+    "page_index": 3,
+    "row": 15,
+    "shard": "shard-00017.pt"
+   },
+   "21": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "22": {
+    "bundle": "bundle_2ca01d52c950170873eceb7673b2948e042200d509969620db5a960ac0babac8",
+    "page_index": 3,
+    "row": 25,
+    "shard": "shard-00427.pt"
+   },
+   "23": {
+    "bundle": "bundle_16318e5e09e2e447f4d3f220e89b7390937fd36a7c57d2c7ee9627f8e8ac4156",
+    "page_index": 3,
+    "row": 16,
+    "shard": "shard-00207.pt"
+   },
+   "24": {
+    "bundle": "bundle_7e294ad0cc8f222d316e61e81782c79d07cd53b4702ada862ff064873055ff8c",
+    "page_index": 0,
+    "row": 22,
+    "shard": "shard-01217.pt"
+   },
+   "25": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "26": {
+    "bundle": "bundle_0b2eea8f25c8e35a235ef6775b1746a00f2ed16e95a1fd5f4832f09b7c8bf761",
+    "page_index": 3,
+    "row": 19,
+    "shard": "shard-00094.pt"
+   },
+   "27": {
+    "bundle": "bundle_7d1b4cb3d85076921d3ed0e601277f03e9a059db34352ee779cbfa3e7911aae9",
+    "page_index": 5,
+    "row": 12,
+    "shard": "shard-01205.pt"
+   },
+   "28": {
+    "bundle": "bundle_81206b19f217a3936c1cd930ff9296a6a909d76cc2bb98818f7b3caac320b284",
+    "page_index": 0,
+    "row": 17,
+    "shard": "shard-01245.pt"
+   },
+   "29": {
+    "bundle": "bundle_5a426863b3bef2d2442dba797eafbf593021a2bc572e52d1be5d235947e50781",
+    "page_index": 1,
+    "row": 9,
+    "shard": "shard-00869.pt"
+   },
+   "3": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "30": {
+    "bundle": "bundle_7b5035d6c8a778e85bafcf626a323e7649cbd4e789c10ad1fdcb00370e921cd3",
+    "page_index": 0,
+    "row": 28,
+    "shard": "shard-01181.pt"
+   },
+   "31": {
+    "bundle": "bundle_935f213661939f9e18178c06dec09ee93e4ce5b1db1f157f0993bbfdff92515e",
+    "page_index": 0,
+    "row": 16,
+    "shard": "shard-01398.pt"
+   },
+   "32": {
+    "bundle": "bundle_92a2bc04861eca123cec7e41ca2392a89e6966b87ec8d561fb50137c2675b02b",
+    "page_index": 1,
+    "row": 16,
+    "shard": "shard-01394.pt"
+   },
+   "4": {
+    "bundle": "bundle_6ae0f06c110f5cdf76ec26f75138c3267562962e40b76bb0cdd75a5fb14123f9",
+    "page_index": 0,
+    "row": 24,
+    "shard": "shard-01009.pt"
+   },
+   "5": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "6": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "7": {
+    "bundle": "bundle_211939d196f67b2e906e2c966e25c93e84964cbb8731e368dbb7bca70992c886",
+    "page_index": 6,
+    "row": 1,
+    "shard": "shard-00311.pt"
+   },
+   "8": {
+    "bundle": "bundle_a6e5be946ab7dd52a5f3eecac941dc03736a0a5ca1a6881e9dbcc2eafbdde4cc",
+    "page_index": 17,
+    "row": 30,
+    "shard": "shard-01580.pt"
+   },
+   "9": {
+    "bundle": "bundle_3b8902274f9c53bbf3ed6b16c50ec42d91fc81d25b7c572d07de19b8c3c42fd4",
+    "page_index": 1,
+    "row": 13,
+    "shard": "shard-00580.pt"
+   }
+  },
+  "text_run_cap": {
+   "bundle": "bundle_5962ab28dbdf95528188e7231a38425c7f68a5607f5139832e954db0a0b9d4ff",
+   "page_index": 0,
+   "row": 22,
+   "shard": "shard-00861.pt"
+  }
+ }
+}

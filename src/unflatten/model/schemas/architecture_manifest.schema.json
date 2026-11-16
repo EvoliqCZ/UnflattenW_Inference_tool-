@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/architecture_manifest.schema.json",
+  "title": "RFC004 Architecture Manifest (§38, v0.1)",
+  "$comment": "Closed envelope. Describes semantic topology independent of any single checkpoint. Fragmentation/context policy fields (§16) and layer/insertion-point limits (§22) are deferred to later A-phases.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "architecture_manifest_schema_version",
+    "architecture_id",
+    "architecture_version",
+    "compatible_ast_versions",
+    "profiles",
+    "d_model",
+    "components",
+    "expert_adapter",
+    "optional_slots"
+  ],
+  "properties": {
+    "architecture_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "architecture_id": { "type": "string", "minLength": 1 },
+    "architecture_version": { "$ref": "#/$defs/semver" },
+    "compatible_ast_versions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/semver" }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "d_model": { "type": "integer", "minimum": 1 },
+    "components": {
+      "$comment": "Component contract versions map (§38.1). Closed to the six v0 contracts plus the M1 exact-text/composite-decoder contract (design §4.8), which is optional so pre-M1 manifests keep validating unchanged.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backbone_adapter_contract",
+        "input_contract",
+        "visual_memory_contract",
+        "structural_grammar",
+        "prediction_ir",
+        "result_envelope"
+      ],
+      "properties": {
+        "backbone_adapter_contract": { "$ref": "#/$defs/semver" },
+        "input_contract": { "$ref": "#/$defs/semver" },
+        "visual_memory_contract": { "$ref": "#/$defs/semver" },
+        "structural_grammar": { "$ref": "#/$defs/semver" },
+        "prediction_ir": { "$ref": "#/$defs/semver" },
+        "result_envelope": { "$ref": "#/$defs/semver" },
+        "composite_decoder_contract": { "$ref": "#/$defs/semver" }
+      }
+    },
+    "expert_adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "supported_modes"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "supported_modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["dense", "sparse_moe"] }
+        }
+      }
+    },
+    "optional_slots": {
+      "$comment": "Declared optional slots ⊆ {visual_compressor, dflash_speculator, mtp_speculator}; a missing key means the slot is undeclared.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visual_compressor": { "type": "boolean" },
+        "dflash_speculator": { "type": "boolean" },
+        "mtp_speculator": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    }
+  }
+}

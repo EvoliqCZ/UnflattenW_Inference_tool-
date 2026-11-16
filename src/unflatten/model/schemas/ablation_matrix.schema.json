@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/ablation_matrix.schema.json",
+  "title": "Architectural Ablation Switch Matrix (RFC004 §52.1)",
+  "$comment": "Closed contract: RFC004 §52.1's eleven mandatory ablation switches, independently configurable at a fixed output contract. RFC004 does not name required runs, thresholds or a statistical protocol (§52); this schema only proves the switches exist and are comparable. A switch whose experimental variant has no implementation yet is declared status='not_available' rather than omitted, so the closed switch_id enum never silently shrinks to 'whatever happens to be built'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ablation_matrix_schema_version", "switches", "comparison_invariants"],
+  "properties": {
+    "ablation_matrix_schema_version": { "$ref": "#/$defs/semver" },
+    "switches": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": { "$ref": "#/$defs/switch" }
+    },
+    "comparison_invariants": {
+      "$comment": "RFC004 §52.2: none of these may change within one ablation comparison, or the result is not an isolated architecture ablation.",
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "dataset_split",
+          "target_semantics",
+          "head_registry",
+          "assembler_policy",
+          "renderer_truth_profile",
+          "evaluation_cohort",
+          "unrelated_training_budget"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value_id", "label"],
+      "properties": {
+        "value_id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
+    "switch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "switch_id",
+        "primary_question",
+        "control",
+        "experimental",
+        "status"
+      ],
+      "properties": {
+        "switch_id": {
+          "enum": [
+            "backbone",
+            "output_representation",
+            "moe",
+            "visual_compression",
+            "aligner",
+            "context",
+            "fragmentation",
+            "typed_values",
+            "table",
+            "speculative_decode",
+            "resource_recovery"
+          ]
+        },
+        "primary_question": { "type": "string", "minLength": 1 },
+        "control": { "$ref": "#/$defs/variant" },
+        "experimental": { "$ref": "#/$defs/variant" },
+        "status": {
+          "$comment": "'available': both variants are independently configurable in this codebase today. 'control_only': the control variant exists but the experimental one is not built yet. 'not_available': neither variant is independently configurable yet -- declared, never omitted.",
+          "enum": ["available", "control_only", "not_available"]
+        }
+      }
+    }
+  }
+}

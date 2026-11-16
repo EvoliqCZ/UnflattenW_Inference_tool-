@@ -1,0 +1,1 @@
+{"qwen_text_allowlist_schema_version": "1.0.0", "tokenizer_artifact_set_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "native_vocab_size": 8, "allowed_native_ids": [0, 1, 2, 3, 4, 5, 6, 7], "denied": [], "classification_policy_version": "1.0.0", "control_text_check": "applied"}

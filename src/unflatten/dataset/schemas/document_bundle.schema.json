@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc003/document_bundle.schema.json",
+  "title": "RFC003 DocumentBundle envelope (D0 subset)",
+  "$comment": "D0 subset of RFC003 §14. Carries NO split field: split is exclusively a release-level mapping of authority ID / lineage root to split_name (RFC003 §14, §30, §40). document_bundle_id must equal the §12.3 projection over {lineage_root_id, ast_hash, ast_file_hash, resource_manifest_hash, label_revision_hash} (semantic ID-integrity check).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_bundle_schema_version",
+    "document_bundle_id",
+    "lineage_root_id",
+    "ast_hash",
+    "ast_file_hash",
+    "resource_manifest_hash",
+    "label_revision_hash",
+    "source_origin",
+    "label_method",
+    "label_grade",
+    "processing_state",
+    "verification_tier",
+    "disposition",
+    "revision_id",
+    "ast",
+    "resources_manifest"
+  ],
+  "properties": {
+    "document_bundle_schema_version": { "const": "0.1.0" },
+    "document_bundle_id": { "type": "string", "pattern": "^bundle_[0-9a-f]{64}$" },
+    "lineage_root_id": { "type": "string", "pattern": "^lin_[0-9a-f]{64}$" },
+    "ast_hash": { "$ref": "#/$defs/sha256" },
+    "ast_file_hash": { "$ref": "#/$defs/sha256" },
+    "resource_manifest_hash": { "$ref": "#/$defs/sha256" },
+    "label_revision_hash": { "$ref": "#/$defs/sha256" },
+    "source_origin": {
+      "enum": ["synthetic_ast", "native_docx", "digital_pdf", "scanned_pdf", "raster_image"]
+    },
+    "label_method": {
+      "enum": [
+        "synthetic_generator",
+        "docx_importer",
+        "human_authored",
+        "model_assisted_human",
+        "pseudo_model",
+        "none"
+      ]
+    },
+    "label_grade": {
+      "enum": [
+        "synthetic_exact",
+        "imported_exact",
+        "imported_normalized",
+        "human_verified",
+        "human_gold",
+        "pseudo_verified_partial",
+        "pseudo_unverified",
+        "unknown"
+      ]
+    },
+    "processing_state": {
+      "enum": [
+        "ingested",
+        "canonicalized",
+        "ast_validated",
+        "compiled",
+        "package_validated",
+        "rendered",
+        "grounded",
+        "released"
+      ]
+    },
+    "verification_tier": {
+      "enum": ["unverified", "machine_verified", "human_verified", "human_gold"]
+    },
+    "disposition": { "enum": ["active", "quarantine", "rejected", "superseded"] },
+    "revision_id": { "$ref": "#/$defs/revision_id" },
+    "supersedes_revision_id": {
+      "$comment": "Semantic rule: when non-null it must be strictly older than revision_id (same lineage audit ordinal, RFC003 §14).",
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/revision_id" }]
+    },
+    "ast": { "$ref": "#/$defs/artifact_ref" },
+    "resources_manifest": { "$ref": "#/$defs/artifact_ref" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "revision_id": { "type": "string", "pattern": "^rev_[0-9]{6}$" },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "size_bytes", "mime_type"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mime_type": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

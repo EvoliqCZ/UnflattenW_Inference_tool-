@@ -1,0 +1,11 @@
+dist
+coverage
+playwright-report
+test-results
+node_modules
+src/api/schema.d.ts
+package-lock.json
+openapi.json
+codes.json
+routes.json
+e2e/csp-probe/dist

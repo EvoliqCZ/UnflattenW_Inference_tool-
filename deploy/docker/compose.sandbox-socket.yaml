@@ -1,0 +1,63 @@
+# EXPLICIT opt-in override: gives the `worker` container the HOST docker
+# socket so PdfSandbox (src/unflatten/service/pdf_sandbox.py) can start a
+# sibling sandbox container per job.
+#
+#   *** Mounting /var/run/docker.sock into a container is root-equivalent  ***
+#   *** control of the HOST machine: anything that can reach that socket  ***
+#   *** can run arbitrary containers as root, bind-mount the host root    ***
+#   *** filesystem, etc. Only ever apply this override on a single-user   ***
+#   *** workstation you already trust; never on a shared or exposed host. ***
+#
+# Sibling-container path requirement (verified against the real
+# `PdfSandbox.build_command()` call, which passes `source.resolve()`
+# straight to the HOST daemon as a bind-mount `src=`): the worker container
+# and the HOST must see the data directory at the SAME absolute path, or the
+# sandbox container the HOST daemon starts will bind-mount the wrong (or a
+# nonexistent) file. A compose *named volume* cannot satisfy this -- its
+# real path on the host (`/var/lib/docker/volumes/.../_data`) is opaque and
+# not guaranteed stable. This override therefore replaces the shared data
+# directory with a HOST bind mount at `UNFLATTEN_HOST_DATA_DIR`, mounted at
+# that exact same path inside `api`/`worker`/`init` too, and points
+# `UNFLATTEN_DATA_DIR` at it. Set `UNFLATTEN_HOST_DATA_DIR` (absolute path,
+# e.g. /home/you/unflatten-diagnostic-data) in your `.env` before using this
+# file -- there is no default, an unset value is a startup error.
+#
+# The plain `unflatten_data` named volume from compose.yaml is still declared
+# (top-level `volumes:` merges) but is no longer mounted by any service once
+# this override is applied -- it is simply unused, not a second source of
+# truth; nothing writes to it.
+#
+# Usage:
+#   docker compose -f compose.yaml -f compose.sandbox-socket.yaml up
+
+services:
+  init:
+    environment:
+      UNFLATTEN_DATA_DIR: ${UNFLATTEN_HOST_DATA_DIR:?set UNFLATTEN_HOST_DATA_DIR to an absolute host path in .env}
+      UNFLATTEN_PRINCIPAL_FILE: ${UNFLATTEN_HOST_DATA_DIR}/principals.json
+    volumes:
+      - ${UNFLATTEN_HOST_DATA_DIR}:${UNFLATTEN_HOST_DATA_DIR}
+
+  api:
+    environment:
+      UNFLATTEN_DATA_DIR: ${UNFLATTEN_HOST_DATA_DIR:?set UNFLATTEN_HOST_DATA_DIR to an absolute host path in .env}
+      UNFLATTEN_PRINCIPAL_FILE: ${UNFLATTEN_HOST_DATA_DIR}/principals.json
+    volumes:
+      - ${UNFLATTEN_HOST_DATA_DIR}:${UNFLATTEN_HOST_DATA_DIR}
+      - ${UNFLATTEN_HOST_MODEL_BUNDLE_DIR:-./models}:/models:ro
+
+  worker:
+    # Default root (reaches a root-owned docker.sock). A host whose docker.sock is group
+    # `docker` can run the worker as the image's unprivileged uid instead -- needed so the
+    # files it writes (artifacts, jobs.sqlite3) stay readable by the api, which runs as
+    # 65532: UNFLATTEN_WORKER_USER=65532:65532 and UNFLATTEN_DOCKER_GID=$(stat -c %g /var/run/docker.sock).
+    user: "${UNFLATTEN_WORKER_USER:-0:0}"
+    group_add: ["${UNFLATTEN_DOCKER_GID:-0}"]
+    environment:
+      UNFLATTEN_DATA_DIR: ${UNFLATTEN_HOST_DATA_DIR:?set UNFLATTEN_HOST_DATA_DIR to an absolute host path in .env}
+      UNFLATTEN_SANDBOX_ALLOW_ROOTFUL: "1"
+      UNFLATTEN_SANDBOX_RUNTIME: docker
+    volumes:
+      - ${UNFLATTEN_HOST_DATA_DIR}:${UNFLATTEN_HOST_DATA_DIR}
+      - ${UNFLATTEN_HOST_MODEL_BUNDLE_DIR:-./models}:/models:ro
+      - /var/run/docker.sock:/var/run/docker.sock

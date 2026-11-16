@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/review_candidate.schema.json",
+  "title": "RFC004 §33.7 Review Candidate wrapper (AST Builder design §2.5, spec-ast-builder-t5-promotion T7b/P4)",
+  "$comment": "Produced by review_candidate.build_review_candidate: the same _build_raw tree as build_strict (same derivations, same binder, same required-property gate), never canonicalized and never given an ast_hash (R10) -- authoritative is always false and this wrapper never enters compile_docx. Every UNRESOLVED_REQUIRED_PROPERTY issue whose default_policy.lookup(...) says may_impute becomes one imputations row and is removed from unresolved; every other issue (RESOURCE_SLOT_UNRESOLVED, NOTE_REF_UNBOUND, STORY_UNRESOLVED, ASSEMBLER_PROPERTY_CONFLICT, and any UNRESOLVED_REQUIRED_PROPERTY default_policy has no record for or refuses to impute) stays in unresolved. builder_report_hash equals the SAME raw build's report_hash (plan U1) -- the strict and review passes agree on it because both walk _build_raw before either the strict gate or this module's imputation post-pass runs. candidate keeps the builder's own b<n> ids and is validated only as an RFC001-shaped tree here, not against canonical_ast.schema.json -- it may be incomplete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review_candidate_schema_version",
+    "profile",
+    "ast_version",
+    "document_id",
+    "authoritative",
+    "candidate",
+    "imputations",
+    "unresolved",
+    "builder_report_hash"
+  ],
+  "properties": {
+    "review_candidate_schema_version": { "$ref": "#/$defs/semver" },
+    "profile": { "type": "string", "minLength": 1 },
+    "ast_version": { "$ref": "#/$defs/semver" },
+    "document_id": { "type": "string", "minLength": 1 },
+    "authoritative": {
+      "$comment": "R10: never true -- a review candidate is never the authoritative AST and never carries an ast_hash.",
+      "const": false
+    },
+    "candidate": { "$ref": "#/$defs/candidate_tree" },
+    "imputations": { "type": "array", "items": { "$ref": "#/$defs/imputation_row" } },
+    "unresolved": { "type": "array", "items": { "$ref": "#/$defs/unresolved_row" } },
+    "builder_report_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nullable_string": {
+      "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+    },
+    "scalar_or_null": {
+      "anyOf": [
+        { "type": "boolean" },
+        { "type": "integer" },
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "candidate_tree": {
+      "$comment": "The RFC001 root shape _build_raw always writes (ast_builder.py's _build_raw literal), not canonical_ast.schema.json -- a candidate may still have UNRESOLVED_REQUIRED_PROPERTY gaps and is never merged/reordered. footnotes/endnotes are optional (only present when the document carries notes).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ast_version", "profile", "document_id", "metadata", "resources", "sections", "extensions"
+      ],
+      "properties": {
+        "ast_version": { "type": "string" },
+        "profile": { "type": "string" },
+        "document_id": { "type": "string" },
+        "metadata": { "type": "object" },
+        "resources": { "type": "array" },
+        "sections": { "type": "array" },
+        "extensions": { "type": "object" },
+        "footnotes": { "type": "array" },
+        "endnotes": { "type": "array" }
+      }
+    },
+    "imputation_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "pointer", "default_value", "default_source", "reason_code"],
+      "properties": {
+        "node_id": { "type": "string", "minLength": 1 },
+        "pointer": { "type": "string", "minLength": 1 },
+        "default_value": { "$ref": "#/$defs/scalar_or_null" },
+        "default_source": { "type": "string", "minLength": 1 },
+        "reason_code": { "const": "imputed_profile_default" }
+      }
+    },
+    "unresolved_row": {
+      "$comment": "node_id is nullable: ASSEMBLER_PROPERTY_CONFLICT and STORY_UNRESOLVED are not scoped to one already-built node (BuilderIssue.node_id, ast_builder.py).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "pointer", "code"],
+      "properties": {
+        "node_id": { "$ref": "#/$defs/nullable_string" },
+        "pointer": { "$ref": "#/$defs/nullable_string" },
+        "code": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

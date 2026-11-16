@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/checkpoint_ancestry.schema.json",
+  "title": "RFC005 Checkpoint Ancestry Manifest (§35.1/§11, plan spec-checkpoint-ancestry-c6)",
+  "$comment": "Closed envelope, v1.1. document_kind 'base' is the generation-0 manifest checkpoint_ancestry.py.freeze_checkpoint_ancestry.py writes before any checkpoint exists; document_kind 'checkpoint' is that same document extended by extend_for_checkpoint/finalize_checkpoint_document once a concrete .pt exists, and carries the non-null 'checkpoint' object. checkpoint_rights_status/checkpoint_privacy_status are DERIVED (checkpoint_ancestry.derive_rights_status/derive_privacy_status) from base_model_decision and dataset_exposures[].decision -- this schema does not and must not let a caller declare them directly beyond the closed enum. distribution_allowed is DERIVED (DEC-011, checkpoint_ancestry.derive_distribution_allowed): true iff distribution_decision is non-null AND both rights and privacy already derive approved -- never a caller-declared boolean. adapters/merge_history are present as maxItems:0 arrays -- this schema documents that RFC005 v1 checkpoints have no adapter/merge ancestry yet, rather than omitting the fields and leaving a future writer to guess the shape. parents is maxItems:1 as of 1.1.0 (DEC-028 D1): initialization_kind 'clean_pretrained' still forces parents to [] (maxItems 0 via the conditional below); 'warm_start' requires exactly one parent entry, the S2 discovery checkpoint a S3 run was init-from'd from (checkpoint_ancestry.build_base_ancestry(parent=...)). legacy_ancestry.value is pinned false: this manifest can only be built from an S0 report whose own legacy_ancestry audit already came back False (checkpoint_ancestry.build_base_ancestry refuses otherwise) -- 'true' or 'null' (unaudited) never reach this document. exposure_ledger/transitive_exposure_manifest are closed {kind: not_produced, reason} | {kind: root, root_hash} unions, never a bare array -- v1's builder only ever emits the not_produced branch (RFC005 has no released checkpoint distribution root yet); the root branch exists so a later release can be expressed without a schema break.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkpoint_ancestry_schema_version",
+    "document_kind",
+    "base_model",
+    "component_lock_hash",
+    "initialization_kind",
+    "parents",
+    "adapters",
+    "merge_history",
+    "legacy_ancestry",
+    "dataset_exposures",
+    "exposure_ledger",
+    "transitive_exposure_manifest",
+    "unknown_project_exposure",
+    "base_model_decision",
+    "checkpoint_rights_status",
+    "checkpoint_privacy_status",
+    "distribution_allowed",
+    "distribution_decision",
+    "checkpoint",
+    "ancestry_hash"
+  ],
+  "properties": {
+    "checkpoint_ancestry_schema_version": { "$ref": "#/$defs/semver" },
+    "document_kind": { "enum": ["base", "checkpoint"] },
+    "base_model": { "$ref": "#/$defs/base_model" },
+    "component_lock_hash": { "$ref": "#/$defs/sha256" },
+    "initialization_kind": {
+      "$comment": "1.1.0 (DEC-028 D1): 'clean_pretrained' (parents forced to [] by the conditional below) or 'warm_start' (exactly one parent, weights-only init from a prior discovery checkpoint). A merge or fine-tune-of-fine-tune-of-fine-tune would need a third kind plus non-empty merge_history, which v1.1 does not ship.",
+      "enum": ["clean_pretrained", "warm_start"]
+    },
+    "parents": {
+      "type": "array",
+      "maxItems": 1,
+      "items": { "$ref": "#/$defs/parent" }
+    },
+    "adapters": { "type": "array", "maxItems": 0 },
+    "merge_history": { "type": "array", "maxItems": 0 },
+    "legacy_ancestry": { "$ref": "#/$defs/legacy_ancestry" },
+    "dataset_exposures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/dataset_exposure" }
+    },
+    "exposure_ledger": { "$ref": "#/$defs/exposure_state" },
+    "transitive_exposure_manifest": { "$ref": "#/$defs/exposure_state" },
+    "unknown_project_exposure": { "$ref": "#/$defs/unknown_project_exposure" },
+    "base_model_decision": {
+      "anyOf": [{ "$ref": "#/$defs/decision_ref" }, { "type": "null" }]
+    },
+    "checkpoint_rights_status": { "$ref": "#/$defs/status" },
+    "checkpoint_privacy_status": { "$ref": "#/$defs/status" },
+    "distribution_allowed": {
+      "$comment": "DEC-011: derived (checkpoint_ancestry.derive_distribution_allowed), never declared -- true iff distribution_decision is non-null AND rights and privacy both derive approved. This schema does not enforce that derivation; verify_sidecar re-derives and refuses disagreement.",
+      "type": "boolean"
+    },
+    "distribution_decision": {
+      "anyOf": [{ "$ref": "#/$defs/decision_ref" }, { "type": "null" }]
+    },
+    "checkpoint": {
+      "anyOf": [{ "$ref": "#/$defs/checkpoint" }, { "type": "null" }]
+    },
+    "ancestry_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "document_kind": { "const": "checkpoint" } },
+        "required": ["document_kind"]
+      },
+      "then": {
+        "properties": { "checkpoint": { "type": "object" } }
+      },
+      "else": {
+        "properties": { "checkpoint": { "type": "null" } }
+      }
+    },
+    {
+      "$comment": "DEC-028 D1: clean_pretrained never carries a parent; warm_start always carries exactly one.",
+      "if": {
+        "properties": { "initialization_kind": { "const": "clean_pretrained" } },
+        "required": ["initialization_kind"]
+      },
+      "then": {
+        "properties": { "parents": { "maxItems": 0 } }
+      },
+      "else": {
+        "properties": { "parents": { "minItems": 1 } }
+      }
+    }
+  ],
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": { "enum": ["approved", "unresolved", "prohibited"] },
+    "decision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "path", "sha256"],
+      "properties": {
+        "decision_id": { "type": "string", "pattern": "^DEC-\\d{3}$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "hashed_file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "base_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "revision",
+        "weights",
+        "weights_set_sha256",
+        "processor",
+        "processor_set_sha256",
+        "pinned_hashes"
+      ],
+      "properties": {
+        "model_id": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "minLength": 1 },
+        "weights": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/hashed_file" }
+        },
+        "weights_set_sha256": { "$ref": "#/$defs/sha256" },
+        "processor": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/hashed_file" }
+        },
+        "processor_set_sha256": { "$ref": "#/$defs/sha256" },
+        "pinned_hashes": {
+          "$comment": "Pointer (path + sha256) to the source pinned-hashes file weights_set_sha256/processor_set_sha256 were derived from -- not a duplicated copy of its content.",
+          "$ref": "#/$defs/hashed_file"
+        }
+      }
+    },
+    "legacy_ancestry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "evidence"],
+      "properties": {
+        "value": {
+          "$comment": "Pinned false: build_base_ancestry refuses any S0 report whose own legacy_ancestry.value is not False (true or null/unaudited never reach this document).",
+          "const": false
+        },
+        "evidence": { "$ref": "#/$defs/legacy_ancestry_evidence" }
+      }
+    },
+    "legacy_ancestry_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["s0_report", "s0_report_value", "release_root_hash", "audited_roots"],
+      "properties": {
+        "s0_report": { "$ref": "#/$defs/hashed_file" },
+        "s0_report_value": { "type": ["boolean", "null"] },
+        "release_root_hash": { "$ref": "#/$defs/sha256" },
+        "audited_roots": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "dataset_exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_name", "release_root_hash", "store_name", "decision"],
+      "properties": {
+        "release_name": { "type": "string", "minLength": 1 },
+        "release_root_hash": { "$ref": "#/$defs/sha256" },
+        "store_name": { "type": "string", "minLength": 1 },
+        "decision": {
+          "anyOf": [{ "$ref": "#/$defs/decision_ref" }, { "type": "null" }]
+        }
+      }
+    },
+    "exposure_state": {
+      "$comment": "Closed union, never a bare array -- a caller passing [] (or any array) fails both branches because each branch requires type object.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reason"],
+          "properties": {
+            "kind": { "const": "not_produced" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root_hash"],
+          "properties": {
+            "kind": { "const": "root" },
+            "root_hash": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "unknown_project_exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "reason"],
+      "properties": {
+        "value": { "type": "boolean" },
+        "reason": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "detail"],
+          "properties": {
+            "code": { "type": "string", "minLength": 1 },
+            "detail": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "parent": {
+      "$comment": "One warm-start parent (DEC-028 D1): the prior checkpoint a S3 run's base ancestry was init-from'd from. checkpoint_id/checkpoint_sha256/run_id/s1_run_manifest_hash/step are taken from the parent's own finalized checkpoint document_kind sidecar; ancestry_hash is that sidecar's own ancestry_hash (the checkpoint document's self-hash, not its base); run_class is taken from the parent's companion S1-format run manifest, never from a caller argument (checkpoint_ancestry.build_base_ancestry).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpoint_id",
+        "ancestry_hash",
+        "checkpoint_sha256",
+        "run_id",
+        "s1_run_manifest_hash",
+        "step",
+        "run_class"
+      ],
+      "properties": {
+        "checkpoint_id": { "type": "string", "pattern": "^ckpt_[0-9a-f]{64}$" },
+        "ancestry_hash": { "$ref": "#/$defs/sha256" },
+        "checkpoint_sha256": { "$ref": "#/$defs/sha256" },
+        "run_id": { "type": "string", "minLength": 1 },
+        "s1_run_manifest_hash": { "$ref": "#/$defs/sha256" },
+        "step": { "type": "integer", "minimum": 0 },
+        "run_class": { "enum": ["discovery", "promotion"] }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpoint_id",
+        "checkpoint_sha256",
+        "step",
+        "run_id",
+        "s1_run_manifest_hash",
+        "base_ancestry_hash"
+      ],
+      "properties": {
+        "checkpoint_id": { "type": "string", "pattern": "^ckpt_[0-9a-f]{64}$" },
+        "checkpoint_sha256": { "$ref": "#/$defs/sha256" },
+        "step": { "type": "integer", "minimum": 0 },
+        "run_id": { "type": ["string", "null"], "minLength": 1 },
+        "s1_run_manifest_hash": {
+          "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+        },
+        "base_ancestry_hash": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

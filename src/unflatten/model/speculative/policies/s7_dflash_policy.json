@@ -1,0 +1,41 @@
+{
+  "s7_dflash_policy_schema_version": "0.1.0",
+  "policy_version": "s7-dflash-policy-draft-v1",
+  "status": "PROPOSED",
+  "dflash": {
+    "block_size": 4,
+    "num_steps": 2,
+    "hidden_taps": ["final"],
+    "anchor_policy": "all_positions",
+    "is_placeholder": true
+  },
+  "dspark": {
+    "variant": "dspark",
+    "block_size": 8,
+    "dspark_hidden_taps": [9, 18, 27, 35],
+    "markov_head": true,
+    "is_placeholder": true
+  },
+  "dspark_v2": {
+    "variant": "dspark_v2",
+    "block_size": 7,
+    "dspark_hidden_taps": [9, 18, 27, 35],
+    "markov_head": true,
+    "dspark_seed_first_token": true,
+    "dspark_context_last": true,
+    "dspark_v2_n_layers": 5,
+    "dspark_v2_n_heads": 40,
+    "dspark_v2_n_kv_heads": 10,
+    "dspark_v2_head_dim": 64,
+    "dspark_v2_ffn_intermediate": 2688,
+    "dspark_v2_markov_rank": 256,
+    "is_placeholder": true
+  },
+  "verify_cost_model": {
+    "plain_step_cost_ms": 34,
+    "verify_round_cost_ms": 61,
+    "drafter_cost_ms_dspark": 16,
+    "drafter_cost_ms_mtp": 3,
+    "is_placeholder": true
+  }
+}

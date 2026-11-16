@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "source": "docs/runs/quantization-rtx4070-2026-09-27.md (measured, RTX 4070 SUPER, single real 300 DPI page, 8580 visual tokens, single-pass prefill peaks) and docs/runs/service-acceptance-2026-09-26.md (bf16 measured on a ~16 GiB-class prod GPU); tiers below other than the RTX 4070 SUPER row are DERIVED from these two measurements plus the stated safety margin, not separately measured on other cards (owner requirement 2026-09-27, general auto-precision policy)",
+  "fp8_min_compute_capability": [8, 9],
+  "safety_margin_ratio": 1.15,
+  "non_fp8_kv_overhead_ratio": 1.2,
+  "static_kv_reserve_mib": 648.0,
+  "static_kv_reserve_source": "DERIVED, owner decision 2026-09-29 (service decodes on StaticKVCache by default; docs/runs/vc-eviction-prep-2026-09-28.md bypass_static_kv measured +557 MiB peak on 20 pages): the static buffer's worst-case excess over a dynamic cache is max_steps (4608, every v15b bundle) positions of bf16 K+V = 4608 x 36 layers x 2 x 8 KV heads x 128 head_dim x 2 B = 648 MiB; added unmargined on top of measured_peak_mib x safety_margin_ratio when the kv cache mode is static",
+  "tiers": [
+    {
+      "decoder_precision": "bf16",
+      "kv_capable_dtype": "bf16",
+      "measured_peak_mib": 11240.5,
+      "measured_in": "docs/runs/service-acceptance-2026-09-26.md"
+    },
+    {
+      "decoder_precision": "int8_or_fp8",
+      "kv_capable_dtype": "fp8",
+      "measured_peak_mib": 6817.9,
+      "measured_in": "docs/runs/quantization-rtx4070-2026-09-27.md"
+    },
+    {
+      "decoder_precision": "int4",
+      "kv_capable_dtype": "fp8",
+      "measured_peak_mib": 5189.5,
+      "measured_in": "docs/runs/quantization-rtx4070-2026-09-27.md"
+    }
+  ]
+}

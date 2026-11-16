@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/run_attempt_manifest.schema.json",
+  "title": "RFC005 §44.3 S2 RunAttempt Manifest",
+  "$comment": "Closed envelope for one execution attempt of an S2 run. §44.3: every execution start creates an immutable/append-only RunAttemptManifest; an attempt that starts as `running` is finalized to exactly one terminal state (completed | failed | cancelled) by a NEW manifest document — the running one is never edited, because a crash between the edit and the write would leave a manifest that claims `running` forever. `exposure_ledger_root_hash` and `exposure_record_count` snapshot the ledger AT THAT MOMENT: the ledger itself is the durable, append-only authority (§44.2) and the manifest only references it. A completed checkpoint may only ever reference a snapshot — it can never delete earlier exposure (§44.3 last sentence).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_attempt_manifest_schema_version",
+    "attempt_id",
+    "attempt_index",
+    "run_id",
+    "execution_profile_hash",
+    "terminal_state",
+    "exposure_ledger_root_hash",
+    "exposure_record_count",
+    "start_integrity_record",
+    "end_integrity_record",
+    "run_attempt_manifest_hash"
+  ],
+  "properties": {
+    "run_attempt_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "attempt_id": {
+      "$comment": "make_id(\"attempt\", \"rfc005.s2-run-attempt-id/v1\", {run_id, attempt_index}) — derived, never assigned, so two attempts of one run can never be confused.",
+      "type": "string",
+      "pattern": "^attempt_[0-9a-f]{64}$"
+    },
+    "attempt_index": {
+      "$comment": "The run's ordinal for this execution start: 0 for the first, N+1 for the N+1th. Re-running a crashed attempt takes the next index; it never reuses a burned one.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "run_id": { "type": "string", "minLength": 1 },
+    "execution_profile_hash": {
+      "$comment": "domain_hash(\"rfc005.s2-execution-profile/v1\", profile) over the closed {name: string} profile the attempt ran under (device, precision, batch shape, …). §44.3's 'execution_profile semantic hash'.",
+      "$ref": "#/$defs/sha256"
+    },
+    "terminal_state": {
+      "enum": ["running", "completed", "failed", "cancelled"]
+    },
+    "exposure_ledger_root_hash": { "$ref": "#/$defs/sha256" },
+    "exposure_record_count": { "type": "integer", "minimum": 0 },
+    "start_integrity_record": {
+      "$comment": "{name: sha256} of the inputs as they were at attempt start — the DEC-023 'nadviazať sa nesmie na výstup s inou identitou' check: a resume must re-verify this record before it may continue.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/sha256" }
+    },
+    "end_integrity_record": {
+      "$comment": "Null while `running`; a {name: sha256} object in every terminal state — even `failed` and `cancelled`, whose end record says what the attempt left on disk.",
+      "anyOf": [
+        { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/sha256" } },
+        { "type": "null" }
+      ]
+    },
+    "run_attempt_manifest_hash": {
+      "$comment": "domain_hash(\"rfc005.s2-run-attempt-manifest/v1\", payload without this field).",
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

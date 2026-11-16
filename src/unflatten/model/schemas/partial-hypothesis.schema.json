@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/partial-hypothesis.schema.json",
+  "title": "RFC004 §35.3 Partial hypothesis",
+  "$comment": "Used only when ast.status = 'partial': a non-authoritative, best-effort decode fragment. Must never carry an authoritative RFC001 ast_hash and must not pretend to be an RFC003 Candidate Annotation IR.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["partial_hypothesis_schema_version", "truncation_code", "nodes"],
+  "properties": {
+    "partial_hypothesis_schema_version": { "const": "0.1.0" },
+    "truncation_code": {
+      "enum": ["DECODER_EVENT_LIMIT", "DECODER_INCOMPLETE", "DECODER_NON_TERMINATION", "TOKEN_BUDGET_EXCEEDED"]
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["local_node_id", "node_type", "best_effort_text"],
+        "properties": {
+          "local_node_id": { "type": "string" },
+          "node_type": { "type": "string" },
+          "best_effort_text": { "type": "string" }
+        }
+      }
+    }
+  }
+}

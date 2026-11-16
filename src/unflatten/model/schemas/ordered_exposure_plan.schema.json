@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/ordered_exposure_plan.schema.json",
+  "title": "RFC005 §30.1/§30.5 Ordered Exposure Plan",
+  "$comment": "Closed envelope for a precomputed ordered exposure plan: the frozen, seed-deterministic sequence of lineage-root draws for one virtual epoch. §30.5 makes these mandatory and identical for Track A, G1 outer comparison and G2 — a candidate must not be able to change its examples based on its own errors, so the plan is built BEFORE the run and frozen into the run manifest by hash. Every draw names exactly one lineage root (mass applied before fragment/view/augmentation expansion, §30.2); the weight components are recorded so the plan is auditable without rerunning the sampler. Integers only: the deterministic CBOR profile (`rfc8949-core-det-nfc-int-v0`) has no float, so all weight fields are per-mille.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ordered_exposure_plan_schema_version",
+    "plan_id",
+    "run_seed",
+    "virtual_epoch_size",
+    "matrix_hash",
+    "sampler_policy_hash",
+    "exposure_policy_hash",
+    "feature_lineage_counts",
+    "draws",
+    "ordered_exposure_plan_hash"
+  ],
+  "properties": {
+    "ordered_exposure_plan_schema_version": { "$ref": "#/$defs/semver" },
+    "plan_id": {
+      "$comment": "make_id(\"plan\", \"rfc005.ordered-exposure-plan/v1\", payload without the self-hash).",
+      "type": "string",
+      "pattern": "^plan_[0-9a-f]{64}$"
+    },
+    "run_seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "virtual_epoch_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "matrix_hash": { "$ref": "#/$defs/sha256" },
+    "sampler_policy_hash": { "$ref": "#/$defs/sha256" },
+    "exposure_policy_hash": { "$ref": "#/$defs/sha256" },
+    "feature_lineage_counts": {
+      "$comment": "The §30.4 input: independent-lineage counts per feature, computed over the lineage pool this plan was built from and frozen here so `w_rare` is auditable without the pool. Absent features simply have no entry.",
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "draws": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "draw_index",
+          "split",
+          "pyramid_level",
+          "task_kind",
+          "cohort",
+          "lineage_root_id",
+          "feature_coverage_milli",
+          "hardness_milli",
+          "w_lineage",
+          "w_rare_milli",
+          "total_weight",
+          "lineage_views_in_epoch"
+        ],
+        "properties": {
+          "draw_index": { "type": "integer", "minimum": 0 },
+          "split": { "type": "string", "enum": ["train", "val", "test"] },
+          "pyramid_level": { "type": "string", "pattern": "^P[0-5]$" },
+          "task_kind": { "type": "string", "pattern": "^[a-z][a-z0-9_]*_v[0-9]+$" },
+          "cohort": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "lineage_root_id": { "type": "string", "minLength": 1 },
+          "feature_coverage_milli": {
+            "$comment": "The CLAMPED feature-coverage factor as used for this draw.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "hardness_milli": {
+            "$comment": "The CLAMPED hardness factor as used for this draw.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "w_lineage": {
+            "$comment": "(feature_coverage_milli × hardness_milli) // 1000 — the §30.3 bounded product.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "w_rare_milli": {
+            "$comment": "The §30.4 cap applied to 1/sqrt(max(count_lineages, 1)) for the lineage's rarest carried feature; 1000 (neutral) when the lineage carries no features.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_weight": {
+            "$comment": "(w_lineage × w_rare_milli) // 1000 — the weight the draw was actually made under.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "lineage_views_in_epoch": {
+            "$comment": "This lineage's view count AFTER the draw; the §30.6 cap is enforced against it.",
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "ordered_exposure_plan_hash": {
+      "$comment": "domain_hash(\"rfc005.ordered-exposure-plan/v1\", payload without this field).",
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

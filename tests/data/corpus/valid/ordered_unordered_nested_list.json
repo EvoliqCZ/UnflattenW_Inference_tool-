@@ -1,0 +1,269 @@
+{
+  "ast_version": "0.1.0",
+  "profile": "word-core-v0",
+  "document_id": "doc",
+  "metadata": {
+    "language": "en-US",
+    "title": null,
+    "subject": null
+  },
+  "resources": [],
+  "sections": [
+    {
+      "id": "s1",
+      "type": "section",
+      "break_type": "next_page",
+      "page": {
+        "width_mpt": 595276,
+        "height_mpt": 841890,
+        "orientation": "portrait"
+      },
+      "margins": {
+        "top_mpt": 72000,
+        "right_mpt": 72000,
+        "bottom_mpt": 72000,
+        "left_mpt": 72000,
+        "gutter_mpt": 0
+      },
+      "columns": {
+        "count": 1,
+        "equal_width": true,
+        "gap_mpt": 18000,
+        "widths_mpt": []
+      },
+      "children": [
+        {
+          "id": "list1",
+          "type": "list",
+          "list_kind": "ordered",
+          "marker": {
+            "format": "decimal",
+            "start": 1,
+            "suffix": "."
+          },
+          "layout": {
+            "left_indent_mpt": 36000,
+            "hanging_mpt": 18000
+          },
+          "items": [
+            {
+              "id": "li1",
+              "type": "list_item",
+              "children": [
+                {
+                  "id": "p1",
+                  "type": "paragraph",
+                  "semantic": {
+                    "role": "body",
+                    "heading_level": null,
+                    "outline_level": null
+                  },
+                  "layout": {
+                    "alignment": "left",
+                    "direction": "ltr",
+                    "indent": {
+                      "left_mpt": 0,
+                      "right_mpt": 0,
+                      "first_line_mpt": 0,
+                      "hanging_mpt": 0
+                    },
+                    "spacing": {
+                      "before_mpt": 0,
+                      "after_mpt": 0,
+                      "line": {
+                        "mode": "single"
+                      }
+                    },
+                    "pagination": {
+                      "keep_with_next": false,
+                      "keep_lines": false,
+                      "page_break_before": false,
+                      "widow_control": true
+                    },
+                    "tabs": []
+                  },
+                  "style": {
+                    "background": null,
+                    "borders": null
+                  },
+                  "children": [
+                    {
+                      "id": "r1",
+                      "type": "run",
+                      "text": "First item",
+                      "language": "en-US",
+                      "style": {
+                        "font_family": "Arial",
+                        "font_size_mpt": 11000,
+                        "bold": false,
+                        "italic": false,
+                        "underline": "none",
+                        "strike": false,
+                        "color": "#000000",
+                        "highlight": null,
+                        "superscript": false,
+                        "subscript": false,
+                        "character_spacing_mpt": 0,
+                        "small_caps": false,
+                        "all_caps": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "li2",
+              "type": "list_item",
+              "children": [
+                {
+                  "id": "p2",
+                  "type": "paragraph",
+                  "semantic": {
+                    "role": "body",
+                    "heading_level": null,
+                    "outline_level": null
+                  },
+                  "layout": {
+                    "alignment": "left",
+                    "direction": "ltr",
+                    "indent": {
+                      "left_mpt": 0,
+                      "right_mpt": 0,
+                      "first_line_mpt": 0,
+                      "hanging_mpt": 0
+                    },
+                    "spacing": {
+                      "before_mpt": 0,
+                      "after_mpt": 0,
+                      "line": {
+                        "mode": "single"
+                      }
+                    },
+                    "pagination": {
+                      "keep_with_next": false,
+                      "keep_lines": false,
+                      "page_break_before": false,
+                      "widow_control": true
+                    },
+                    "tabs": []
+                  },
+                  "style": {
+                    "background": null,
+                    "borders": null
+                  },
+                  "children": [
+                    {
+                      "id": "r2",
+                      "type": "run",
+                      "text": "Second item",
+                      "language": "en-US",
+                      "style": {
+                        "font_family": "Arial",
+                        "font_size_mpt": 11000,
+                        "bold": false,
+                        "italic": false,
+                        "underline": "none",
+                        "strike": false,
+                        "color": "#000000",
+                        "highlight": null,
+                        "superscript": false,
+                        "subscript": false,
+                        "character_spacing_mpt": 0,
+                        "small_caps": false,
+                        "all_caps": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "list2",
+                  "type": "list",
+                  "list_kind": "unordered",
+                  "marker": {
+                    "format": "bullet",
+                    "start": null,
+                    "suffix": "."
+                  },
+                  "layout": {
+                    "left_indent_mpt": 36000,
+                    "hanging_mpt": 18000
+                  },
+                  "items": [
+                    {
+                      "id": "li2a",
+                      "type": "list_item",
+                      "children": [
+                        {
+                          "id": "p2a",
+                          "type": "paragraph",
+                          "semantic": {
+                            "role": "body",
+                            "heading_level": null,
+                            "outline_level": null
+                          },
+                          "layout": {
+                            "alignment": "left",
+                            "direction": "ltr",
+                            "indent": {
+                              "left_mpt": 0,
+                              "right_mpt": 0,
+                              "first_line_mpt": 0,
+                              "hanging_mpt": 0
+                            },
+                            "spacing": {
+                              "before_mpt": 0,
+                              "after_mpt": 0,
+                              "line": {
+                                "mode": "single"
+                              }
+                            },
+                            "pagination": {
+                              "keep_with_next": false,
+                              "keep_lines": false,
+                              "page_break_before": false,
+                              "widow_control": true
+                            },
+                            "tabs": []
+                          },
+                          "style": {
+                            "background": null,
+                            "borders": null
+                          },
+                          "children": [
+                            {
+                              "id": "r2a",
+                              "type": "run",
+                              "text": "Nested bullet",
+                              "language": "en-US",
+                              "style": {
+                                "font_family": "Arial",
+                                "font_size_mpt": 11000,
+                                "bold": false,
+                                "italic": false,
+                                "underline": "none",
+                                "strike": false,
+                                "color": "#000000",
+                                "highlight": null,
+                                "superscript": false,
+                                "subscript": false,
+                                "character_spacing_mpt": 0,
+                                "small_caps": false,
+                                "all_caps": false
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "extensions": {}
+}

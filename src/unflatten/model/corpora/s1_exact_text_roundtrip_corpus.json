@@ -1,0 +1,23 @@
+{
+  "case_count": 32,
+  "cases_hash": "sha256:c0b2c2eae9bd64b810cb55dc61a0ffdff2820b2a09a4316661cbdeba7392f10e",
+  "category_counts": {
+    "allowed_controls": 3,
+    "ascii": 3,
+    "bidi": 2,
+    "byte_len_1": 2,
+    "byte_len_2": 2,
+    "byte_len_3": 2,
+    "byte_len_4": 2,
+    "cjk": 2,
+    "emoji_zwj": 2,
+    "invalid_surrogate": 2,
+    "nfc_accents": 2,
+    "non_nfc_reject": 2,
+    "spaces": 2,
+    "supplementary": 2,
+    "variation_selector": 2
+  },
+  "corpus_version": "1.0.0",
+  "exact_text_roundtrip_corpus_schema_version": "1.0.0"
+}

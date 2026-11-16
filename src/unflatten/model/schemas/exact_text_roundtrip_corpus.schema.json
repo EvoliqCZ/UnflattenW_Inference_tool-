@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/exact_text_roundtrip_corpus.schema.json",
+  "title": "M1 Exact Text Round-Trip Corpus descriptor (design §4.7)",
+  "$comment": "Closed envelope. Hash-bound Unicode/control fixture corpus so acceptance criterion 2 is evaluated against a named corpus version -- shrinking or reordering the corpus changes cases_hash and is therefore visible. Category counts may only grow across corpus versions (design §4.7); this schema is test evidence, not a model input, so it is not bound in the Component Lock.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "exact_text_roundtrip_corpus_schema_version",
+    "corpus_version",
+    "case_count",
+    "cases_hash",
+    "category_counts"
+  ],
+  "properties": {
+    "exact_text_roundtrip_corpus_schema_version": { "$ref": "#/$defs/semver" },
+    "corpus_version": { "$ref": "#/$defs/semver" },
+    "case_count": { "type": "integer", "minimum": 0 },
+    "cases_hash": { "$ref": "#/$defs/sha256" },
+    "category_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ascii",
+        "spaces",
+        "nfc_accents",
+        "non_nfc_reject",
+        "bidi",
+        "cjk",
+        "emoji_zwj",
+        "variation_selector",
+        "supplementary",
+        "allowed_controls",
+        "invalid_surrogate",
+        "byte_len_1",
+        "byte_len_2",
+        "byte_len_3",
+        "byte_len_4"
+      ],
+      "properties": {
+        "ascii": { "type": "integer", "minimum": 0 },
+        "spaces": { "type": "integer", "minimum": 0 },
+        "nfc_accents": { "type": "integer", "minimum": 0 },
+        "non_nfc_reject": { "type": "integer", "minimum": 0 },
+        "bidi": { "type": "integer", "minimum": 0 },
+        "cjk": { "type": "integer", "minimum": 0 },
+        "emoji_zwj": { "type": "integer", "minimum": 0 },
+        "variation_selector": { "type": "integer", "minimum": 0 },
+        "supplementary": { "type": "integer", "minimum": 0 },
+        "allowed_controls": { "type": "integer", "minimum": 0 },
+        "invalid_surrogate": { "type": "integer", "minimum": 0 },
+        "byte_len_1": { "type": "integer", "minimum": 0 },
+        "byte_len_2": { "type": "integer", "minimum": 0 },
+        "byte_len_3": { "type": "integer", "minimum": 0 },
+        "byte_len_4": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

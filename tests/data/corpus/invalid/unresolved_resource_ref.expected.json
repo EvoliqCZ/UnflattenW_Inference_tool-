@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "BROKEN_RESOURCE_REF",
+      "path": "/sections/0/children/0/children/1/resource_ref"
+    }
+  ]
+}

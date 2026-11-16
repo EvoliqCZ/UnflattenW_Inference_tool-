@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s2_run_manifest.schema.json",
+  "title": "RFC005 §44.1 S2 Run Manifest",
+  "$comment": "Closed envelope for one S2 run: the identity under which it may execute. Every field is a derivation from a frozen artefact, never a free choice -- `run_id` is derived from all the other fields (addendum A, same construction as S1's `s1run_` ids), and every hash pins the exact cohort, stage data matrix, sampler policy, exposure policy and ordered exposure plan the run is allowed to draw from. A manifest that does not hash-verify is not a manifest: the run it names has no identity. `gradient_bearing` is DECLARED, never inferred (DEC-009: an S2 run starts as `discovery`; whether it bears gradient is an owner decision frozen here).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s2_run_manifest_schema_version",
+    "run_id",
+    "run_class",
+    "gradient_bearing",
+    "stage_id",
+    "run_seed",
+    "binding_s1_run_manifest_hash",
+    "cohort_hash",
+    "stage_data_matrix_hash",
+    "s2_sampler_policy_hash",
+    "s2_exposure_policy_hash",
+    "ordered_exposure_plan_hash",
+    "s2_run_manifest_hash"
+  ],
+  "properties": {
+    "s2_run_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "run_id": {
+      "$comment": "make_id(\"s2run\", \"rfc005.s2-run-id/v1\", payload without run_id and without the self-hash). Derived, never assigned.",
+      "type": "string",
+      "pattern": "^s2run_[0-9a-f]{64}$"
+    },
+    "run_class": { "enum": ["discovery", "promotion"] },
+    "gradient_bearing": { "type": "boolean" },
+    "stage_id": { "const": "S2" },
+    "run_seed": {
+      "$comment": "The seed the ordered exposure plan was built under -- the manifest and the plan must agree, because the plan is the seed-deterministic draw order this run is allowed to follow.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "binding_s1_run_manifest_hash": {
+      "$comment": "1.1.0 (DEC-027 D1/D2, T4b): the companion S1-format run manifest's own `s1_run_manifest_hash`, re-derived by the builder from the presented companion document (run_binding.compute_s1_run_manifest_hash over its payload without its self-hash) -- never a caller-typed value. S2 has no run manifest of its own shape for cache/policy/allowlist bindings, so every S1-side binding (cache identity, allowlist, ancestry, run_config budget) is carried by naming this companion.",
+      "$ref": "#/$defs/sha256"
+    },
+    "cohort_hash": {
+      "$comment": "1.1.0: nullable. Null iff no matrix cell with cohort == 'synthetic_p1p2' carries mass (today's S2 matrix: 100% docxcorp, synthetic mass 0) -- an unused pin is refused as a lie, and a used synthetic cell without one is refused as unpinned (DEC-027 D2).",
+      "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "stage_data_matrix_hash": { "$ref": "#/$defs/sha256" },
+    "s2_sampler_policy_hash": { "$ref": "#/$defs/sha256" },
+    "s2_exposure_policy_hash": { "$ref": "#/$defs/sha256" },
+    "ordered_exposure_plan_hash": { "$ref": "#/$defs/sha256" },
+    "s2_run_manifest_hash": {
+      "$comment": "domain_hash(\"rfc005.s2-run-manifest/v1\", payload without this field).",
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

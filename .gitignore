@@ -1,0 +1,71 @@
+# --- prostredie a cache (nikdy do repa) ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+.opencode/node_modules/
+
+# --- data zijú MIMO repozitara ---
+# Korpus (~/unflatten-data/) sa do gitu nedostane nikdy: je to 300+ GB
+# odvodenych dat a hlavne zdrojove DOCX, ktore NESMU opustit tento stroj.
+# Tento blok je poistka pre pripad, ze by niekto data do repa skopiroval.
+unflatten-data/
+*.docx
+*.pdf
+!tests/data/**/*.docx
+!tests/data/**/*.pdf
+# T43/D-B: one committed, synthetic-fixture-rendered demo PDF for the setup
+# wizard (never a real scan/control document) -- see deploy/docker's report.
+!web/public/assets/sample.pdf
+objects/
+index.jsonl
+renders.jsonl
+quarantine.jsonl
+run-summary.json
+
+# --- lokalne logy a docasne subory ---
+*.log
+scratchpad/
+
+# --- deploy/docker: lokalna konfiguracia so skutocnym tokenom/cestami ---
+deploy/docker/.env
+deploy/docker/models/
+deploy/docker/models.json
+
+# --- web/ (T12): buildy, generovane typy a testovacie artefakty ---
+web/node_modules
+web/dist/
+web/src/api/schema.d.ts
+web/playwright-report/
+web/test-results/
+web/.last-run.json
+web/coverage/
+web/e2e/csp-probe/dist/
+web/*.tsbuildinfo
+src/unflatten/service/ui/dist/
+
+# Local credentials, accounts, databases and downloaded model payloads.
+.env
+.env.*
+!.env.example
+**/hf-token
+**/principals.json
+**/web-auth.json
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.pem
+*.key
+/data/
+*.launcher/
+.superpowers/

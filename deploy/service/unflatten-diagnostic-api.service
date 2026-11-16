@@ -1,0 +1,26 @@
+[Unit]
+Description=Unflatten private diagnostic API
+After=local-fs.target
+ConditionPathExists=/etc/unflatten/service.env
+ConditionPathExists=/etc/unflatten/principals.json
+
+[Service]
+Type=simple
+User=unflatten
+Group=unflatten
+EnvironmentFile=/etc/unflatten/service.env
+WorkingDirectory=/srv/unflatten
+ExecStart=/srv/unflatten/.venv/bin/python -m unflatten.service.api_cli --principal-file /etc/unflatten/principals.json --job-store ${UNFLATTEN_DATA_DIR}/jobs.sqlite3 --artifact-root ${UNFLATTEN_DATA_DIR}/artifacts --model-bundle ${UNFLATTEN_MODEL_BUNDLE} --host 127.0.0.1 --port ${UNFLATTEN_PORT}
+Restart=on-failure
+RestartSec=5s
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/etc/unflatten/principals.json
+ReadWritePaths=/var/lib/unflatten-diagnostic
+
+[Install]
+WantedBy=unflatten-diagnostic.target

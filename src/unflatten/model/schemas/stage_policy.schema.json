@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/stage_policy.schema.json",
+  "title": "RFC005 §26.4/§26.6 Stage (loss) Policy",
+  "$comment": "Closed envelope for the artifact `stage_policy_hash` names. RFC005 §26.4: every λ_f is explicit, versioned and stored in a loss policy; dynamic weighting only through a named algorithm with its own hash and bounded behavior, and it may not read validation/test metrics back inside one run. §26.6: the policy carries a closed exact-RFC003-task_kind -> loss families -> head IDs / output locators allowlist; an unspecified pair is disabled and wildcards are forbidden. The concrete λ values, the stage id and the allowlist rows are owner content decisions -- this schema fixes their SHAPE and refuses the malformed, it does not supply them. The loss family names are deliberately NOT enumerated here: `stage_policy.py` requires exactly the families in `training_materializer.LOSS_FAMILY_IDS`, so a family added there becomes required of every policy without anyone having to remember this file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stage_policy_schema_version",
+    "policy_version",
+    "stage_id",
+    "loss_weights_milli",
+    "dynamic_weighting",
+    "reads_validation_or_test_metrics",
+    "task_view_allowlist"
+  ],
+  "properties": {
+    "stage_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage_id": {
+      "$comment": "The RFC005 §12 stage this policy weights. Named, never inferred from a run class.",
+      "type": "string",
+      "pattern": "^S[0-9]+$"
+    },
+    "loss_weights_milli": {
+      "$comment": "λ_f per loss family (§26.4), in MILLI-units: the stored integer is 1000·λ_f, so λ=1.0 is 1000. Integer because the deterministic CBOR profile this hash is computed under (`rfc8949-core-det-nfc-int-v0`) has no float in its data model at all -- a float λ is not representable in the identity, and the repository already carries scaled integers for exactly this reason (`width_mpt`, `rotation_mdeg`). The unit is in the field name so a caller cannot pass λ and mean 1.0. Exactly the LOSS_FAMILY_IDS family set is required by the producer; a zero weight is refused by the schema, because disabling a family belongs in `task_view_allowlist` ('an unspecified pair is disabled'), not in a weight that still looks configured.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^L_[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "dynamic_weighting": {
+      "$comment": "§26.4: allowed only through a named algorithm with its own hash and bounded behavior. `null` means static λ. There is no default: the field is required, so 'static' is a declaration.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithm_id",
+            "algorithm_hash",
+            "lambda_min_milli",
+            "lambda_max_milli"
+          ],
+          "properties": {
+            "algorithm_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+            "algorithm_hash": { "$ref": "#/$defs/sha256" },
+            "lambda_min_milli": { "type": "integer", "minimum": 1 },
+            "lambda_max_milli": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "reads_validation_or_test_metrics": {
+      "$comment": "§26.4 forbids feeding validation/test metrics back into weighting inside one run. Required and const false, so the prohibition is recorded in the policy identity rather than assumed.",
+      "const": false
+    },
+    "task_view_allowlist": {
+      "$comment": "§26.6. One row per (task_kind, loss_family) pair that is ENABLED; any pair absent from this list is disabled. Row-per-pair rather than per-task is what makes 'one output logit must not enter two loss families' checkable at all.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_kind", "loss_family", "head_ids", "output_locators"],
+        "properties": {
+          "task_kind": {
+            "$comment": "An exact RFC003 task_kind. Membership in the closed RFC003 enum is checked by the producer against `unflatten.dataset.enums.TASK_KIND`, not restated here. The pattern only rules out the wildcard forms §26.6 bans outright.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*_v[0-9]+$"
+          },
+          "loss_family": { "type": "string", "pattern": "^L_[a-z][a-z0-9_]*$" },
+          "head_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.]*$" }
+          },
+          "output_locators": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.]*$" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

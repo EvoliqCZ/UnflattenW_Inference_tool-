@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/failure-report.schema.json",
+  "title": "RFC004 §42.7 Failure Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "failure_report_schema_version",
+    "axis",
+    "terminal_status",
+    "primary_code",
+    "retry_count",
+    "attempts",
+    "issues"
+  ],
+  "properties": {
+    "failure_report_schema_version": { "const": "0.1.0" },
+    "axis": { "enum": ["ast", "renderer"] },
+    "terminal_status": { "enum": ["review_candidate", "partial", "failed"] },
+    "primary_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "retry_count": { "type": "integer", "minimum": 0 },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attempt_index", "action", "config_hash", "outcome_code"],
+        "properties": {
+          "attempt_index": { "type": "integer", "minimum": 0 },
+          "action": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "config_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "outcome_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/model_issue" }
+    }
+  },
+  "$defs": {
+    "model_issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code", "category", "severity", "stage", "page_ordinal",
+        "fragment_sequence_index", "local_node_id", "node_id",
+        "node_property_pointer", "ast_pointer", "message", "details",
+        "recoverability", "policy_action"
+      ],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "category": { "type": "string" },
+        "severity": { "enum": ["info", "warning", "error", "fatal"] },
+        "stage": { "type": "string" },
+        "page_ordinal": { "type": ["integer", "null"], "minimum": 0 },
+        "fragment_sequence_index": { "type": ["integer", "null"], "minimum": 0 },
+        "local_node_id": { "type": ["string", "null"] },
+        "node_id": { "type": ["string", "null"] },
+        "node_property_pointer": { "type": ["string", "null"] },
+        "ast_pointer": { "type": ["string", "null"] },
+        "message": { "type": "string" },
+        "details": { "type": "object" },
+        "recoverability": {
+          "enum": ["none", "same_config", "larger_window", "primary_decoder", "human_review"]
+        },
+        "policy_action": {
+          "enum": [
+            "continue", "continue_with_warning", "retry", "return_review_candidate",
+            "return_partial", "set_acceptance_review_required", "reject", "fail_request"
+          ]
+        }
+      }
+    }
+  }
+}

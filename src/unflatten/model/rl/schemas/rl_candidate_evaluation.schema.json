@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL candidate evaluation (RFC005-ERRATA-010 E3.3-E3.4)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "scorer_version", "document_id", "candidate_id", "reward_policy_hash",
+    "chain_policy_flags", "gates", "status", "scalar_micro", "components",
+    "weight_observed_micro", "weight_total_micro", "candidate_evaluation_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "scorer_version": { "type": "string", "minLength": 1 },
+    "document_id": { "type": "string", "minLength": 1 },
+    "candidate_id": { "type": "string", "minLength": 1 },
+    "reward_policy_hash": { "$ref": "#/$defs/hash" },
+    "chain_policy_flags": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" },
+      "minProperties": 1
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate", "status", "evidence"],
+        "properties": {
+          "gate": {
+            "enum": [
+              "missing_or_invented_text",
+              "invalid_ast",
+              "resource_fragment_integrity",
+              "severe_structural_error",
+              "rfc002_render"
+            ]
+          },
+          "status": { "enum": ["pass", "fail", "unmeasured"] },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "scored",
+        "insufficient_evidence",
+        "gate_failed:missing_or_invented_text",
+        "gate_failed:invalid_ast",
+        "gate_failed:resource_fragment_integrity",
+        "gate_failed:severe_structural_error",
+        "gate_failed:rfc002_render"
+      ]
+    },
+    "scalar_micro": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      ]
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visible_text_control_events", "strict_ast_tree_semantics", "typed_layout_typography",
+        "grid_span_cell_ownership", "alignment_fragment_continuity", "render_geometry_perceptual"
+      ],
+      "properties": {
+        "visible_text_control_events": { "$ref": "#/$defs/component" },
+        "strict_ast_tree_semantics": { "$ref": "#/$defs/component" },
+        "typed_layout_typography": { "$ref": "#/$defs/component" },
+        "grid_span_cell_ownership": { "$ref": "#/$defs/component" },
+        "alignment_fragment_continuity": { "$ref": "#/$defs/component" },
+        "render_geometry_perceptual": { "$ref": "#/$defs/component" }
+      }
+    },
+    "weight_observed_micro": { "type": "integer", "minimum": 0 },
+    "weight_total_micro": { "type": "integer", "minimum": 0 },
+    "candidate_evaluation_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "micro", "weight_micro"],
+      "properties": {
+        "state": { "enum": ["scored", "unobservable", "not_computed", "off"] },
+        "micro": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "integer", "minimum": 0, "maximum": 1000000 }
+          ]
+        },
+        "weight_micro": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    }
+  }
+}

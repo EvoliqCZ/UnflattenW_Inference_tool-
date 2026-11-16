@@ -1,0 +1,8 @@
+{
+  "text_continuity_policy_schema_version": "1.0.0",
+  "min_gap_tokens": 5,
+  "min_duplicate_tokens": 5,
+  "verdict_mode": "zero_pages",
+  "rate_floor_micro": null,
+  "is_placeholder": false
+}

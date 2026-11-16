@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc003/render_view.schema.json",
+  "title": "RFC003 RenderView envelope (D0 subset)",
+  "$comment": "D0 subset of RFC003 §22.3. render_view_id must equal the §12.4 projection over {authority_ref, view_kind, input_artifact_set_hash, render_profile_hash, transform_chain_hash, output_artifact_set_hash} (semantic ID-integrity check). Authority/view_kind pairing (canonical_render ⇒ DocumentBundle, hypothesis_preview ⇒ Candidate, source_render/human_reference ⇒ hypothesis_hash null) is enforced by the semantic pass.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "render_view_schema_version",
+    "render_view_id",
+    "authority_ref",
+    "view_kind",
+    "input_artifact_set_hash",
+    "transform_chain_hash",
+    "render_profile",
+    "outputs"
+  ],
+  "properties": {
+    "render_view_schema_version": { "const": "0.1.0" },
+    "render_view_id": { "type": "string", "pattern": "^render_[0-9a-f]{64}$" },
+    "authority_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_bundle_id", "candidate_id", "hypothesis_hash"],
+      "properties": {
+        "document_bundle_id": {
+          "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^bundle_[0-9a-f]{64}$" }]
+        },
+        "candidate_id": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "pattern": "^candidate_[0-9a-f]{64}$" }
+          ]
+        },
+        "hypothesis_hash": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }] }
+      },
+      "oneOf": [
+        {
+          "$comment": "DocumentBundle authority: candidate and hypothesis must be null.",
+          "properties": {
+            "document_bundle_id": { "type": "string" },
+            "candidate_id": { "type": "null" },
+            "hypothesis_hash": { "type": "null" }
+          }
+        },
+        {
+          "$comment": "Candidate authority: bundle null; hypothesis_hash nullable.",
+          "properties": {
+            "document_bundle_id": { "type": "null" },
+            "candidate_id": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "view_kind": {
+      "enum": [
+        "source_render",
+        "canonical_render",
+        "hypothesis_preview",
+        "augmentation_render",
+        "scan_simulation",
+        "photo_simulation",
+        "human_reference"
+      ]
+    },
+    "input_artifact_set_hash": { "$ref": "#/$defs/sha256" },
+    "transform_chain_hash": { "$ref": "#/$defs/sha256" },
+    "render_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "render_profile_hash",
+        "backend_name",
+        "backend_version",
+        "os_image_digest",
+        "render_config_hash",
+        "font_pack_hash",
+        "locale",
+        "timezone",
+        "compatibility_mode",
+        "dpi",
+        "color_profile",
+        "image_encoder"
+      ],
+      "properties": {
+        "render_profile_hash": { "$ref": "#/$defs/sha256" },
+        "backend_name": { "type": "string", "minLength": 1 },
+        "backend_version": { "type": "string", "minLength": 1 },
+        "os_image_digest": { "$ref": "#/$defs/sha256" },
+        "render_config_hash": { "$ref": "#/$defs/sha256" },
+        "font_pack_hash": { "$ref": "#/$defs/sha256" },
+        "locale": { "type": "string", "minLength": 1 },
+        "timezone": { "type": "string", "minLength": 1 },
+        "compatibility_mode": { "type": "string", "minLength": 1 },
+        "dpi": { "type": "integer", "minimum": 1 },
+        "color_profile": { "type": "string", "minLength": 1 },
+        "image_encoder": { "type": "string", "minLength": 1 }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pages_index", "page_set_hash", "output_artifact_set_hash"],
+      "properties": {
+        "pages_index": { "$ref": "#/$defs/artifact_ref" },
+        "page_set_hash": { "$ref": "#/$defs/sha256" },
+        "output_artifact_set_hash": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["view_kind"],
+        "properties": { "view_kind": { "const": "hypothesis_preview" } }
+      },
+      "then": {
+        "properties": {
+          "authority_ref": { "properties": { "hypothesis_hash": { "type": "string" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["view_kind"],
+        "properties": { "view_kind": { "const": "canonical_render" } }
+      },
+      "then": {
+        "properties": {
+          "authority_ref": { "properties": { "hypothesis_hash": { "type": "null" } } }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "size_bytes", "mime_type"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mime_type": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

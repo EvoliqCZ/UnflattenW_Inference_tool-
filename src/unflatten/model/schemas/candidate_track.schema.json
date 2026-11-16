@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/candidate_track.schema.json",
+  "title": "RFC005 Candidate Track (§11/§44, plan spec-candidate-track-c4)",
+  "$comment": "Closed envelope, v1. A CandidateTrack binds one admission track name to one clean_pretrained base ancestry, one component lock and one architecture manifest -- it is a cross-checked derived manifest, never hand-assembled. checkpoint_rights_status/checkpoint_privacy_status, initialization_kind, legacy_ancestry, transitive_exposure_manifest and ancestry_hash are all COPIED verbatim from the underlying checkpoint_ancestry document (unflatten.model.checkpoint_ancestry) AFTER it passes verify_base -- this schema does not and cannot re-derive them; candidate_track.py refuses to build a document whose copied fields disagree with a freshly-verified ancestry. adapter_policy is always the 'registry' shape in v1 (RFC005-ERRATA-001 E1's adapter_plus_new_heads_no_lora); it has no other branch, since no producer or plan decision for one exists yet. base_checkpoint's 'checkpoint' branch exists in-schema for a future checkpoint-anchored track -- v1 only ever produces base_weights_only. transitive_exposure_manifest mirrors checkpoint_ancestry's own exposure_state union but renames the non-not_produced branch to 'hash' (an ancestry 'root' branch's root_hash becomes this document's transitive_exposure_manifest.sha256) because a candidate track exposes only the hash, not the root-object shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_track_schema_version",
+    "candidate_track_id",
+    "admission_track_name",
+    "backbone_profile",
+    "ast_profile",
+    "capability_profile_id",
+    "capability_profile_hash",
+    "architecture_manifest_sha256",
+    "architecture_id",
+    "base_checkpoint",
+    "initialization_kind",
+    "adaptation_kind",
+    "legacy_ancestry",
+    "ancestry_hash",
+    "checkpoint_rights_status",
+    "checkpoint_privacy_status",
+    "transitive_exposure_manifest",
+    "adapter_policy",
+    "model_component_lock_hash"
+  ],
+  "properties": {
+    "candidate_track_schema_version": { "$ref": "#/$defs/semver" },
+    "candidate_track_id": {
+      "type": "string",
+      "pattern": "^track_[0-9a-f]{64}$"
+    },
+    "admission_track_name": {
+      "$comment": "Pinned to the one track name unflatten.dataset.admission.report.DENSE_CONTRACT_CANARY_TRACK / unflatten.model.trainability_smoke.DENSE_CONTRACT_CANARY_TRACK name today (RFC004 ratified only for dense_contract_canary_ready/dense_vertical_slice_ready under DEC-005).",
+      "enum": ["dense_contract_canary"]
+    },
+    "backbone_profile": {
+      "enum": ["qwen3-vl-word-adapter-v0"]
+    },
+    "ast_profile": {
+      "enum": ["word-visual-v1.1"]
+    },
+    "capability_profile_id": { "type": "string", "minLength": 1 },
+    "capability_profile_hash": { "$ref": "#/$defs/sha256" },
+    "architecture_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "architecture_id": { "type": "string", "minLength": 1 },
+    "base_checkpoint": { "$ref": "#/$defs/base_checkpoint" },
+    "initialization_kind": {
+      "enum": ["clean_pretrained"]
+    },
+    "adaptation_kind": {
+      "$comment": "RFC005-ERRATA-001 E1: the one adaptation kind v1 produces -- an adapter plus new heads, no LoRA delta.",
+      "enum": ["adapter_plus_new_heads_no_lora"]
+    },
+    "legacy_ancestry": { "type": "boolean" },
+    "ancestry_hash": { "$ref": "#/$defs/sha256" },
+    "checkpoint_rights_status": { "$ref": "#/$defs/status" },
+    "checkpoint_privacy_status": { "$ref": "#/$defs/status" },
+    "transitive_exposure_manifest": { "$ref": "#/$defs/transitive_exposure_manifest" },
+    "adapter_policy": { "$ref": "#/$defs/adapter_policy" },
+    "model_component_lock_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": { "enum": ["approved", "unresolved", "prohibited"] },
+    "base_checkpoint": {
+      "$comment": "Closed union, never a bare array. v1 only ever produces base_weights_only; the checkpoint branch exists in-schema for a future checkpoint-anchored track.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "weights_set_sha256"],
+          "properties": {
+            "kind": { "const": "base_weights_only" },
+            "weights_set_sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "checkpoint_id", "checkpoint_sha256"],
+          "properties": {
+            "kind": { "const": "checkpoint" },
+            "checkpoint_id": { "type": "string", "pattern": "^ckpt_[0-9a-f]{64}$" },
+            "checkpoint_sha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "transitive_exposure_manifest": {
+      "$comment": "Closed union, never a bare array -- mapped from checkpoint_ancestry's exposure_state: not_produced copies verbatim, root becomes {kind: hash, sha256: root_hash}.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reason"],
+          "properties": {
+            "kind": { "const": "not_produced" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "sha256"],
+          "properties": {
+            "kind": { "const": "hash" },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      ]
+    },
+    "adapter_policy": {
+      "$comment": "v1 always produces the registry branch (RFC005 §14.3). No other branch exists: adding one requires a producer and a plan decision first.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "trainable_group_registry_hash", "lora", "rfc_ref"],
+      "properties": {
+        "kind": { "const": "registry" },
+        "trainable_group_registry_hash": { "$ref": "#/$defs/sha256" },
+        "lora": { "enum": ["disabled"] },
+        "rfc_ref": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

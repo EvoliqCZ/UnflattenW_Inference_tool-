@@ -1,0 +1,470 @@
+{
+ "collate_regions_default": {
+  "excluded": {
+   "multi_region": 1,
+   "unresolved": 0,
+   "withdrawn": 1
+  },
+  "excluded_by_node_type": {
+   "paragraph": {
+    "multi_region": 1,
+    "unresolved": 0,
+    "withdrawn": 1
+   }
+  },
+  "node_types": [
+   "paragraph",
+   "paragraph",
+   "paragraph",
+   "table"
+  ],
+  "tensor_digest": "sha256:4ee999e43c6351fdcad413970c24b1218a572044f23a58ae1ca0ed348070a440",
+  "tensors": {
+   "anchor_step": [
+    1,
+    2,
+    4,
+    5
+   ],
+   "bbox_target": [
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "row_index": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "status_target": [
+    0,
+    2,
+    0,
+    1
+   ],
+   "supervise_box": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "supervise_status": [
+    true,
+    true,
+    true,
+    true
+   ]
+  }
+ },
+ "draw_hash": {
+  "seed15/step0": "sha256:ba1006e6e8fbe06dc966323971d9a03349f12b6d5a555d75ac72ea94b8d58057",
+  "seed15/step1": "sha256:f1b4e23d2241aad06defa82a1c5efdff77a2972bebd6315473cf971cb3726522",
+  "seed15/step17": "sha256:beba78c3b4d3e6db9498c78cda8be9ed6d329e0588179c5ac39547e110da8658",
+  "seed15/step235409": "sha256:274d4bc6b8565ce5a6b2a237b09685b7c661ddfc89676c7b3de140c187b4be87",
+  "seed16/step0": "sha256:b1707a89acebf145c766d84362252338a922c7176657deceec513eeadec4e4f1"
+ },
+ "generated_at_commit": "e8388702",
+ "onfly_views": {
+  "manifest_fields": {
+   "draw_domain": "unflatten.onfly-augmentation-draw/v1",
+   "policy_hash": "sha256:9a23fe3fd0ae98ea936406118e8d31f241e771f2dc554a1f6c17197235fbdfe1",
+   "policy_id": "augmentation-v1",
+   "seed": 15,
+   "selection": [
+    1,
+    5
+   ]
+  },
+  "views": {
+   "doc_0/page0/step0": null,
+   "doc_1/page1/step7919": null,
+   "doc_10/page1/step79190": {
+    "family": "photo_simulation",
+    "ops": [
+     {
+      "op": "perspective",
+      "params": {
+       "magnitude": 0.024137
+      }
+     },
+     {
+      "op": "shadow",
+      "params": {
+       "strength": 0.336644
+      }
+     },
+     {
+      "op": "lighting",
+      "params": {
+       "strength": 0.118979
+      }
+     }
+    ],
+    "seeds": [
+     14355661933998174660,
+     17079171436849171714,
+     4632181294234168862
+    ],
+    "transform_chain_hash": "sha256:46233fd2444a5283623487775f5785f6fe9b422940302b5ae9021566cc397964"
+   },
+   "doc_11/page2/step87109": null,
+   "doc_12/page0/step95028": null,
+   "doc_13/page1/step102947": null,
+   "doc_14/page2/step110866": null,
+   "doc_15/page0/step118785": null,
+   "doc_16/page1/step126704": null,
+   "doc_17/page2/step134623": null,
+   "doc_18/page0/step142542": null,
+   "doc_19/page1/step150461": null,
+   "doc_2/page2/step15838": {
+    "family": "scan_simulation",
+    "ops": [
+     {
+      "op": "rotation",
+      "params": {
+       "angle_deg": 1.711326
+      }
+     },
+     {
+      "op": "noise",
+      "params": {
+       "sigma": 4.926537
+      }
+     },
+     {
+      "op": "jpeg",
+      "params": {
+       "quality": 46.005519
+      }
+     },
+     {
+      "op": "blur",
+      "params": {
+       "radius": 0.764777
+      }
+     }
+    ],
+    "seeds": [
+     5735744954160692324,
+     4086523255297114235,
+     17807055921673595135,
+     3693371496581788544
+    ],
+    "transform_chain_hash": "sha256:9af50d828422af40644017082e49d39feaa1ee90fb6c5cc94deb6094259dd0e4"
+   },
+   "doc_3/page0/step23757": null,
+   "doc_4/page1/step31676": null,
+   "doc_5/page2/step39595": null,
+   "doc_6/page0/step47514": null,
+   "doc_7/page1/step55433": null,
+   "doc_8/page2/step63352": null,
+   "doc_9/page0/step71271": null
+  }
+ },
+ "page_uniform_plan": {
+  "first_draw_pages": [
+   [
+    "doc_50",
+    20
+   ],
+   [
+    "doc_50",
+    42
+   ],
+   [
+    "doc_50",
+    11
+   ],
+   [
+    "doc_50",
+    8
+   ],
+   [
+    "doc_50",
+    34
+   ],
+   [
+    "doc_50",
+    30
+   ],
+   [
+    "doc_50",
+    22
+   ],
+   [
+    "doc_50",
+    18
+   ],
+   [
+    "doc_50",
+    16
+   ],
+   [
+    "doc_50",
+    21
+   ],
+   [
+    "doc_50",
+    0
+   ],
+   [
+    "doc_50",
+    48
+   ]
+  ],
+  "ordered_exposure_plan_hash": "sha256:87775b6adcfc2c7d7ed1425332594749728d04b90671cd308c06ccf9feff7d5d",
+  "plan_id": "plan_af0fb10cd0272d8830ee7d6e80bc20a656732c08c80b4efdee99c80ff25dfdfa",
+  "sidecar_sha256": "sha256:e28be1f809ce7903aa2813633eef0add5d0b4180af84b2dd63079de7122588d6"
+ },
+ "s4_run_manifest_v16": {
+  "keys": [
+   "binding_s1_run_manifest_hash",
+   "consistency_lambda_milli",
+   "data_quality_gate_hash",
+   "gradient_bearing",
+   "heads_frozen_for_no_supervision",
+   "init_from",
+   "low_supervision_pointers_disclosed",
+   "lr_reduced_micro",
+   "lr_schedule",
+   "mask_inactive_union_arms",
+   "ordered_exposure_plan_hash",
+   "run_class",
+   "run_id",
+   "run_seed",
+   "s2_exposure_policy_hash",
+   "s2_sampler_policy_hash",
+   "s4_run_manifest_hash",
+   "s4_run_manifest_schema_version",
+   "s4_stage_policy_hash",
+   "selection_policy_hash",
+   "stage_data_matrix_hash",
+   "stage_id",
+   "structural_table_region",
+   "typed_head_config_hash",
+   "typed_integer_codec",
+   "typed_supervision_census_hash",
+   "typed_supervision_floor",
+   "visual_input"
+  ],
+  "run_id": "s4run_680c946bc67b5a1a245f67cb3d98c509af666309b511ee448300047a3f2733d4",
+  "s4_run_manifest_hash": "sha256:67216c6c21951e71e2279a51d566d6c1ba97e2faf352f53eeaefac1862f7049f",
+  "s4_run_manifest_schema_version": "1.4.0",
+  "visual_input": {
+   "augmentation": {
+    "draw_domain": "unflatten.onfly-augmentation-draw/v1",
+    "policy_hash": "sha256:9a23fe3fd0ae98ea936406118e8d31f241e771f2dc554a1f6c17197235fbdfe1",
+    "policy_id": "augmentation-v1",
+    "seed": 15,
+    "selection": [
+     1,
+     5
+    ]
+   },
+   "mode": "onfly_vit",
+   "visual_feature_tap": "pooler_output+deepstack:0,1,2",
+   "visual_input_policy_hash": "sha256:a152d25ec5fec7e44eb4388b55154ec24b491247c7419984e628e5f1b03589d3"
+  }
+ },
+ "train_argv": [
+  "<TMP>/cache/train",
+  "--run-dir",
+  "<TMP>/run",
+  "--release-dir",
+  "<TMP>/release",
+  "--device",
+  "cuda",
+  "--seed",
+  "15",
+  "--steps",
+  "235410",
+  "--batch-size",
+  "1",
+  "--lr",
+  "0.0001",
+  "--lr-reduced",
+  "1e-05",
+  "--grad-clip",
+  "1.0",
+  "--optimizer",
+  "adamw",
+  "--val-cache",
+  "<TMP>/cache/val_iid",
+  "--val-expectation",
+  "<TMP>/run/val-expectation-input.json",
+  "--eval-every",
+  "1000",
+  "--eval-pages",
+  "300",
+  "--out",
+  "<TMP>/run/checkpoint.pt",
+  "--checkpoint-every",
+  "1000",
+  "--keep-every",
+  "10000",
+  "--preflight-rows",
+  "4",
+  "--num-workers",
+  "12",
+  "--visual-input-policy",
+  "<TMP>/vip.json",
+  "--page-image-store",
+  "<TMP>/store",
+  "--structural-table-region",
+  "exclude",
+  "--data-quality-gate",
+  "<TMP>/gate.json",
+  "--onfly-augmentation-seed",
+  "15",
+  "--mask-inactive-union-arms",
+  "--consistency-lambda",
+  "0.25",
+  "--lr-schedule",
+  "linear_tail",
+  "--lr-schedule-start-step",
+  "0",
+  "--lr-schedule-floor-milli",
+  "10"
+ ],
+ "transform_region_targets": [
+  {
+   "chain_scope": "page",
+   "continuation": [
+    [
+     false,
+     false
+    ]
+   ],
+   "mapping_method": "text",
+   "node_id": "p_on",
+   "page_evidence": "observed",
+   "regions": [
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ]
+   ],
+   "supervision_mask": true
+  },
+  {
+   "chain_scope": null,
+   "continuation": [],
+   "mapping_method": null,
+   "node_id": "p_off",
+   "page_evidence": "observed",
+   "regions": [],
+   "supervision_mask": true
+  },
+  {
+   "chain_scope": "page",
+   "continuation": [
+    [
+     false,
+     false
+    ]
+   ],
+   "mapping_method": "text",
+   "node_id": "p_half",
+   "page_evidence": "observed",
+   "regions": [
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ]
+   ],
+   "supervision_mask": true
+  },
+  {
+   "chain_scope": "page",
+   "continuation": [
+    [
+     false,
+     false
+    ],
+    [
+     false,
+     false
+    ]
+   ],
+   "mapping_method": "text",
+   "node_id": "p_two",
+   "page_evidence": "observed",
+   "regions": [
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ],
+    [
+     750000,
+     300000,
+     850000,
+     400000
+    ]
+   ],
+   "supervision_mask": true
+  },
+  {
+   "chain_scope": null,
+   "continuation": [],
+   "mapping_method": null,
+   "node_id": "t_struct",
+   "page_evidence": "structural",
+   "regions": [],
+   "supervision_mask": true
+  },
+  {
+   "chain_scope": "page",
+   "continuation": [
+    [
+     false,
+     false
+    ]
+   ],
+   "mapping_method": "text",
+   "node_id": "p_withdrawn",
+   "page_evidence": "observed",
+   "regions": [
+    [
+     700000,
+     100000,
+     900000,
+     200000
+    ]
+   ],
+   "supervision_mask": false
+  }
+ ],
+ "versions": {
+  "numpy": "2.4.6",
+  "pillow": "12.3.0",
+  "torch": "2.13.0+cu130"
+ }
+}

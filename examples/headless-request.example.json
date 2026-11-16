@@ -1,0 +1,8 @@
+{
+  "base_url": "http://127.0.0.1:8421",
+  "input": "document.pdf",
+  "output": "result.docx",
+  "label": "Example document",
+  "poll_interval": 2,
+  "timeout": 1800
+}

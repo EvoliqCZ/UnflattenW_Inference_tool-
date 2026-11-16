@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "default_variant": "auto",
+  "variants": [
+    {
+      "variant_id": "dense-1.0-bf16",
+      "label": "Unflatten W Dense 1.0",
+      "precision": "bf16",
+      "kv_cache": "bf16",
+      "engine": "native",
+      "availability": "published",
+      "source": {
+        "kind": "hf",
+        "repo_id": "Evoliq/Unflatten-W-Dense-1.0",
+        "revision": "9ebf7df1d6b01ae5d3a396f379fe454378a38ae7",
+        "bundle_manifest_sha256": "sha256:0ee3a3c68e1290aeb7eaf72b9d28371c249f4d75f82851e9745ac221b0920c03"
+      }
+    }
+  ]
+}

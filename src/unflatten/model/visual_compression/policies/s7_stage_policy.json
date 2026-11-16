@@ -1,0 +1,14 @@
+{
+  "s7_stage_policy_schema_version": "0.1.0",
+  "policy_version": "s7-stage-policy-draft-v1",
+  "status": "PROPOSED",
+  "vc1": {
+    "budget_lambda_micro": 0,
+    "target_compression_ratio_micro": 2000000,
+    "is_placeholder": true
+  },
+  "vc2": {
+    "signal_a_loss_weight_micro": 1000000,
+    "is_placeholder": true
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s3_run_manifest.schema.json",
+  "title": "RFC005 S3 Run Manifest",
+  "$comment": "Closed envelope for one S3 discovery run: the identity under which it may execute (design §7.1). `run_id` is derived from every other field (addendum A, the same construction s1_run_manifest / s2_run_manifest use). S3 has no run-manifest shape of its own for cache identity, allowlist or ancestry -- those bindings are carried by naming a companion S1-format run manifest by hash, exactly as s2_run_manifest does. `typed_integer_codec` is pinned `direct_regression` (D5); `grad_clip_micro` deliberately does NOT appear here -- it lives only in run_config.json (design §7.1, [governance R1]).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s3_run_manifest_schema_version",
+    "run_id",
+    "run_class",
+    "gradient_bearing",
+    "stage_id",
+    "run_seed",
+    "binding_s1_run_manifest_hash",
+    "s3_stage_policy_hash",
+    "stage_data_matrix_hash",
+    "s2_sampler_policy_hash",
+    "s2_exposure_policy_hash",
+    "ordered_exposure_plan_hash",
+    "typed_supervision_census_hash",
+    "typed_supervision_floor",
+    "heads_frozen_for_no_supervision",
+    "typed_integer_codec",
+    "lr_reduced_micro",
+    "init_from",
+    "s3_run_manifest_hash"
+  ],
+  "properties": {
+    "s3_run_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "run_id": {
+      "$comment": "make_id(\"s3run\", \"rfc005.s3-run-id/v1\", payload without run_id and without the self-hash). Derived, never assigned.",
+      "type": "string",
+      "pattern": "^s3run_[0-9a-f]{64}$"
+    },
+    "run_class": { "enum": ["discovery", "promotion"] },
+    "gradient_bearing": { "type": "boolean" },
+    "stage_id": { "const": "S3" },
+    "run_seed": {
+      "$comment": "The seed the ordered exposure plan (reused from S2) was built under.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "binding_s1_run_manifest_hash": {
+      "$comment": "The companion S1-format run manifest's own s1_run_manifest_hash, re-derived by the builder from the presented companion document -- never a caller-typed value.",
+      "$ref": "#/$defs/sha256"
+    },
+    "s3_stage_policy_hash": { "$ref": "#/$defs/sha256" },
+    "stage_data_matrix_hash": { "$ref": "#/$defs/sha256" },
+    "s2_sampler_policy_hash": { "$ref": "#/$defs/sha256" },
+    "s2_exposure_policy_hash": { "$ref": "#/$defs/sha256" },
+    "ordered_exposure_plan_hash": { "$ref": "#/$defs/sha256" },
+    "typed_supervision_census_hash": {
+      "$comment": "The frozen s3_typed_census.json's own census_hash, re-derived by the builder from the presented document.",
+      "$ref": "#/$defs/sha256"
+    },
+    "typed_supervision_floor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_supervised_per_head", "min_lineages_per_head"],
+      "properties": {
+        "min_supervised_per_head": { "type": "integer", "minimum": 0 },
+        "min_lineages_per_head": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "heads_frozen_for_no_supervision": {
+      "$comment": "Explicit, may be empty. A head listed here whose census family-bearing supervised count is at or above min_supervised_per_head is an unused freeze and is refused by the builder (DEC-027 D2 rule).",
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "typed_integer_codec": { "const": "direct_regression" },
+    "lr_reduced_micro": {
+      "$comment": "Integer thousandths of the reduced learning rate applied to tree_text_decoder (house style: lr_micro).",
+      "type": "integer",
+      "minimum": 0
+    },
+    "init_from": {
+      "$comment": "Warm-start pin (design §6) or null for a clean run. parent_run_class is never caller-supplied at admission: it is re-derived here from the presented parent companion manifest, whose own hash must equal parent_s1_run_manifest_hash.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "checkpoint_sha256",
+            "checkpoint_id",
+            "parent_run_id",
+            "parent_s1_run_manifest_hash",
+            "parent_base_ancestry_hash",
+            "step",
+            "parent_run_class"
+          ],
+          "properties": {
+            "checkpoint_sha256": { "$ref": "#/$defs/sha256" },
+            "checkpoint_id": {
+              "type": "string",
+              "pattern": "^ckpt_[0-9a-f]{64}$"
+            },
+            "parent_run_id": {
+              "type": "string",
+              "pattern": "^s2run_[0-9a-f]{64}$"
+            },
+            "parent_s1_run_manifest_hash": { "$ref": "#/$defs/sha256" },
+            "parent_base_ancestry_hash": { "$ref": "#/$defs/sha256" },
+            "step": { "type": "integer", "minimum": 0 },
+            "parent_run_class": { "enum": ["discovery", "promotion"] }
+          }
+        }
+      ]
+    },
+    "s3_run_manifest_hash": {
+      "$comment": "domain_hash(\"rfc005.s3-run-manifest/v1\", payload without this field).",
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

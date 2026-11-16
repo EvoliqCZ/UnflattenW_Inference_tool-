@@ -1,0 +1,13 @@
+{
+  "schema": "unflatten.s5-capture-gate/1",
+  "decision": "DEC-083",
+  "sample": {"control_sample_sha256": "sha256:f183577dfeda4ebec13835b2f16150175df5954b9cfb8aa556e6288416236493", "captures": 50, "scans": 35, "photos": 15},
+  "measured_by": "scripts/s5_control_eval.py",
+  "service_chain": "RFC004-ERRATA-004 + headless-defaults.v0",
+  "gates": [
+    {"metric_id": "whole_page_image_count", "max": 5, "of": 50, "reference": {"v15b": 3, "v16_16k": 21}},
+    {"metric_id": "scan_text_similarity_median_ratio_milli", "min": 950, "note": "median text_similarity_ppm of the scans / 1e6, against the clean render of the same checkpoint"}
+  ],
+  "trial_budget": {"max_candidates": 3},
+  "order_rule": "candidates in s4_selection_policy order, at most trial_budget.max_candidates trials (each 50 captures through the service); first PASS is final; budget exhausted or no PASS -> result 'none_passed'"
+}

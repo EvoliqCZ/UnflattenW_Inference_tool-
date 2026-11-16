@@ -1,0 +1,8 @@
+{
+ "cardinality_max": {
+  "/columns": 39,
+  "/columns/widths_mpt": 8,
+  "/layout/tabs": 44
+ },
+ "tabs_subset_of_sup": 0
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL stage gate policy (RFC005-ERRATA-010 E7.3/E7.4; own schema, general_stage_gate_policy is not widened)",
+  "$comment": "A null threshold is a placeholder: the gate reports insufficient_evidence, never pass/fail. A RATIFIED policy may carry no null applicable threshold (checked in gate_policy.py, JSON Schema cannot express 'applicable per kind' without noise). Rates and bounds are integer micro units; the CBOR profile has no floats.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "stage_id", "gates", "reward_quality", "shaping",
+    "stage_policy_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["PROPOSED", "RATIFIED"] },
+    "stage_id": { "const": "S4_5_reward_guided_reconstruction_refinement" },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/gate" }
+    },
+    "reward_quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_correlation_micro", "min_independent_lineages"],
+      "properties": {
+        "min_correlation_micro": { "$ref": "#/$defs/signed_micro_or_null" },
+        "min_independent_lineages": { "$ref": "#/$defs/count_or_null" }
+      }
+    },
+    "shaping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_zero_advantage_rate_micro"],
+      "properties": {
+        "max_zero_advantage_rate_micro": { "$ref": "#/$defs/rate_or_null" }
+      }
+    },
+    "stage_policy_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "rate_or_null": {
+      "oneOf": [
+        { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        { "type": "null" }
+      ]
+    },
+    "signed_micro_or_null": {
+      "oneOf": [
+        { "type": "integer", "minimum": -1000000, "maximum": 1000000 },
+        { "type": "null" }
+      ]
+    },
+    "count_or_null": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "null" }
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_id", "group", "kind", "floor_micro", "margin_micro",
+        "min_independent_lineages", "min_attempted_denominator"
+      ],
+      "properties": {
+        "gate_id": { "type": "string", "minLength": 1 },
+        "group": { "enum": ["a", "b", "c"] },
+        "kind": { "enum": ["zero_count", "non_regression", "benefit", "not_worse"] },
+        "floor_micro": { "$ref": "#/$defs/rate_or_null" },
+        "margin_micro": { "$ref": "#/$defs/rate_or_null" },
+        "min_independent_lineages": { "$ref": "#/$defs/count_or_null" },
+        "min_attempted_denominator": { "$ref": "#/$defs/count_or_null" }
+      }
+    }
+  }
+}

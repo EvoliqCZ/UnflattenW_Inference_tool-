@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/component_lock.schema.json",
+  "title": "RFC004 Model Component Lock (§39, v0.1 — A0 subset)",
+  "$comment": "Closed envelope; not the RFC003 dataset Component Lock. A0 models the D0-style subset: 19 component kinds implementable today with a flat {kind, version, artifact_sha256 | semantic_hash} record. Deferred to later A-phases (§39.2 full list): visual_compressor, resource_recovery/materializer, fragment_assembler, ast_builder/canonicalizer/validator versions, confidence_calibrator, acceptance_policy, report_projection_registry, result_identity_projection, acceptance_reason_code_registry, speculator config/checkpoint, model_stage_registry, checkpoint_manifest and runtime_lock ArtifactRef envelopes. The bare ambiguous kind 'dflash' is forbidden by §39.3. Provisional kinds — present in this enum but NOT named in §39.2, so §39.2 does not mandate them and a lock omitting them is not thereby incomplete: 'model_capability_profile' (pending RR-4 in docs/plans/spec-dense-v0-m1-exact-text-design.md §4.8; §41.2 makes a new capability profile MINOR, which authorizes a new profile, not a new lock kind). 'composite_vocabulary' is NOT provisional: §39.2 names 'structural tokenizer/vocabulary'. Before treating any kind here as §39.2-mandated, check it against that list. MINOR addition (RFC004-ERRATA-005 E3/W1-7, ADRF/VC Wave 1): 'reasoning_module', 'reasoning_gate', 'pre_encoder_compressor', 'visual_compressor' (the last removed from the deferred list above). No producer emits any of the four yet -- see `unflatten.model.reasoning.lock` for the missing-weight hard load error §23 requires once one does. Adding these enum members does not change any existing lock document's bytes or hash: this schema file is never itself hashed into a Component Lock identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_component_lock_schema_version",
+    "model_name",
+    "model_version",
+    "architecture_id",
+    "ast_version",
+    "profiles",
+    "components"
+  ],
+  "properties": {
+    "model_component_lock_schema_version": { "$ref": "#/$defs/semver" },
+    "model_name": { "type": "string", "minLength": 1 },
+    "model_version": { "$ref": "#/$defs/semver" },
+    "architecture_id": { "type": "string", "minLength": 1 },
+    "ast_version": { "$ref": "#/$defs/semver" },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/component" }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "component": {
+      "$comment": "Exactly one of artifact_sha256 (raw SHA-256 of exact artifact bytes) or semantic_hash (domain-separated §3.1 deterministic-CBOR semantic hash) — the raw-vs-semantic distinction is load-bearing and the two must never be assumed equal.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "version"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "rfc001_schema_binding",
+            "rfc001_hash_projection",
+            "cbor_profile",
+            "io_schemas",
+            "architecture_manifest",
+            "backbone_adapter",
+            "base_model_weights",
+            "image_preprocessor",
+            "document_context_encoder",
+            "structural_tokenizer",
+            "text_tokenizer",
+            "grammar",
+            "expert_adapter",
+            "typed_head_registry",
+            "default_policy",
+            "decode_config",
+            "error_code_registry",
+            "runtime_lock",
+            "renderer_binding",
+            "composite_vocabulary",
+            "model_capability_profile",
+            "reasoning_module",
+            "reasoning_gate",
+            "pre_encoder_compressor",
+            "visual_compressor",
+            "node_visual_aligner",
+            "assembler_policy",
+            "chain_policy",
+            "confidence_calibrator",
+            "speculative_decoder",
+            "acceptance_policy"
+          ]
+        },
+        "version": { "$ref": "#/$defs/semver" },
+        "artifact_sha256": { "$ref": "#/$defs/sha256" },
+        "semantic_hash": { "$ref": "#/$defs/sha256" }
+      },
+      "oneOf": [
+        { "required": ["artifact_sha256"], "not": { "required": ["semantic_hash"] } },
+        { "required": ["semantic_hash"], "not": { "required": ["artifact_sha256"] } }
+      ]
+    }
+  }
+}

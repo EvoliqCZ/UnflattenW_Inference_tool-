@@ -1,0 +1,202 @@
+/*
+ * Design tokens -- "lab record on paper" (UX §1, §8). Single source of
+ * colour/type/space/motion values; shadcn/ui component variables are mapped
+ * onto these tokens below so there is exactly one place that owns a colour.
+ *
+ * Structure: raw values live on `:root` / `.dark` as plain CSS custom
+ * properties (so `.dark` can override them for a runtime theme toggle --
+ * Tailwind v4's `@theme` block is evaluated once at build time and cannot
+ * itself branch on a class), then `@theme inline` re-exposes both the UX
+ * tokens and the shadcn-shaped names as Tailwind utilities via `var(...)`.
+ */
+
+@import 'tailwindcss';
+/* UX §8.2: only latin + latin-ext (full Slovak diacritics: ľ ĺ ŕ ô ä ť ď ň) -- not the full
+   @fontsource charset, which also ships cyrillic/greek/vietnamese subsets nothing here needs. */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-600.css';
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-400.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-500.css';
+
+:root {
+  /* 8.1 Colours -- light */
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-sunken: #edebe5;
+  --ink: #16181d;
+  --ink-muted: #5b5f68;
+  --border: #d9d6ce;
+  --border-strong: #8a8e97;
+  --accent: #2748c9;
+  --accent-ink: #ffffff;
+  --accent-subtle: #e6ebfb;
+  --focus: #2748c9;
+  --success: #1c7c4a;
+  --warning-text: #8a5a00;
+  --warning-bg: #fff4d6;
+  --danger: #b3261e;
+  --banner-bg: #f2b705;
+  --banner-ink: #16181d;
+  --diff-source: #0072b2;
+  --diff-docx: #d55e00;
+  --paper: #ffffff;
+
+  /* 8.2 Typography */
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* 8.3 Space (4px grid) and radii */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-control: 4px;
+  --radius-card: 6px;
+  --radius-badge: 999px;
+  --radius-page: 0px;
+
+  /* 8.4 Motion */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.dark {
+  --bg: #111317;
+  --surface: #1a1d23;
+  --surface-sunken: #0c0e11;
+  --ink: #ecedef;
+  --ink-muted: #a2a7b1;
+  --border: #2c3038;
+  --border-strong: #6b717c;
+  --accent: #8fa6ff;
+  --accent-ink: #0b0d12;
+  --accent-subtle: #1c2440;
+  --focus: #8fa6ff;
+  --success: #5fcb8e;
+  --warning-text: #f2c14e;
+  --warning-bg: #2b2208;
+  --danger: #ff8a80;
+  /* --banner-bg / --banner-ink / --paper stay identical in both themes (UX §8.1). */
+  --diff-source: #56b4e9;
+  --diff-docx: #e69f00;
+}
+
+@theme inline {
+  /* UX token names, exposed as Tailwind utilities (bg-bg, text-ink, border-border, ...). */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-focus: var(--focus);
+  --color-success: var(--success);
+  --color-warning-text: var(--warning-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-banner-bg: var(--banner-bg);
+  --color-banner-ink: var(--banner-ink);
+  --color-diff-source: var(--diff-source);
+  --color-diff-docx: var(--diff-docx);
+  --color-paper: var(--paper);
+
+  /* shadcn/ui semantic names, mapped onto the UX tokens above -- components
+     read these, never the raw hex values, so there is one colour source. */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-ink);
+  --color-secondary: var(--surface-sunken);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface-sunken);
+  --color-muted-foreground: var(--ink-muted);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--accent-ink);
+  --color-input: var(--border-strong);
+  --color-ring: var(--focus);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: var(--radius-control);
+  --radius-md: var(--radius-card);
+  --radius-lg: var(--radius-card);
+  --radius-full: var(--radius-badge);
+
+  /* 8.2 Type scale */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.33;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.43;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.75rem;
+  --text-xl--line-height: 1.25;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color-scheme: light dark;
+    /* WCAG 2.4.11: the sticky banner + TopNav must never obscure a focused element. */
+    scroll-padding-top: 96px;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+  }
+
+  /* Namerané hodnoty (kódy, ID, počty, časy) -- vlastný riadok pre číslice, nikdy neskáču pri pollingu. */
+  .font-mono,
+  code,
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* UX §8.1: banner decoration only -- 45deg hazard stripes at 25% ink opacity, never over the text itself. */
+  .hazard-tape {
+    background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--banner-ink) 25%, transparent) 0 6px,
+      transparent 6px 12px
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

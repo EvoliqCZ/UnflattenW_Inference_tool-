@@ -1,0 +1,10 @@
+{
+  "s6_stage_policy_schema_version": "0.1.0",
+  "status": "PROPOSED",
+  "note": "RFC005 §20.2 router warm-up. DEC-047 condition 4: topology/thresholds are policy fields, never literals. Every value below is a PLACEHOLDER — no owner has frozen K or lambda_router yet.",
+  "router_warmup_steps": 100,
+  "warmup_trainable_param_prefixes": [
+    "sparse_adapter.router."
+  ],
+  "lambda_router_milli": 10
+}

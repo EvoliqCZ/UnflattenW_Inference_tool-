@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/model-release-manifest.schema.json",
+  "title": "RFC004 §39.6 Model Release Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_release_manifest_schema_version",
+    "model_release_id",
+    "architecture_id",
+    "model_version",
+    "model_component_lock_hash",
+    "model_capability_manifest_hash",
+    "supported_profiles",
+    "release_channel",
+    "component_lock",
+    "capability_manifest"
+  ],
+  "properties": {
+    "model_release_manifest_schema_version": { "const": "0.1.0" },
+    "model_release_id": { "type": "string", "pattern": "^model_[0-9a-f]{64}$" },
+    "architecture_id": { "type": "string" },
+    "model_version": { "type": "string" },
+    "model_component_lock_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "model_capability_manifest_hash": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "supported_profiles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "release_channel": { "enum": ["dev", "staging", "prod"] },
+    "component_lock": { "$ref": "#/$defs/artifact_ref" },
+    "capability_manifest": { "$ref": "#/$defs/artifact_ref" }
+  },
+  "$defs": {
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "size_bytes", "mime_type"],
+      "properties": {
+        "ref": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mime_type": { "const": "application/json" }
+      }
+    }
+  }
+}

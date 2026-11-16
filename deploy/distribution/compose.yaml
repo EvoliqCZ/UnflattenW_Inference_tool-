@@ -1,0 +1,132 @@
+name: unflatten-w-app-1-0
+
+x-proxy-build-args: &proxy-build-args
+  HTTP_PROXY: ${HTTP_PROXY:-}
+  HTTPS_PROXY: ${HTTPS_PROXY:-}
+  http_proxy: ${http_proxy:-${HTTP_PROXY:-}}
+  https_proxy: ${https_proxy:-${HTTPS_PROXY:-}}
+  NO_PROXY: ${NO_PROXY:-}
+  no_proxy: ${no_proxy:-${NO_PROXY:-}}
+
+x-common: &common
+  UNFLATTEN_DATA_DIR: ${UNFLATTEN_HOST_DATA_DIR:?Run Spustit.sh configure}
+  UNFLATTEN_PRINCIPAL_FILE: ${UNFLATTEN_HOST_DATA_DIR}/principals.json
+  UNFLATTEN_MODELS_CONFIG: /config/models.json
+  HF_HOME: ${UNFLATTEN_HOST_DATA_DIR}/hf-cache
+  HOME: ${UNFLATTEN_HOST_DATA_DIR}/home
+  PYTHONDONTWRITEBYTECODE: "1"
+
+x-volumes: &volumes
+  - ${UNFLATTEN_HOST_DATA_DIR}:${UNFLATTEN_HOST_DATA_DIR}
+  - ./models.json:/config/models.json:ro
+  - ./bootstrap:/bootstrap:ro
+
+services:
+  sandbox-image:
+    image: unflatten-w-app-pdf-sandbox:1.0
+    build:
+      context: ../pdf-sandbox
+      dockerfile: Containerfile
+      args: *proxy-build-args
+    entrypoint: ["/bin/true"]
+    restart: "no"
+
+  init:
+    image: unflatten-w-app-api:1.0
+    build:
+      context: ../..
+      dockerfile: deploy/distribution/Dockerfile
+      target: runtime-api
+      args: *proxy-build-args
+    user: ${UNFLATTEN_APP_UID}:${UNFLATTEN_APP_GID}
+    entrypoint: ["/usr/local/bin/entrypoint-init.sh"]
+    environment:
+      <<: *common
+      UNFLATTEN_INIT_PRINT_TOKEN: "0"
+    volumes: *volumes
+    restart: "no"
+
+  api:
+    image: unflatten-w-app-api:1.0
+    build:
+      context: ../..
+      dockerfile: deploy/distribution/Dockerfile
+      target: runtime-api
+      args:
+        <<: *proxy-build-args
+        UNFLATTEN_GIT_SHA: app-1.0
+    user: ${UNFLATTEN_APP_UID}:${UNFLATTEN_APP_GID}
+    entrypoint: ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-api.sh"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment:
+      <<: *common
+      UNFLATTEN_HOST: 0.0.0.0
+      UNFLATTEN_PORT: "8000"
+      UNFLATTEN_WEB_UI: spa
+      UNFLATTEN_WEB_ALLOWED_HOSTS: 127.0.0.1,localhost,[::1]
+      UNFLATTEN_SETUP_TOKENLESS: "1"
+      UNFLATTEN_GIT_SHA: app-1.0
+      UNFLATTEN_BOOTSTRAP_MODEL_MANIFEST: /bootstrap/manifest.json
+      UNFLATTEN_MODEL_ID: Qwen/Qwen3-VL-4B-Instruct
+      UNFLATTEN_MODEL_REVISION: ebb281ec70b05090aa6165b016eac8ec08e71b17
+    volumes: *volumes
+    ports:
+      - 127.0.0.1:${UNFLATTEN_APP_PORT}:8000
+    restart: unless-stopped
+
+  worker:
+    image: unflatten-w-app-worker:1.0
+    build:
+      context: ../..
+      dockerfile: deploy/distribution/Dockerfile
+      target: runtime-worker
+      args: *proxy-build-args
+    user: ${UNFLATTEN_APP_UID}:${UNFLATTEN_APP_GID}
+    group_add: ["${UNFLATTEN_DOCKER_GID}"]
+    entrypoint: ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-worker.sh"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      sandbox-image:
+        condition: service_completed_successfully
+    environment:
+      <<: *common
+      HF_TOKEN_PATH: /run/secrets/hf_token
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+      NO_PROXY: ${NO_PROXY:-}
+      UNFLATTEN_SANDBOX_IMAGE: ${UNFLATTEN_APP_SANDBOX_IMAGE:-unflatten-w-app-pdf-sandbox:1.0}
+      UNFLATTEN_SANDBOX_RUNTIME: docker
+      UNFLATTEN_SANDBOX_ALLOW_ROOTFUL: "1"
+      UNFLATTEN_MODEL_ID: Qwen/Qwen3-VL-4B-Instruct
+      UNFLATTEN_MODEL_REVISION: ebb281ec70b05090aa6165b016eac8ec08e71b17
+      UNFLATTEN_MODEL_VARIANT: auto
+      UNFLATTEN_DEVICE: cuda:0
+      UNFLATTEN_DEEPSTACK: "1"
+      UNFLATTEN_LOOP_GUARD: bundle
+      UNFLATTEN_KV_CACHE_MODE: bf16_dynamic
+      UNFLATTEN_ENGINES: native
+      UNFLATTEN_DISABLE_CUDNN_SDPA: "1"
+      TORCH_CUDNN_SDPA_ENABLED: "0"
+      TORCH_DISABLE_NATIVE_JIT: "1"
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+    volumes:
+      - ${UNFLATTEN_HOST_DATA_DIR}:${UNFLATTEN_HOST_DATA_DIR}
+      - ./models.json:/config/models.json:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    secrets: [hf_token]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+secrets:
+  hf_token:
+    file: ${UNFLATTEN_APP_HF_TOKEN_FILE:?Run Spustit.sh configure}

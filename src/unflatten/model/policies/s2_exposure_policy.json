@@ -1,0 +1,10 @@
+{
+ "max_augmentation_variants": 1,
+ "max_fragment_overlap_exposure": 0,
+ "max_views_per_lineage_per_virtual_epoch": 1,
+ "p5_repeat_cap": 0,
+ "policy_version": "1.0.0",
+ "s2_exposure_policy_schema_version": "1.0.0",
+ "stage_id": "S2",
+ "synthetic_recipe_family_cap": 0
+}

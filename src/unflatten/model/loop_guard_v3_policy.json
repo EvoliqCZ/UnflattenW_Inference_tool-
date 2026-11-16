@@ -1,0 +1,36 @@
+{
+ "schema": "loop-guard-v3-policy/1",
+ "policy_id": "loop-guard-v3",
+ "status": "PROPOSED",
+ "decision": "DEC-055",
+ "semantics": "loop-guard-v3-semantics/1",
+ "base_guard": "v2",
+ "arms": [
+  "r1",
+  "r1+r3",
+  "r1+r3+r4",
+  "r1+r4",
+  "r2",
+  "r2+r3",
+  "r2+r3+r4",
+  "r2+r4"
+ ],
+ "default_arm": "r1",
+ "text_free_unit_cap": 32,
+ "empty_run_unit_cap": 160,
+ "unit_period_max": 32,
+ "max_cells_per_row": 60,
+ "max_rows_per_table": 84,
+ "long_period_min": 33,
+ "long_period_max": 256,
+ "long_period_reps": 12,
+ "max_rewinds": 8,
+ "provenance": {
+  "text_free_unit_cap": "DEC-055 V3 audit (agent loop-data-audit, scripts/loop_data_audit.py guard_maxima, commit baa21ca on branch worktree-agent-a1f013511775588b2), replayed with this guard's semantics on 78 470 train / 10 214 val_iid gold pages; empty cell: train max 55, clean p99.99 31, val max 26; empty row: clean p99.99 23, val max 34 (1 val page trips at 32); other text-free: val max 23. Working K = 32 kept (provisional).",
+  "max_cells_per_row": "DEC-055 V3 audit (agent loop-data-audit, scripts/loop_data_audit.py guard_maxima, commit baa21ca on branch worktree-agent-a1f013511775588b2), replayed with this guard's semantics on 78 470 train / 10 214 val_iid gold pages; train max 56 (genuine form-header/Gantt grids reach 53-56), val max 27; 60 keeps headroom.",
+  "max_rows_per_table": "DEC-055 V3 audit (agent loop-data-audit, scripts/loop_data_audit.py guard_maxima, commit baa21ca on branch worktree-agent-a1f013511775588b2), replayed with this guard's semantics on 78 470 train / 10 214 val_iid gold pages; train max 82 (spill pages from an import defect), clean max 76, val max 61.",
+  "long_period_reps": "TRAIN gold replay: 4 of 78 470 train pages repeat a text-bearing block of period 33..256 at least 12 times back-to-back (max 17); chosen on the train counts before any GPU decode (the val counts were printed by the same calibration run, not used to pick the value)",
+  "max_rewinds": "bound on R2 rewinds per page, after which R2 falls back to the R1 veto",
+  "empty_run_unit_cap": "DEC-055 V3 audit (agent loop-data-audit, scripts/loop_data_audit.py guard_maxima, commit baa21ca on branch worktree-agent-a1f013511775588b2), replayed with this guard's semantics on 78 470 train / 10 214 val_iid gold pages; empty runs: train max 250, p99.99 157, val max 171 (1 val page trips at 160). Every train empty run is a withdrawn-text wrapper (not supervised), so a veto never changes the page. Provisional until DEC-055 V1 canonicalises them."
+ }
+}

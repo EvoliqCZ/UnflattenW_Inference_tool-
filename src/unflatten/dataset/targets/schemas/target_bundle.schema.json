@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/target_bundle.schema.json",
+  "title": "Unflatten Canonical Target Bundle v0.1 (RFC003 §27–§28)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_schema_version",
+    "document_bundle_id",
+    "ast_hash",
+    "ast_file_hash",
+    "target_bundle_hash",
+    "projector",
+    "structural",
+    "text",
+    "typed",
+    "provenance",
+    "counts"
+  ],
+  "properties": {
+    "target_schema_version": { "const": "0.2.0" },
+    "document_bundle_id": {
+      "type": ["string", "null"],
+      "pattern": "^bundle_[0-9a-f]{64}$"
+    },
+    "ast_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "ast_file_hash": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "target_bundle_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "projector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "config_hash"],
+      "properties": {
+        "name": { "const": "canonical-target-projector" },
+        "version": { "type": "string", "minLength": 1 },
+        "config_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "structural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["events", "node_order", "node_types", "parent_index", "close_event_index"],
+      "properties": {
+        "events": { "type": "array", "items": { "$ref": "#/$defs/structural_event" } },
+        "node_order": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "node_types": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "parent_index": { "type": "array", "items": { "type": "integer", "minimum": -1 } },
+        "close_event_index": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+      }
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spans", "visible_text_events"],
+      "properties": {
+        "spans": { "type": "array", "items": { "$ref": "#/$defs/text_span" } },
+        "visible_text_events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/visible_text_event" }
+        }
+      }
+    },
+    "typed": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/typed_entry" }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label_origin", "verification"],
+      "properties": {
+        "label_origin": { "$ref": "#/$defs/label_origin" },
+        "verification": { "$ref": "#/$defs/verification" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nodes",
+        "structural_events",
+        "text_spans",
+        "visible_text_events",
+        "typed_fields"
+      ],
+      "properties": {
+        "nodes": { "type": "integer", "minimum": 0 },
+        "structural_events": { "type": "integer", "minimum": 0 },
+        "text_spans": { "type": "integer", "minimum": 0 },
+        "visible_text_events": { "type": "integer", "minimum": 0 },
+        "typed_fields": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "text_span_id": { "type": "string", "pattern": "^txt_(0|[1-9][0-9]*)$" },
+    "label_origin": {
+      "enum": [
+        "synthetic_generator",
+        "docx_importer_resolved",
+        "renderer_derived",
+        "mapping_deterministic",
+        "human_authored",
+        "human_verified",
+        "model_proposed",
+        "imputed_for_render"
+      ]
+    },
+    "verification": {
+      "enum": ["unverified", "deterministic_checked", "human_verified", "human_adjudicated"]
+    },
+    "structural_event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["index", "op", "node_id", "node_type"],
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "op": { "const": "open" },
+            "node_id": { "type": "string", "minLength": 1 },
+            "node_type": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["index", "op", "node_id", "text_span_id"],
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "op": { "const": "text" },
+            "node_id": { "type": "string", "minLength": 1 },
+            "text_span_id": { "$ref": "#/$defs/text_span_id" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["index", "op", "node_id", "open_index"],
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "op": { "const": "close" },
+            "node_id": { "type": "string", "minLength": 1 },
+            "open_index": { "type": "integer", "minimum": 0 }
+          }
+        }
+      ]
+    },
+    "text_span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_span_id", "node_id", "text", "start", "end", "normalization"],
+      "properties": {
+        "text_span_id": { "$ref": "#/$defs/text_span_id" },
+        "node_id": { "type": "string", "minLength": 1 },
+        "text": { "type": "string", "minLength": 1 },
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 },
+        "normalization": { "const": "NFC" }
+      }
+    },
+    "visible_text_event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["index", "event", "node_id", "text_span_id"],
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "event": { "const": "RUN_TEXT" },
+            "node_id": { "type": "string", "minLength": 1 },
+            "text_span_id": { "$ref": "#/$defs/text_span_id" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["index", "event", "node_id"],
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "event": {
+              "enum": [
+                "TAB",
+                "LINE_BREAK",
+                "PAGE_BREAK_EXPLICIT",
+                "COLUMN_BREAK_EXPLICIT",
+                "PARAGRAPH_END",
+                "CELL_END",
+                "ROW_END",
+                "SECTION_END"
+              ]
+            },
+            "node_id": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "typed_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_type", "fields"],
+      "properties": {
+        "node_type": { "type": "string", "minLength": 1 },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/typed_field" } }
+      }
+    },
+    "typed_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_property_pointer",
+        "value_type",
+        "value",
+        "known_mask",
+        "origin",
+        "verification"
+      ],
+      "properties": {
+        "node_property_pointer": { "type": "string", "pattern": "^(/[^/]+)+$" },
+        "value_type": { "enum": ["enum", "string", "integer", "boolean", "object"] },
+        "value": {},
+        "known_mask": { "type": "boolean" },
+        "observable_mask": {
+          "type": "boolean",
+          "description": "RFC003 §29 scope, stamped by targets.masks.apply_supervision_mask; absent on a freshly derived bundle."
+        },
+        "supervision_mask": {
+          "type": "boolean",
+          "description": "RFC003 §29 scope: known_mask AND observable_mask; absent on a freshly derived bundle."
+        },
+        "origin": { "$ref": "#/$defs/label_origin" },
+        "verification": { "$ref": "#/$defs/verification" }
+      }
+    }
+  }
+}

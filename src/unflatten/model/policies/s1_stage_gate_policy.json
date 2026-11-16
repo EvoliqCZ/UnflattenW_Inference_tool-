@@ -1,0 +1,106 @@
+{
+  "gates": [
+    {
+      "gate": 1,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "forward_backward_finite"
+    },
+    {
+      "gate": 2,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "frozen_groups_zero_grad"
+    },
+    {
+      "gate": 3,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "trainable_groups_finite_nonzero_grad"
+    },
+    {
+      "gate": 4,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "masks_zero_loss_contribution"
+    },
+    {
+      "gate": 5,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "missing_target_no_default"
+    },
+    {
+      "gate": 6,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "checkpoint_roundtrip"
+    },
+    {
+      "gate": 7,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "grammar_constrained_valid_tree"
+    },
+    {
+      "gate": 8,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "forbidden_metadata_no_leak"
+    },
+    {
+      "gate": 9,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "loader_lineage_disjoint"
+    },
+    {
+      "gate": 10,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "text_roundtrip"
+    },
+    {
+      "gate": 11,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "namespace_no_collision"
+    },
+    {
+      "gate": 12,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "padding_equivalence"
+    },
+    {
+      "gate": 13,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "free_running_no_silent_truncation"
+    },
+    {
+      "gate": 14,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "component_lock"
+    },
+    {
+      "gate": 15,
+      "kind": "contract",
+      "missing_evidence_action": "blocked",
+      "name": "optimizer_membership_complete"
+    }
+  ],
+  "minimum_independent_lineages": {
+    "reason": "no minimum independent-lineage count is set at S1/S2; RFC005 D4 defers a numeric minimum to S3+",
+    "status": "not_applicable"
+  },
+  "missing_evidence_action_policy_wide": "blocked",
+  "policy_version": "1.0.0",
+  "quality": {
+    "reason": "RFC005 S1/S2's fifteen gates are contract-only, never quality metrics (owner R5 2026-09-07, D4); gate 12's atol/rtol tolerances are declared per run by s1_runner.py and reported in that run's own gate 12 evidence, never a value this frozen policy pins",
+    "status": "not_applicable"
+  },
+  "stage": "S1",
+  "stage_gate_policy_schema_version": "1.0.0"
+}

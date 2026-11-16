@@ -1,0 +1,23 @@
+{
+ "policy_schema_version": "1.0.0",
+ "policy_id": "augmentation-v1",
+ "selection_numerator": 1,
+ "selection_denominator": 5,
+ "families": {
+  "scan_simulation": {
+   "ops": [
+    {"op": "rotation", "params": {"angle_deg": [-2.0, 2.0]}},
+    {"op": "noise", "params": {"sigma": [2.0, 8.0]}},
+    {"op": "jpeg", "params": {"quality": [35, 70]}},
+    {"op": "blur", "params": {"radius": [0.3, 1.2]}}
+   ]
+  },
+  "photo_simulation": {
+   "ops": [
+    {"op": "perspective", "params": {"magnitude": [0.01, 0.04]}},
+    {"op": "shadow", "params": {"strength": [0.15, 0.45]}},
+    {"op": "lighting", "params": {"strength": [0.1, 0.35]}}
+   ]
+  }
+ }
+}

@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.1",
+  "app": "Unflatten W 1.0",
+  "company": "EVOLIQ s.r.o.",
+  "verified_at": "2026-11-15T19:12:52.287156+00:00",
+  "tested_source_commit": "ea1c838084466f689c43e4ad38f435c06b10e41d",
+  "status": "Recorded source, security, browser and GPU acceptance checks passed.",
+  "model": {
+    "repo": "Evoliq/Unflatten-W-Dense-1.0",
+    "revision": "9ebf7df1d6b01ae5d3a396f379fe454378a38ae7",
+    "manifest_sha256": "sha256:0ee3a3c68e1290aeb7eaf72b9d28371c249f4d75f82851e9745ac221b0920c03"
+  },
+  "backend": {
+    "tests": 1973,
+    "slow_included": true,
+    "service_coverage_percent": 90.24,
+    "scope": "Complete published service/renderer/AST suite plus multi-page image/resource regression suites",
+    "environment": "Python 3.13 local test overlay; locked images also received live CUDA acceptance"
+  },
+  "frontend": {
+    "tests": 646,
+    "test_files": 103,
+    "statements_percent": 89.56,
+    "lines_percent": 90.24,
+    "verify": "passed",
+    "browser_release_checks": 3,
+    "browser_scope": "48-page scrolling desktop/mobile; EVOLIQ light/dark and locale links; authenticated app under storage denial"
+  },
+  "dependency_audit": {
+    "python_runtime_advisories": 0,
+    "npm_all_dependencies_advisories": 0,
+    "npm_production_advisories": 0,
+    "ignored_advisories": [],
+    "runtime_fixes": {
+      "accelerate": "Removed unused optional dependency; upstream 1.15 still contained vulnerable dispatch code. Native loader does not use dispatch.",
+      "filelock": "4.2.10",
+      "setuptools": "84.2.1"
+    },
+    "frontend_fixes": {
+      "vite": "7.3.8",
+      "vitest": "5.1.0",
+      "typescript_estree_minimatch_override": ">=11.0.1 (only affected consumer)"
+    },
+    "container_imports": "Locked runtime imports passed; Accelerate absent. Concurrent pinned public HF config download/cache succeeded with filelock4.2.10."
+  },
+  "historical_bf16_acceptance": {
+    "tested_source_commit": "b4b7aeee706606b98c1926db2f03f7b557b73a6e",
+    "gpu_model_resident": true,
+    "pdf_to_word": "two-page synthetic demo; text of both pages exactly matched",
+    "word_bytes": 2649,
+    "reopen_during_job": {
+      "containers_unchanged": true,
+      "settings_unchanged": true,
+      "seconds": 0.33
+    },
+    "restart": {
+      "passed": true,
+      "seconds_including_cached_image_build": 141.55,
+      "cache_blobs_unchanged": 35,
+      "account_and_principal_unchanged": true,
+      "existing_login_valid": true,
+      "completed_job_preserved": "job_5a1b3cd1f82a418eb3969bfe782e0696",
+      "word_hash_unchanged": true,
+      "gpu_model_resident": true,
+      "fresh_worker_observation_after_restart": true,
+      "credential_reused_without_HF_TOKEN_env": true
+    },
+    "recovery": {
+      "cancelled_synthetic_job": true,
+      "purge_removed_job_and_bytes": true,
+      "password_reset_via_shipped_command": true,
+      "old_session_revoked": true,
+      "old_password_rejected": true,
+      "new_password_login": true,
+      "existing_jobs_preserved": true
+    },
+    "image_retry": {
+      "pinned_image_multipart_retry_across_seconds": true,
+      "same_job_returned": true,
+      "synthetic_image_job_purged": true
+    },
+    "pinned_runtime_boundaries": {
+      "pillow_version": "13.0.0",
+      "certifi_version": "2026.10.23",
+      "oversized_apng_rejected_before_decoder": true,
+      "compromised_tls_root_absent": true
+    },
+    "historical_empty_cache_download": {
+      "passed": true,
+      "scope": "Initial pre-audit preparation; final acceptance reused all35 verified cache blobs"
+    },
+    "test_stack_stopped": true,
+    "unrelated_training_left_running": true
+  },
+  "post_cleanup_gpu_acceptance": {
+    "status": "passed",
+    "platform": "Linux AMD64 NVIDIA GeForce RTX4070SUPER 12GB",
+    "precision": "separate FP8 test variant; distributed default remains BF16",
+    "source_modules_match_tested_commit": true,
+    "gpu_model_resident": true,
+    "word_produced": true,
+    "word_bytes": 2653,
+    "text_of_both_synthetic_pages_exact": true,
+    "conversion_seconds": 22.1,
+    "existing_account_principal_and_jobs_preserved": true
+  },
+  "presentation": {
+    "languages": [
+      "en",
+      "sk"
+    ],
+    "language_choice_before_login": true,
+    "storage_denial_nonfatal": true,
+    "company_logo": "Original EVOLIQ horizontal black/white artwork, footer/header/About and both README languages",
+    "company_website": "English/Slovak navigation link, opens in a new tab",
+    "product_banner": "Diagnostic/non-production banner removed at owner request; stable protocol fields preserved"
+  },
+  "publication": {
+    "repository": "https://github.com/EvoliqCZ/UnflattenW_Inference_tool-",
+    "visibility": "PRIVATE, unchanged",
+    "scope": "Complete inference application snapshot with app tests/fixtures, model bundle/export helpers and deployment; local development history remains local",
+    "excluded": "Weights, credentials, live documents/data, historical training operation scripts/tests and internal corpus-review tooling",
+    "history": "Fresh source-only main snapshot; internal development/training history stays local."
+  },
+  "limitations": [
+    "BF16 recommends at least 16 GB GPU memory; actual allocatable capacity is checked.",
+    "Model repository is private and needs an authorized Hugging Face read token.",
+    "A synthetic conversion is application acceptance, not a model-quality benchmark.",
+    "Full suite runs in a local test overlay; locked image receives actual CUDA/PDF/Word acceptance.",
+    "Historical training/agent-tooling suites are outside this standalone app suite.",
+    "Dependency audits cover the Python/npm graph; container OS packages were not comprehensively scanned.",
+    "Reconstruction can change layout, pagination and image crops: the observed48-page document exported as76 Word pages. Structural validation is not a layout-fidelity benchmark."
+  ],
+  "multi_page_image_fix": {
+    "included_commit": "ea1c838084466f689c43e4ad38f435c06b10e41d",
+    "strict_validation_preserved": true,
+    "per_page_resource_recovery": true,
+    "header_footer_image_content_identity": true,
+    "real_replay_without_new_GPU_decode": {
+      "input_pages": 48,
+      "embedded_images_restored": 6,
+      "ast_status": "strict_valid",
+      "word_produced": true,
+      "resulting_word_pages": 76
+    },
+    "scope": "Source data and rebuilt customer document are excluded from the release."
+  },
+  "review": {
+    "release_review": "One fresh independent review; Important authenticated-storage-denial failure fixed and verified RED-to-GREEN; stale deployment references corrected.",
+    "multi_page_review": "Peer task reviewed resource recovery; header/footer content and dimension propagation issues fixed before integration.",
+    "deferred_code_findings": []
+  }
+}

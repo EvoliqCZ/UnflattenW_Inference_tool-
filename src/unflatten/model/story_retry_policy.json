@@ -1,0 +1,12 @@
+{
+ "schema": "story-retry-policy/1",
+ "policy_id": "story-retry.v0",
+ "status": "PROPOSED",
+ "semantics": "story-retry-semantics/1",
+ "unit": "tokens_in_story",
+ "pattern_source": "retry_from_first_decode",
+ "threshold_tokens": null,
+ "provenance": {
+  "threshold_tokens": "placeholder; the gap on 40 selection pages at step 131 000 is 140 .. 728 tokens, gold tail reaches 872 (docs/runs/header-length-cap-analysis-2026-10-11.md); frozen by owner before the first measurement that counts"
+ }
+}

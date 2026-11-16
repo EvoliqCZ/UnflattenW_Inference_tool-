@@ -1,0 +1,13 @@
+{
+ "decode": {
+  "loop_guard": "v2",
+  "max_steps": 4608,
+  "region_decode": true,
+  "typed_decode": true
+ },
+ "selection_policy_hash": "sha256:f9d4a7a87d3cce9c00deda3efa43e6fe8dda67cc7bbd57a69dd5ad94169722d6",
+ "source": {
+  "path": "s4_selection_policy.v15b.json",
+  "policy_version": "1.0.0"
+ }
+}

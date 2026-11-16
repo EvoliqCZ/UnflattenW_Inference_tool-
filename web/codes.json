@@ -1,0 +1,163 @@
+{
+  "artifact_roles": [
+    "diagnostic_docx",
+    "docx_preview",
+    "prediction_ir",
+    "source_preview"
+  ],
+  "capabilities": [
+    "cancel_own_job",
+    "download_docx",
+    "download_prediction_ir",
+    "read_status",
+    "submit_diagnostic"
+  ],
+  "component_codes": [
+    "artifact_store",
+    "job_store",
+    "pdf_sandbox",
+    "principal_store",
+    "runtime_policy",
+    "worker"
+  ],
+  "diagnostic_reason_codes": [
+    "DIAGNOSTIC_DOCX_NOT_REQUESTED",
+    "DOCX_AST_NOT_STRICT",
+    "DOCX_CHAIN_ERROR",
+    "DOCX_FONT_SUBSTITUTED",
+    "DOCX_OUTPUT_TOO_LARGE",
+    "DOCX_PAGE_NOT_TERMINATED",
+    "DOCX_PAGE_STREAM_INVALID",
+    "DOCX_RENDER_NOT_READY",
+    "HEADLESS_DEFAULTS_V0_APPLIED",
+    "PREVIEW_RENDER_FAILED"
+  ],
+  "docx_blockers": [
+    "AST_PROMOTER_UNAVAILABLE",
+    "PRODUCT_CHECKPOINT_UNAVAILABLE",
+    "RESOURCE_BRANCH_UNAVAILABLE",
+    "RFC004_RENDERER_GATE_UNAVAILABLE",
+    "TYPED_PROPERTY_HEADS_UNAVAILABLE"
+  ],
+  "download_states": [
+    "absent",
+    "downloading",
+    "failed",
+    "loading",
+    "ready",
+    "verifying"
+  ],
+  "engine_ids": [
+    "native"
+  ],
+  "engine_unavailable_reasons": [
+    "worker_not_published"
+  ],
+  "fits_reasons": [
+    "compute_capability",
+    "vram"
+  ],
+  "input_kinds": [
+    "image",
+    "pdf"
+  ],
+  "job_stages": [
+    "admission_complete",
+    "artifact_finalization",
+    "ast_promotion",
+    "feature_extraction",
+    "loading_model",
+    "model_decode",
+    "model_input_projection",
+    "pdf_inspection",
+    "pdf_rasterization",
+    "png_validation",
+    "prediction_ir_sealing",
+    "renderer_gate"
+  ],
+  "job_states": [
+    "cancelled",
+    "expired",
+    "failed",
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "model_command_kinds": [
+    "delete",
+    "download",
+    "load"
+  ],
+  "model_command_phases": [
+    "deleting",
+    "downloading",
+    "loading",
+    "verifying"
+  ],
+  "model_command_states": [
+    "failed",
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "problem_codes": [
+    "ARTIFACT_EXPIRED",
+    "AST_PROMOTION_FAILED",
+    "AST_PROMOTION_UNAVAILABLE",
+    "AUTHENTICATION_FAILED",
+    "CAPABILITY_DENIED",
+    "CAPABILITY_NOT_READY",
+    "HOST_NOT_ALLOWED",
+    "IDEMPOTENCY_KEY_REUSED",
+    "IMAGE_INPUT_INVALID",
+    "INTERNAL_ERROR",
+    "JOB_ACTIVE",
+    "JOB_CANCELLED",
+    "JOB_TERMINAL",
+    "MODEL_CHECKPOINT_UNVERIFIED",
+    "MODEL_COMMAND_CONFLICT",
+    "MODEL_COMPONENT_LOCK_MISMATCH",
+    "MODEL_DECODE_MAX_STEPS",
+    "MODEL_DECODE_VOCABULARY_EXHAUSTED",
+    "MODEL_DOWNLOAD_FAILED",
+    "MODEL_ENGINE_UNAVAILABLE",
+    "MODEL_INPUT_FORBIDDEN_CHANNEL",
+    "MODEL_VARIANT_DOES_NOT_FIT",
+    "MODEL_VARIANT_NOT_DOWNLOADABLE",
+    "MODEL_VARIANT_NOT_PUBLISHED",
+    "MODEL_VARIANT_PLANNED",
+    "PDF_ACTIVE_CONTENT",
+    "PDF_ANNOTATION_UNSUPPORTED",
+    "PDF_EMBEDDED_FILE",
+    "PDF_ENCRYPTED",
+    "PDF_HIDDEN_TEXT",
+    "PDF_MALFORMED",
+    "PDF_PAGE_DIMENSIONS_EXCEEDED",
+    "PDF_SIGNATURE_INVALID",
+    "PDF_TEXT_VISIBILITY_AMBIGUOUS",
+    "PNG_INVALID",
+    "POPPLER_RESOURCE_LIMIT",
+    "POPPLER_TIMEOUT",
+    "PREDICTION_IR_INVALID",
+    "QUEUE_CAPACITY_EXCEEDED",
+    "RASTER_OUTPUT_INVALID",
+    "RASTER_PIXEL_LIMIT_EXCEEDED",
+    "RATE_LIMITED",
+    "RENDERER_FAILED",
+    "REQUEST_INVALID",
+    "RESOURCE_NOT_FOUND",
+    "RUNTIME_POLICY_MISMATCH",
+    "SETUP_ALREADY_COMPLETE",
+    "SETUP_REQUIRED",
+    "TOO_MANY_PAGES",
+    "UNKNOWN_MODEL_VARIANT",
+    "UNSUPPORTED_MEDIA_TYPE",
+    "UNSUPPORTED_PAGE_COUNT",
+    "UPLOAD_TOO_LARGE",
+    "WEB_REQUEST_REJECTED"
+  ],
+  "renderer_approximations": [
+    "FONT_FALLBACK"
+  ],
+  "schema_version": "1.0"
+}

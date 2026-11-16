@@ -1,0 +1,39 @@
+ARG BASE_IMAGE=docker.io/library/ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffbb1bf33ca3
+FROM docker.io/library/python:3.12.11-slim-bookworm AS certificates
+
+FROM ${BASE_IMAGE} AS pinned-base
+COPY --from=certificates /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN rm -f /etc/apt/sources.list.d/ubuntu.sources \
+    && printf '%s\n' \
+      'deb [check-valid-until=no] https://snapshot.ubuntu.com/ubuntu/20260924T000000Z noble main universe' \
+      'deb [check-valid-until=no] https://snapshot.ubuntu.com/ubuntu/20260924T000000Z noble-updates main universe' \
+      'deb [check-valid-until=no] https://snapshot.ubuntu.com/ubuntu/20260924T000000Z noble-security main universe' \
+      > /etc/apt/sources.list
+
+FROM pinned-base AS verifier
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y python3=3.12.3-0ubuntu2.1 \
+    && rm -rf /var/lib/apt/lists/*
+COPY scanner*.py entrypoint.py /opt/unflatten/
+RUN python3 -m py_compile /opt/unflatten/scanner*.py /opt/unflatten/entrypoint.py
+
+FROM pinned-base AS runtime
+ARG POPPLER_VERSION=24.02.0-1ubuntu9.9
+ARG QPDF_VERSION=11.9.0-1.1ubuntu0.1
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        python3=3.12.3-0ubuntu2.1 \
+        poppler-utils=${POPPLER_VERSION} \
+        qpdf=${QPDF_VERSION} \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=verifier --chown=65532:65532 /opt/unflatten /opt/unflatten
+ENV HOME=/tmp PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+LABEL org.opencontainers.image.title="Unflatten PDF admission sandbox" \
+      org.unflatten.pdf-scanner.identity="unflatten-pdf-admission/qpdf-11.9.0-1.1ubuntu0.1-poppler-24.02.0-1ubuntu9.9/v13"
+USER 65532:65532
+HEALTHCHECK NONE
+ENTRYPOINT ["python3", "/opt/unflatten/entrypoint.py"]

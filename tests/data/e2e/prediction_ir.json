@@ -1,0 +1,4 @@
+{
+  "_fixture_note": "T37 e2e fixture -- NOT validated against model_prediction_ir.schema.json. Building a schema-true payload needs unflatten.model.prediction_ir, which imports unflatten.model.node_lifecycle, which imports torch at module load; fake_worker.py stays torch-free by design (design doc Sec 7.6), so this fixture is a placeholder byte blob published under the prediction_ir artifact role, not a real sealed prediction.",
+  "document_hypotheses": []
+}

@@ -1,0 +1,10 @@
+{
+  "policy_version": "adaptive-document-visual-memory-v0-policy-v1",
+  "retention_ratio": {
+    "protected": 1,
+    "high": 1,
+    "medium": 2,
+    "low": 4,
+    "uncertain": 1
+  }
+}

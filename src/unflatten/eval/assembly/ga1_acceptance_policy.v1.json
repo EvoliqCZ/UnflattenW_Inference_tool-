@@ -1,0 +1,13 @@
+{
+  "ga1_acceptance_policy_schema_version": "1.0.0",
+  "policy_name": "B0",
+  "floors_micro": {
+    "section": 980000,
+    "table": 900000,
+    "list": 830000
+  },
+  "margin_micro": 0,
+  "minimum_documents": 200,
+  "minimum_decisions_per_class": 30,
+  "is_placeholder": false
+}

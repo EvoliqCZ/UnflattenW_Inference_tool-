@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/training_target_materializer.schema.json",
+  "title": "M1 Training Target Materializer descriptor (design \u00a74.6)",
+  "$comment": "Closed envelope. Describes the materializer implementation and which LossUnit kinds/loss families it supports. M1 implements only rfc003_supervised; sealed_derived/online_regularizer requests fail as unsupported -- the enum stays the full closed set so narrowing happens at runtime, not in the type (design \u00a74.6, RFC005 \u00a729.6). Schema 1.1.0 adds optional leader_projection for DEC-036 form fill-leader canonicalization. Schema 1.2.0 adds optional target_policy for the v16 target projection (DEC-055 V1a/V1b/V1c, audit 2026-09-29 exclusions and spill refusal); a descriptor without it still declares 1.1.0, so no pre-v16 materializer hash moves.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "training_target_materializer_schema_version",
+    "materializer_version",
+    "implementation_hash",
+    "loss_unit_schema_hash",
+    "boundary_projection_policy_version",
+    "composite_vocabulary_hash",
+    "composite_grammar_hash",
+    "capability_profile_hash",
+    "supported_loss_unit_kinds",
+    "supported_loss_families"
+  ],
+  "properties": {
+    "training_target_materializer_schema_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "materializer_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "implementation_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "loss_unit_schema_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "boundary_projection_policy_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "composite_vocabulary_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "composite_grammar_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "capability_profile_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "supported_loss_unit_kinds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "rfc003_supervised",
+          "sealed_derived",
+          "online_regularizer"
+        ]
+      }
+    },
+    "supported_loss_families": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "L_structure",
+          "L_text",
+          "L_typed",
+          "L_alignment"
+        ]
+      }
+    },
+    "leader_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_version",
+        "chars",
+        "min_run",
+        "canonical_len"
+      ],
+      "properties": {
+        "policy_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "chars": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          }
+        },
+        "min_run": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "canonical_len": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "target_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "whitespace_run_grant",
+        "withdrawn_run_collapse",
+        "story_rehome",
+        "withdrawn_whitespace_drop",
+        "spill_refusal",
+        "unowned_ink_floor_chars",
+        "unowned_ink_floor_is_placeholder",
+        "page_exclusions_sha256"
+      ],
+      "properties": {
+        "policy_id": {
+          "const": "v16-targets.v1"
+        },
+        "whitespace_run_grant": {
+          "type": "boolean"
+        },
+        "withdrawn_run_collapse": {
+          "type": "boolean"
+        },
+        "story_rehome": {
+          "type": "boolean"
+        },
+        "withdrawn_whitespace_drop": {
+          "type": "boolean"
+        },
+        "spill_refusal": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "min_trailing_rows_next_empty",
+                "min_trailing_rows_previous_empty"
+              ],
+              "properties": {
+                "min_trailing_rows_next_empty": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "min_trailing_rows_previous_empty": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          ]
+        },
+        "unowned_ink_floor_chars": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            }
+          ]
+        },
+        "unowned_ink_floor_is_placeholder": {
+          "type": "boolean"
+        },
+        "page_exclusions_sha256": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/sha256"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

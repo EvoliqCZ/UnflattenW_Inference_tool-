@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "CELL_MISSING_PARAGRAPH",
+      "path": "/sections/0/children/0/rows/0/cells/0"
+    }
+  ]
+}

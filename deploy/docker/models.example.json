@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "default_variant": "auto",
+  "variants": [
+    {
+      "variant_id": "bf16-hf",
+      "label": "BF16 (bf16 weights, bf16 KV cache)",
+      "precision": "bf16",
+      "kv_cache": "bf16",
+      "availability": "unpublished"
+    },
+    {
+      "variant_id": "fp8-hf",
+      "label": "FP8 (fp8 weights, fp8 KV cache)",
+      "precision": "fp8",
+      "kv_cache": "fp8",
+      "availability": "unpublished"
+    },
+    {
+      "variant_id": "int8-hf",
+      "label": "INT8 (int8 weights, bf16 KV cache)",
+      "precision": "int8",
+      "kv_cache": "bf16",
+      "availability": "unpublished"
+    },
+    {
+      "variant_id": "unflatten-w-moe",
+      "label": "Unflatten W MoE (future model)",
+      "availability": "planned"
+    },
+    {
+      "variant_id": "local-bundle",
+      "label": "local bundle (scripts/build_model_bundle.py build --out ./models/local-bundle)",
+      "precision": "bf16",
+      "kv_cache": "bf16",
+      "bundle": "./models/local-bundle"
+    }
+  ]
+}

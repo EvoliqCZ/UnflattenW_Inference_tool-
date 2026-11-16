@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "TABLE_GRID_OVERLAP",
+      "path": "/sections/0/children/0/rows/0/cells/1"
+    }
+  ]
+}

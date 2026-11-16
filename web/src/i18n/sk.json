@@ -1,0 +1,802 @@
+{
+  "artifact": {
+    "role": {
+      "diagnostic_docx": "Dokument Word",
+      "docx_preview": "Náhľad Word dokumentu",
+      "prediction_ir": "Medzivýstup predikcie",
+      "source_preview": "Náhľad zdroja"
+    }
+  },
+  "codes": {
+    "approximation": {
+      "FONT_FALLBACK": "Náhradné písmo"
+    },
+    "blocker": {
+      "AST_PROMOTER_UNAVAILABLE": "Zostavovač AST nie je dostupný",
+      "PRODUCT_CHECKPOINT_UNAVAILABLE": "Produkčný kontrolný bod nie je dostupný",
+      "RESOURCE_BRANCH_UNAVAILABLE": "Vetva zotavenia zdrojov nie je dostupná",
+      "RFC004_RENDERER_GATE_UNAVAILABLE": "Brána vykresľovača RFC004 nie je dostupná",
+      "TYPED_PROPERTY_HEADS_UNAVAILABLE": "Typované hlavy vlastností nie sú dostupné"
+    },
+    "capability": {
+      "cancel_own_job": "Zrušiť vlastnú úlohu",
+      "download_docx": "Stiahnuť DOCX",
+      "download_prediction_ir": "Stiahnuť medzivýstup predikcie",
+      "read_status": "Čítať stav",
+      "submit_diagnostic": "Spustiť konverziu"
+    },
+    "commandKind": {
+      "delete": "Odstrániť",
+      "download": "Stiahnuť",
+      "load": "Načítať"
+    },
+    "commandPhase": {
+      "deleting": "Odstraňuje sa",
+      "downloading": "Sťahuje sa",
+      "loading": "Načítava sa",
+      "verifying": "Overuje sa"
+    },
+    "commandState": {
+      "failed": "Zlyhal",
+      "queued": "Vo fronte",
+      "running": "Beží",
+      "succeeded": "Dokončený"
+    },
+    "component": {
+      "artifact_store": {
+        "hint": "Sklad výstupných súborov úloh.",
+        "label": "Úložisko artefaktov"
+      },
+      "job_store": {
+        "hint": "Trvalý záznam stavu úloh.",
+        "label": "Úložisko úloh"
+      },
+      "pdf_sandbox": {
+        "hint": "Izolované prostredie na spracovanie PDF.",
+        "label": "Karanténa PDF"
+      },
+      "principal_store": {
+        "hint": "Záznam prihlasovacích účtov.",
+        "label": "Úložisko účtov"
+      },
+      "runtime_policy": {
+        "hint": "Politika obmedzujúca beh služby.",
+        "label": "Behová politika"
+      },
+      "worker": {
+        "hint": "Proces, ktorý vykonáva úlohy.",
+        "label": "Pracovný proces"
+      }
+    },
+    "engine": {
+      "native": "Natívny"
+    },
+    "engineUnavailable": {
+      "worker_not_published": "Pracovný proces nebol publikovaný"
+    },
+    "fitsReason": {
+      "compute_capability": "Výpočtová schopnosť GPU",
+      "vram": "Pamäť GPU"
+    },
+    "inputKind": {
+      "image": "Obrázok",
+      "pdf": "PDF"
+    },
+    "problem": {
+      "ARTIFACT_EXPIRED": {
+        "hint": "Výstup úlohy už bol odstránený podľa retenčnej lehoty.",
+        "title": "Artefakt vypršal"
+      },
+      "AST_PROMOTION_FAILED": {
+        "hint": "Predikovaná štruktúra sa nepodarilo previesť na kanonický AST.",
+        "title": "Zostavenie AST zlyhalo"
+      },
+      "AST_PROMOTION_UNAVAILABLE": {
+        "hint": "Táto zložka služby momentálne nie je k dispozícii.",
+        "title": "Zostavenie AST nie je dostupné"
+      },
+      "AUTHENTICATION_FAILED": {
+        "hint": "Meno alebo heslo nesúhlasí.",
+        "title": "Prihlásenie zlyhalo"
+      },
+      "CAPABILITY_DENIED": {
+        "hint": "Účet nemá oprávnenie na túto akciu.",
+        "title": "Operácia nie je povolená"
+      },
+      "CAPABILITY_NOT_READY": {
+        "hint": "Táto schopnosť služby ešte nie je k dispozícii.",
+        "title": "Funkcia zatiaľ nie je pripravená"
+      },
+      "HOST_NOT_ALLOWED": {
+        "hint": "Požiadavka prišla z hostiteľa mimo povoleného zoznamu.",
+        "title": "Hostiteľ nie je povolený"
+      },
+      "IDEMPOTENCY_KEY_REUSED": {
+        "hint": "Rovnaký idempotenčný kľúč bol už raz odoslaný s inými dátami.",
+        "title": "Kľúč požiadavky je už použitý"
+      },
+      "IMAGE_INPUT_INVALID": {
+        "hint": "Nahraný obrázok sa nepodarilo spracovať.",
+        "title": "Neplatný obrázok"
+      },
+      "INTERNAL_ERROR": {
+        "hint": "Služba narazila na neočakávanú chybu.",
+        "title": "Vnútorná chyba služby"
+      },
+      "JOB_ACTIVE": {
+        "hint": "Túto akciu nie je možné vykonať, kým úloha beží.",
+        "title": "Úloha stále beží"
+      },
+      "JOB_CANCELLED": {
+        "hint": "Úloha bola zrušená pred dokončením.",
+        "title": "Úloha bola zrušená"
+      },
+      "JOB_TERMINAL": {
+        "hint": "Úloha sa nachádza v konečnom stave a nedá sa ďalej meniť.",
+        "title": "Úloha je už ukončená"
+      },
+      "MODEL_CHECKPOINT_UNVERIFIED": {
+        "hint": "Stiahnutý súbor modelu nesedí s očakávaným odtlačkom.",
+        "title": "Kontrolný bod modelu nebol overený"
+      },
+      "MODEL_COMMAND_CONFLICT": {
+        "hint": "Nad týmto variantom modelu prebieha iná operácia.",
+        "title": "Iný príkaz nad modelom už beží"
+      },
+      "MODEL_COMPONENT_LOCK_MISMATCH": {
+        "hint": "Stav zdieľanej komponenty modelu sa medzičasom zmenil.",
+        "title": "Nezhoda zámku komponentu modelu"
+      },
+      "MODEL_DECODE_MAX_STEPS": {
+        "hint": "Model neukončil stranu do maximálneho počtu krokov.",
+        "title": "Dekódovanie prekročilo limit krokov"
+      },
+      "MODEL_DECODE_VOCABULARY_EXHAUSTED": {
+        "hint": "Model požadoval token mimo podporovaného slovníka.",
+        "title": "Slovník dekódovania vyčerpaný"
+      },
+      "MODEL_DOWNLOAD_FAILED": {
+        "hint": "Overte internetové pripojenie a prístup Hugging Face tokenu k tomuto modelu. Po oprave prístupu znovu spustite aplikáciu.",
+        "title": "Model sa nepodarilo stiahnuť"
+      },
+      "MODEL_ENGINE_UNAVAILABLE": {
+        "hint": "Overte dostupnosť podporovanej NVIDIA GPU, ovládača a NVIDIA Container Toolkit. Potom reštartujte aplikáciu.",
+        "title": "Inferenčný engine nie je dostupný"
+      },
+      "MODEL_INPUT_FORBIDDEN_CHANNEL": {
+        "hint": "Vstup používa kanál, ktorý model v tomto nasadení neprijíma.",
+        "title": "Zakázaný vstupný kanál modelu"
+      },
+      "MODEL_VARIANT_DOES_NOT_FIT": {
+        "hint": "Uvoľnite pamäť GPU ukončením iných úloh a skúste model načítať znova.",
+        "title": "Variant modelu sa nezmestí"
+      },
+      "MODEL_VARIANT_NOT_DOWNLOADABLE": {
+        "hint": "Tento variant modelu nie je momentálne k dispozícii na stiahnutie.",
+        "title": "Variant modelu nie je možné stiahnuť"
+      },
+      "MODEL_VARIANT_NOT_PUBLISHED": {
+        "hint": "Repozitár tohto variantu na Hugging Face ešte nie je zverejnený; stiahnuť a použiť ho pôjde až po zverejnení.",
+        "title": "Variant modelu zatiaľ nie je zverejnený"
+      },
+      "MODEL_VARIANT_PLANNED": {
+        "hint": "Tento model ešte neexistuje, pripravuje sa. Zatiaľ ho nie je možné stiahnuť ani použiť.",
+        "title": "Model sa ešte pripravuje"
+      },
+      "PDF_ACTIVE_CONTENT": {
+        "hint": "Dokument obsahuje JavaScript alebo iný aktívny prvok a bol odmietnutý.",
+        "title": "PDF obsahuje aktívny obsah"
+      },
+      "PDF_ANNOTATION_UNSUPPORTED": {
+        "hint": "Dokument obsahuje typ anotácie, ktorý služba nespracúva.",
+        "title": "Nepodporovaná anotácia PDF"
+      },
+      "PDF_EMBEDDED_FILE": {
+        "hint": "Dokument obsahuje vložený súbor a bol z bezpečnostných dôvodov odmietnutý.",
+        "title": "PDF obsahuje vložený súbor"
+      },
+      "PDF_ENCRYPTED": {
+        "hint": "Dokument je chránený heslom alebo šifrovaním.",
+        "title": "PDF je zašifrované"
+      },
+      "PDF_HIDDEN_TEXT": {
+        "hint": "V dokumente sa našiel text, ktorý nie je viditeľný na stránke.",
+        "title": "PDF obsahuje skrytý text"
+      },
+      "PDF_MALFORMED": {
+        "hint": "Súbor sa nepodarilo prečítať ako platné PDF.",
+        "title": "PDF je poškodené"
+      },
+      "PDF_PAGE_DIMENSIONS_EXCEEDED": {
+        "hint": "Aspoň jedna strana presahuje podporované rozmery.",
+        "title": "Rozmer strany PDF je príliš veľký"
+      },
+      "PDF_SIGNATURE_INVALID": {
+        "hint": "Digitálny podpis dokumentu sa nepodarilo overiť.",
+        "title": "Neplatný podpis PDF"
+      },
+      "PDF_TEXT_VISIBILITY_AMBIGUOUS": {
+        "hint": "Nedá sa spoľahlivo určiť, či je text v dokumente viditeľný.",
+        "title": "Viditeľnosť textu v PDF je nejednoznačná"
+      },
+      "PNG_INVALID": {
+        "hint": "Vygenerovaný alebo nahraný obrázok PNG nie je platný.",
+        "title": "Neplatný PNG"
+      },
+      "POPPLER_RESOURCE_LIMIT": {
+        "hint": "Nástroj na spracovanie PDF prekročil povolené zdroje.",
+        "title": "Limit zdrojov pri spracovaní PDF"
+      },
+      "POPPLER_TIMEOUT": {
+        "hint": "Spracovanie dokumentu trvalo dlhšie ako povolený limit.",
+        "title": "Časový limit spracovania PDF vypršal"
+      },
+      "PREDICTION_IR_INVALID": {
+        "hint": "Vnútorná reprezentácia predikcie nespĺňa svoj kontrakt.",
+        "title": "Neplatný medzivýstup predikcie"
+      },
+      "QUEUE_CAPACITY_EXCEEDED": {
+        "hint": "Služba momentálne neprijíma ďalšie úlohy.",
+        "title": "Fronta je plná"
+      },
+      "RASTER_OUTPUT_INVALID": {
+        "hint": "Rastrovanie strany vyprodukovalo neplatný obrázok.",
+        "title": "Neplatný výstup rastrovania"
+      },
+      "RASTER_PIXEL_LIMIT_EXCEEDED": {
+        "hint": "Rastrovaná strana presahuje podporovaný počet pixelov.",
+        "title": "Prekročený limit pixelov"
+      },
+      "RATE_LIMITED": {
+        "hint": "Prekročil sa povolený počet požiadaviek za daný čas.",
+        "title": "Príliš veľa požiadaviek"
+      },
+      "RENDERER_FAILED": {
+        "hint": "Prevod na dokument Word zlyhal.",
+        "title": "Vykreslenie zlyhalo"
+      },
+      "REQUEST_INVALID": {
+        "hint": "Telo alebo parametre požiadavky nespĺňajú očakávaný tvar.",
+        "title": "Neplatná požiadavka"
+      },
+      "RESOURCE_NOT_FOUND": {
+        "hint": "Požadovaná položka neexistuje alebo už nie je dostupná.",
+        "title": "Zdroj nebol nájdený"
+      },
+      "RUNTIME_POLICY_MISMATCH": {
+        "hint": "Aktuálne nastavenie behu nezodpovedá požadovanej politike.",
+        "title": "Nezhoda behovej politiky"
+      },
+      "SETUP_ALREADY_COMPLETE": {
+        "hint": "Prvotné nastavenie služby už bolo vykonané.",
+        "title": "Nastavenie je už dokončené"
+      },
+      "SETUP_REQUIRED": {
+        "hint": "Službu je najprv potrebné nastaviť.",
+        "title": "Je potrebné nastavenie"
+      },
+      "TOO_MANY_PAGES": {
+        "hint": "Dokument presahuje povolený počet strán.",
+        "title": "Príliš veľa strán"
+      },
+      "UNKNOWN_MODEL_VARIANT": {
+        "hint": "Zadaný variant modelu nie je zaregistrovaný.",
+        "title": "Neznámy variant modelu"
+      },
+      "UNSUPPORTED_MEDIA_TYPE": {
+        "hint": "Nahraný súbor nemá podporovaný typ.",
+        "title": "Nepodporovaný typ súboru"
+      },
+      "UNSUPPORTED_PAGE_COUNT": {
+        "hint": "Počet strán vstupu nezodpovedá podporovanému rozsahu.",
+        "title": "Nepodporovaný počet strán"
+      },
+      "UPLOAD_TOO_LARGE": {
+        "hint": "Veľkosť súboru presahuje povolený limit.",
+        "title": "Nahrávaný súbor je príliš veľký"
+      },
+      "WEB_REQUEST_REJECTED": {
+        "hint": "Táto operácia nie je z webového rozhrania povolená.",
+        "title": "Požiadavka z prehliadača bola odmietnutá"
+      }
+    },
+    "reason": {
+      "DIAGNOSTIC_DOCX_NOT_REQUESTED": "Výstup Word nebol vyžiadaný",
+      "DOCX_AST_NOT_STRICT": "AST nespĺňa prísny profil",
+      "DOCX_CHAIN_ERROR": "Chyba v reťazci zostavenia DOCX",
+      "DOCX_FONT_SUBSTITUTED": "Písmo bolo nahradené náhradou",
+      "DOCX_OUTPUT_TOO_LARGE": "Výstupný DOCX je príliš veľký",
+      "DOCX_PAGE_NOT_TERMINATED": "Strana nebola ukončená",
+      "DOCX_PAGE_STREAM_INVALID": "Neplatný dátový prúd strany",
+      "DOCX_RENDER_NOT_READY": "Vykresľovanie ešte nie je pripravené",
+      "HEADLESS_DEFAULTS_V0_APPLIED": "Použili sa predvolené hodnoty bez obsluhy",
+      "PREVIEW_RENDER_FAILED": "Vykreslenie náhľadu zlyhalo"
+    },
+    "stage": {
+      "admission_complete": "Prijatie dokončené",
+      "artifact_finalization": "Uzatváranie výstupov",
+      "ast_promotion": "Zostavenie AST",
+      "feature_extraction": "Extrakcia príznakov",
+      "loading_model": "Načítava sa model",
+      "model_decode": "Dekódovanie modelom",
+      "model_input_projection": "Projekcia vstupu modelu",
+      "pdf_inspection": "Kontrola PDF",
+      "pdf_rasterization": "Rastrovanie PDF",
+      "png_validation": "Overenie PNG",
+      "prediction_ir_sealing": "Uzatváranie medzivýstupu",
+      "renderer_gate": "Brána vykresľovača"
+    },
+    "state": {
+      "cancelled": "Zrušená",
+      "expired": "Vypršala",
+      "failed": "Zlyhala",
+      "queued": "Vo fronte",
+      "running": "Beží",
+      "succeeded": "Dokončená"
+    },
+    "unknown": "Neznámy kód"
+  },
+  "common": {
+    "back": "Späť",
+    "cancel": "Zrušiť",
+    "close": "Zavrieť",
+    "confirm": "Potvrdiť",
+    "copied": "Skopírované",
+    "copy": "Kopírovať",
+    "delete": "Odstrániť",
+    "download": "Stiahnuť",
+    "loading": "Načítava sa…",
+    "next": "Ďalej",
+    "retry": "Skúsiť znova",
+    "unknown": "Neznáme"
+  },
+  "compare": {
+    "alt": {
+      "docx": "Word (náhľad), strana {{index}} z {{total}}",
+      "source": "Originál, strana {{index}} z {{total}}"
+    },
+    "diffTint": "Zvýraznenie rozdielov",
+    "legend": "Legenda",
+    "link": "Prepojiť posuny",
+    "linkPages": "Prepojiť strany",
+    "maximize": "Zväčšiť",
+    "mismatch": "Rôzny počet strán",
+    "mismatchNotice": "Originál má {{sourceCount}} strán, Word sa vykreslil na {{docxCount}} strán. Strany sa nemusia zhodovať jedna k jednej.",
+    "missing": {
+      "docxNotProduced": "Word nevznikol: {{reasons}}.",
+      "loadFailed": "Náhľad sa nepodarilo načítať.",
+      "noSource": "Náhľad originálu pre stranu {{index}} chýba.",
+      "outOfRangeDocx": "Word nemá stranu {{index}}.",
+      "outOfRangeSource": "Originál nemá stranu {{index}}.",
+      "pageFailed": "Strana {{index}} zlyhala ({{error}}). V dokumente je zástupný odsek.",
+      "previewFailed": "Náhľad Wordu sa nepodarilo vykresliť. Word je napriek tomu k dispozícii na stiahnutie."
+    },
+    "mode": {
+      "overlay": "Prekrytie",
+      "side": "Vedľa seba",
+      "swipe": "Posuvník"
+    },
+    "modeLabel": "Režim porovnania",
+    "opacity": "Priehľadnosť",
+    "pageInputLabel": "Strana",
+    "pageInputLabelDocx": "Strana (Word)",
+    "pageInputLabelSource": "Strana (originál)",
+    "pageOf": "Strana {{current}} z {{total}}",
+    "paneDocx": "Word",
+    "paneSource": "Originál",
+    "restore": "Obnoviť zobrazenie",
+    "shortcuts": {
+      "actualSize": "100 %",
+      "diffToggle": "Farebný rozdiel zap/vyp (v Prekrytí)",
+      "firstLast": "Prvá / posledná strana",
+      "fit": "Prispôsobiť strane",
+      "help": "Otvoriť tento dialóg",
+      "lock": "Zámok synchronizácie",
+      "maximizeToggle": "Maximalizovať / obnoviť",
+      "mode": "Režim Vedľa seba / Prekrytie / Posuvník",
+      "opacityStep": "Priehľadnosť −/+ 10 %",
+      "open": "Klávesové skratky",
+      "page": "Predchádzajúca / nasledujúca strana",
+      "title": "Klávesové skratky",
+      "zoomStep": "Priblížiť / oddialiť"
+    },
+    "zoom": {
+      "actual": "Skutočná veľkosť",
+      "fitPage": "Prispôsobiť strane",
+      "fitWidth": "Prispôsobiť šírke",
+      "in": "Priblížiť",
+      "out": "Oddialiť",
+      "reset": "Obnoviť"
+    },
+    "zoomGroup": "Ovládanie priblíženia",
+    "zoomLevel": "Priblíženie {{percent}} %"
+  },
+  "convert": {
+    "blocked": {
+      "noFiles": "Najprv vyber súbor.",
+      "notReady": "Služba nie je pripravená."
+    },
+    "dropzone": {
+      "choose": "Vybrať súbory",
+      "hint": "alebo klikni pre výber súboru",
+      "invalidType": "Tento typ súboru nie je podporovaný.",
+      "label": "Sem presuň PDF alebo obrázky"
+    },
+    "label": {
+      "counter": "{{count}}/{{max}}",
+      "hint": "Uloží sa k úlohe na tomto PC a zmaže sa s ňou.",
+      "invalid": "Označenie obsahuje nepovolený znak.",
+      "job": "Označenie úlohy"
+    },
+    "limits": "PDF do {{maxPages}} strán, alebo PNG/JPEG (jeden súbor = jedna strana) · spolu najviac {{maxBytes}}",
+    "model": {
+      "default": "Predvolený",
+      "label": "Model",
+      "manage": "Spravovať modely",
+      "single": "Model: {{label}}"
+    },
+    "note": {
+      "photo": "Fotografia dokumentu namiesto skenu môže znížiť presnosť."
+    },
+    "output": {
+      "docx": {
+        "hint": "Word dokument na kontrolu.",
+        "label": "Dokument Word"
+      },
+      "ir": {
+        "hint": "Vnútorná reprezentácia predikcie.",
+        "label": "Medzivýstup"
+      },
+      "legend": "Výstup"
+    },
+    "queue": {
+      "moveDown": "Posunúť nižšie",
+      "moveUp": "Posunúť vyššie",
+      "remove": "Odstrániť",
+      "title": "Vo fronte"
+    },
+    "recentJobs": {
+      "title": "Posledné úlohy",
+      "viewAll": "Všetky úlohy"
+    },
+    "submit": "Odoslať",
+    "submitting": "Odosiela sa…",
+    "title": "Prevod dokumentu",
+    "warning": {
+      "smallImage": "Malé rozlíšenie: ~{{dpi}} DPI pri A4 (model bol meraný pri 300 DPI, ~3 500 px). Text môže byť rozpoznaný horšie."
+    }
+  },
+  "diagnostics": {
+    "fontSubstituted": "Písmo bolo nahradené",
+    "headlessDefaults": "Použité predvolené hodnoty bez obsluhy",
+    "no": "Nie",
+    "policyNoEdits": "Táto politika nemení obsah, iba dopĺňa predvolené hodnoty.",
+    "rawJson": "Surové dáta (JSON)",
+    "unavailable": "Diagnostika zatiaľ nie je k dispozícii.",
+    "yes": "Áno"
+  },
+  "domainComponents": {
+    "fontSubstitutionNotice": {
+      "text": "Pri vykreslení Wordu bolo písmo nahradené metricky zhodným (FONT_FALLBACK). Náhľad Wordu preto nemusí presne zodpovedať tomu, čo uvidíš vo Worde na svojom PC."
+    },
+    "photoQualityNote": {
+      "text": "Pri fotografiách meranie S5 ukázalo pokles podobnosti textu približne o 2 %, pri skenoch približne o 0,1 %."
+    }
+  },
+  "job": {
+    "artifacts": {
+      "downloadWord": "Stiahnuť Word",
+      "page": "Strana {{n}}",
+      "predictionIr": "Prediction IR (JSON, {{n}} strán)"
+    },
+    "cancel": {
+      "alreadyTerminal": "Úloha už skončila.",
+      "body": "Naozaj chceš úlohu zrušiť?",
+      "confirm": "Zrušiť",
+      "keep": "Ponechať",
+      "title": "Zrušiť úlohu"
+    },
+    "compareExpired": "Porovnanie nie je k dispozícii — artefakty úlohy už expirovali.",
+    "duration": "Trvanie",
+    "elapsed": "Uplynulo",
+    "expiry": {
+      "expired": "Vypršala",
+      "in": "Vyprší o {{time}}",
+      "soon": "Čoskoro vyprší"
+    },
+    "header": {
+      "back": "Späť na úlohy",
+      "reupload": "Nahrať znova",
+      "title": "Úloha"
+    },
+    "notFound": "Úloha neexistuje alebo bola zmazaná.",
+    "progress": {
+      "eta": "Odhadovaný čas",
+      "etaMinutes": "odhad ~{{minutes}} min",
+      "page": {
+        "done": "Hotovo",
+        "failed": "Zlyhala",
+        "running": "Beží",
+        "waiting": "Čaká"
+      },
+      "pageSummary": "Strana {{current}} z {{total}} · hotové {{done}} · zlyhané {{failed}}",
+      "step": {
+        "assembly": "Zostavenie",
+        "assemblyIr": "Zapečatenie IR",
+        "input": "Vstup",
+        "model": "Model",
+        "other": "Iné",
+        "receipt": "Príjem",
+        "recognition": "Rozpoznávanie",
+        "state": {
+          "cancelled": "Zrušené",
+          "current": "Prebieha",
+          "done": "Hotovo",
+          "failed": "Zlyhalo",
+          "upcoming": "Čaká"
+        }
+      },
+      "summary": "Priebeh",
+      "pages": "Priebeh strán"
+    },
+    "purge": {
+      "body": "Výstupy úlohy budú natrvalo odstránené.",
+      "confirm": "Odstrániť",
+      "keep": "Ponechať",
+      "title": "Odstrániť úlohu",
+      "toast": "Úloha bola natrvalo odstránená."
+    },
+    "queue": {
+      "waitingDownload": "Čaká sa na stiahnutie modelu {{label}}",
+      "waitingJob": "Čaká sa vo fronte úloh",
+      "waitingWorker": "Čaká sa na pracovný proces"
+    },
+    "result": {
+      "docxMissing": "Word dokument sa nepodarilo vytvoriť.",
+      "irOnly": "K dispozícii je iba medzivýstup.",
+      "zip": "Stiahnuť všetko (ZIP)",
+      "zipHint": "Obsahuje všetky vytvorené súbory."
+    },
+    "tab": {
+      "compare": "Porovnanie",
+      "diagnostics": "Diagnostika",
+      "result": "Výsledok"
+    },
+    "terminalToast": "Úloha {{label}}: {{state}}"
+  },
+  "jobs": {
+    "action": {
+      "cancel": "Zrušiť",
+      "open": "Otvoriť",
+      "purge": "Odstrániť natrvalo"
+    },
+    "column": {
+      "actions": "Akcie",
+      "created": "Vytvorené",
+      "expires": "Zmaže sa",
+      "label": "Označenie",
+      "model": "Model",
+      "pages": "Strany",
+      "state": "Stav"
+    },
+    "empty": "Zatiaľ žiadne úlohy.",
+    "emptyFilter": "Žiadna úloha nezodpovedá filtru.",
+    "filter": {
+      "active": "Aktívne",
+      "all": "Všetky",
+      "ended": "Ukončené",
+      "failed": "Zlyhané",
+      "succeeded": "Dokončené"
+    },
+    "loadMore": "Načítať ďalšie",
+    "search": "Hľadať podľa označenia",
+    "title": "Úlohy"
+  },
+  "login": {
+    "forgot": "Zabudnuté heslo?",
+    "forgotBody": "Heslo obnovíš príkazovým riadkom na serveri.",
+    "hidePassword": "Skryť heslo",
+    "networkError": "Službu sa nepodarilo dosiahnuť. Skús to znova.",
+    "password": "Heslo",
+    "rateLimited": "Príliš veľa pokusov. Skús to znova o {{seconds}} s.",
+    "resetCommand": "./Spustit.sh reset-password",
+    "showPassword": "Zobraziť heslo",
+    "submit": "Prihlásiť sa",
+    "title": "Prihlásenie",
+    "wrong": "Nesprávne heslo."
+  },
+  "models": {
+    "action": {
+      "delete": "Odstrániť kópiu",
+      "download": "Stiahnuť",
+      "load": "Načítať na GPU",
+      "retry": "Skúsiť znova",
+      "retryDownload": "Stiahnuť znova",
+      "setDefault": "Nastaviť ako predvolený"
+    },
+    "availability": {
+      "planned": {
+        "badge": "Pripravuje sa",
+        "reason": "Tento model ešte neexistuje, pripravuje sa. Zatiaľ ho nie je možné stiahnuť.",
+        "vram": "Pamäťovú náročnosť zatiaľ nie je z čoho odhadnúť."
+      },
+      "unpublished": {
+        "badge": "Zatiaľ nezverejnené na Hugging Face",
+        "reason": "Repozitár tohto variantu na Hugging Face ešte nie je zverejnený. Stiahnutie sa sprístupní po zverejnení."
+      }
+    },
+    "badge": {
+      "default": "Predvolený",
+      "resident": "Na GPU"
+    },
+    "card": {
+      "label": "Popis"
+    },
+    "confirm": {
+      "delete": {
+        "body": "Model sa dá kedykoľvek stiahnuť znova.",
+        "deniedLocal": "Lokálny balík nemá čo odstrániť z disku.",
+        "deniedResident": "Model je práve načítaný na GPU; najprv načítaj iný.",
+        "title": "Zmazať {{size}} z disku?"
+      },
+      "load": {
+        "title": "Načítať {{label}} na GPU?"
+      }
+    },
+    "device": {
+      "label": "Zariadenie",
+      "summary": "GPU · {{total}} VRAM · voľné {{free}} (pred {{observed}}) · compute capability {{cc}}",
+      "unknown": "Worker ešte nenahlásil GPU."
+    },
+    "download": {
+      "waiting": "Sťahovanie beží vo workeri; úlohy s týmto modelom čakajú vo fronte."
+    },
+    "empty": "Nie je nakonfigurovaný žiadny model.",
+    "fits": {
+      "exceedsComputeCapability": "FP8 vyžaduje compute capability ≥ 8.9 (táto GPU: {{cc}}).",
+      "exceedsVram": "Odhad špičky {{est}} presahuje {{total}} VRAM tejto GPU.",
+      "no": "Nezmestí sa",
+      "noFp8": "FP8 nie je podporované",
+      "unknown": "Neznáme",
+      "unknownNote": "Worker ešte nenahlásil GPU; ak sa model nezmestí, služba úlohu odmietne pred spustením.",
+      "yes": "Zmestí sa"
+    },
+    "footer": "Modely sa sťahujú z Hugging Face na pripnutom commite a pred načítaním sa overí SHA manifestu.",
+    "state": {
+      "absent": "Nestiahnutý",
+      "downloading": "Sťahuje sa",
+      "failed": "Zlyhalo",
+      "loading": "Načítava sa",
+      "ready": "Pripravený",
+      "verifying": "Overuje sa"
+    },
+    "switch": {
+      "loaded": "Načítaný",
+      "noneResident": "Žiadny model nie je načítaný",
+      "notLoaded": "Nenačítaný"
+    },
+    "switchNotice": {
+      "downloaded": "Na GPU je teraz {{resident}}. Úloha ho uvoľní a načíta {{selected}} — to trvá desiatky sekúnd.",
+      "noneResident": "Na GPU zatiaľ nie je načítaný žiadny model; prvá úloha ho načíta.",
+      "notDownloaded": "Najprv sa stiahne {{size}}; úloha dovtedy čaká vo fronte."
+    },
+    "title": "Modely",
+    "vram": {
+      "freeOfTotal": "voľné {{free}} z {{total}}",
+      "label": "Využitie pamäte GPU"
+    }
+  },
+  "nav": {
+    "convert": "Nová konverzia",
+    "jobs": "Úlohy",
+    "logout": "Odhlásiť sa",
+    "models": "Modely",
+    "settings": "Nastavenia",
+    "skipToContent": "Preskočiť na obsah",
+    "mainNavigation": "Hlavná navigácia",
+    "openNavigation": "Otvoriť navigáciu",
+    "settingsAndTheme": "Nastavenia a téma"
+  },
+  "session": {
+    "expired": {
+      "body": "Prihlás sa znova, aby si mohol pokračovať.",
+      "title": "Relácia vypršala"
+    }
+  },
+  "settings": {
+    "about": {
+      "apiVersion": "API verzia",
+      "sandboxRootful": "Sandbox beží cez docker socket hostiteľa (práva roota).",
+      "sessionIdle": "Časový limit nečinnosti relácie: {{seconds}} s",
+      "sessionMax": "Maximálna dĺžka relácie: {{seconds}} s",
+      "title": "O aplikácii",
+      "version": "Verzia"
+    },
+    "account": {
+      "changePassword": "Zmeniť heslo",
+      "title": "Účet"
+    },
+    "changePasswordDialog": {
+      "confirmLabel": "Potvrdenie nového hesla",
+      "currentPasswordLabel": "Súčasné heslo",
+      "mismatch": "Heslá sa nezhodujú.",
+      "newPasswordLabel": "Nové heslo",
+      "submit": "Zmeniť heslo",
+      "success": "Heslo bolo zmenené.",
+      "title": "Zmeniť heslo",
+      "tooShort": "Heslo musí mať aspoň 12 znakov.",
+      "wrongCurrentPassword": "Súčasné heslo je nesprávne."
+    },
+    "defaultModel": {
+      "auto": "Automaticky",
+      "excludedNote": "Varianty, ktoré sa nezmestia, nie je možné nastaviť ako predvolené.",
+      "label": "Predvolený model"
+    },
+    "language": "Jazyk",
+    "theme": {
+      "dark": "Tmavá",
+      "label": "Téma",
+      "light": "Svetlá",
+      "system": "Podľa systému"
+    }
+  },
+  "setup": {
+    "continue": "Pokračovať",
+    "continueAnyway": "Pokračovať aj tak",
+    "link": {
+      "invalid": "Odkaz na nastavenie neplatí. Otvor znova odkaz, ktorý vypísal run-local.sh.",
+      "missing": "Otvor odkaz na prvotné nastavenie, ktorý vypísal run-local.sh."
+    },
+    "step": {
+      "model": {
+        "body": "Výber východiskového modelu.",
+        "chooseOther": "Vybrať iný model ({{count}})",
+        "finishLater": "Dokončiť neskôr",
+        "title": "Model"
+      },
+      "password": {
+        "alreadyComplete": "Nastavenie je už dokončené. Presmerúvam na prihlásenie.",
+        "body": "Nastav heslo pre prihlásenie do webového rozhrania.",
+        "confirmLabel": "Potvrdenie hesla",
+        "mismatch": "Heslá sa nezhodujú.",
+        "passwordLabel": "Heslo",
+        "submit": "Vytvoriť heslo",
+        "title": "Heslo",
+        "tooShort": "Heslo musí mať aspoň 12 znakov."
+      },
+      "ready": {
+        "body": "Nastavenie je dokončené.",
+        "title": "Hotovo",
+        "tryDemo": "Skúsiť ukážkový dokument",
+        "uploadOwn": "Nahrať vlastný súbor"
+      },
+      "system": {
+        "body": "Overenie dostupných zdrojov.",
+        "checking": "Kontrolujem systém…",
+        "notReady": "Niektoré komponenty nie sú pripravené.",
+        "ready": "Systém je pripravený.",
+        "title": "Systém"
+      }
+    },
+    "title": "Prvotné nastavenie"
+  },
+  "status": {
+    "service": {
+      "notReady": "Nepripravená",
+      "partial": "Čiastočne pripravená",
+      "ready": "Pripravená",
+      "unreachable": "Nedostupná"
+    }
+  },
+  "validation": {
+    "mixed": "Vyber buď jedno PDF, alebo obrázky strán, nie oboje.",
+    "onePdf": "Naraz sa dá spracovať jedno PDF.",
+    "tooLarge": "Spolu {{size}}, limit je {{max}}.",
+    "tooManyImages": "{{n}} obrázkov je viac ako limit {{max}} strán.",
+    "type": "{{name}}: nepodporovaný typ. Podporované sú PDF, PNG a JPEG.",
+    "undecodable": "{{name}} sa nedá otvoriť ako obrázok."
+  },
+  "brand": {
+    "companyWebsite": "Web EVOLIQ (otvorí sa na novej karte)"
+  }
+}

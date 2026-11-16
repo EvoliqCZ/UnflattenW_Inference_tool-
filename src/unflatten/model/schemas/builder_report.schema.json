@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/builder_report.schema.json",
+  "title": "RFC004 §33.2 bod 8 Builder Report (AST Builder design §3, spec-ast-builder-t5-promotion T6b/P2)",
+  "$comment": "Produced by ast_builder._build_raw on every build, including a failed one (mode is always strict_build -- plan U1: review_candidate's imputations live in a SEPARATE wrapper whose builder_report_hash equals this same raw report's report_hash, never a second mode). Since plan P3, derivations/discarded_inputs are filled by the RFC004 §27.2 derivation post-pass (_Builder.apply_derivations) whenever a required pointer is missing and a registered derivation's precondition holds; imputations stays empty until P4 wires review_candidate. report_hash is a domain_hash(\"rfc004.builder-report/v0\", payload) over every OTHER field, with the five row arrays sorted by (source or '', pointer or '', code or '') first so two builds that differ only in issue-collection order hash equal (design §3, plan P2 R6).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "builder_report_schema_version",
+    "mode",
+    "builder_version",
+    "derivation_registry_hash",
+    "default_policy_hash",
+    "node_counts",
+    "property_counts",
+    "predicted_by_pointer",
+    "derivations",
+    "imputations",
+    "discarded_inputs",
+    "unresolved",
+    "conflicts",
+    "report_hash"
+  ],
+  "properties": {
+    "builder_report_schema_version": { "$ref": "#/$defs/semver" },
+    "mode": {
+      "$comment": "Always strict_build (plan U1); no review_build mode exists.",
+      "const": "strict_build"
+    },
+    "builder_version": { "$ref": "#/$defs/semver" },
+    "derivation_registry_hash": { "$ref": "#/$defs/sha256" },
+    "default_policy_hash": { "$ref": "#/$defs/sha256" },
+    "node_counts": {
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "property_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predicted", "derived", "imputed", "unresolved", "discarded"],
+      "properties": {
+        "predicted": { "type": "integer", "minimum": 0 },
+        "derived": { "type": "integer", "minimum": 0 },
+        "imputed": { "type": "integer", "minimum": 0 },
+        "unresolved": { "type": "integer", "minimum": 0 },
+        "discarded": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "predicted_by_pointer": {
+      "$comment": "Keys are '<node_type><pointer>' (e.g. 'run/style/bold'), the same convention derivations.py's DerivationRecord.input_pointers cross-node form uses.",
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "derivations": { "type": "array", "items": { "$ref": "#/$defs/derivation_row" } },
+    "imputations": { "type": "array", "items": { "$ref": "#/$defs/imputation_row" } },
+    "discarded_inputs": { "type": "array", "items": { "$ref": "#/$defs/discarded_row" } },
+    "unresolved": { "type": "array", "items": { "$ref": "#/$defs/issue_row" } },
+    "conflicts": { "type": "array", "items": { "$ref": "#/$defs/issue_row" } },
+    "report_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nullable_string": {
+      "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+    },
+    "scalar_or_null": {
+      "anyOf": [
+        { "type": "boolean" },
+        { "type": "integer" },
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "issue_row": {
+      "$comment": "One BuilderIssue: unresolved carries every non-conflict issue (UNRESOLVED_REQUIRED_PROPERTY, RESOURCE_SLOT_UNRESOLVED/DUPLICATE, RESOURCE_BYTES_INVALID, NOTE_REF_UNBOUND, STORY_UNRESOLVED, REPEATED_INDEX_OUT_OF_RANGE); conflicts carries only ASSEMBLER_PROPERTY_CONFLICT. CANONICALIZATION_REFUSED never appears here -- canonicalize runs only in build_strict, after _build_raw already returned this report (plan U1).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "node_type", "pointer", "code", "detail"],
+      "properties": {
+        "source": { "$ref": "#/$defs/nullable_string" },
+        "node_type": { "$ref": "#/$defs/nullable_string" },
+        "pointer": { "$ref": "#/$defs/nullable_string" },
+        "code": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" }
+      }
+    },
+    "derivation_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source", "node_id", "node_type", "pointer", "derivation_id", "version", "input_pointers"
+      ],
+      "properties": {
+        "source": { "$ref": "#/$defs/nullable_string" },
+        "node_id": { "type": "string", "minLength": 1 },
+        "node_type": { "type": "string", "minLength": 1 },
+        "pointer": { "type": "string", "minLength": 1 },
+        "derivation_id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "input_pointers": { "type": "array", "items": { "type": "string" } },
+        "value": { "$ref": "#/$defs/scalar_or_null" },
+        "value_length": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "imputation_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id", "node_type", "pointer", "default_value", "default_source", "reason_code"
+      ],
+      "properties": {
+        "node_id": { "type": "string", "minLength": 1 },
+        "node_type": { "type": "string", "minLength": 1 },
+        "pointer": { "type": "string", "minLength": 1 },
+        "default_value": { "$ref": "#/$defs/scalar_or_null" },
+        "default_source": { "type": "string", "minLength": 1 },
+        "reason_code": { "const": "imputed_profile_default" }
+      }
+    },
+    "discarded_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "node_id", "node_type", "pointer", "detail"],
+      "properties": {
+        "source": { "$ref": "#/$defs/nullable_string" },
+        "node_id": { "type": "string", "minLength": 1 },
+        "node_type": { "type": "string", "minLength": 1 },
+        "pointer": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

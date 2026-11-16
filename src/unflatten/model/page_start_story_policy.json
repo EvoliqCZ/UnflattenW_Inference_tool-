@@ -1,0 +1,15 @@
+{
+ "schema": "page-start-story-policy/1",
+ "policy_id": "page-start-story.v0",
+ "status": "PROPOSED",
+ "decision": "DEC-061",
+ "semantics": "page-start-story-semantics/1",
+ "band_fraction_top": 0.12,
+ "band_fraction_bottom": 0.12,
+ "confidence_threshold": 0.9,
+ "provenance": {
+  "band_fraction_top": "strategy R3 placeholder; frozen by owner in DEC-061 before T6",
+  "band_fraction_bottom": "strategy R3 placeholder; frozen by owner in DEC-061 before T6",
+  "confidence_threshold": "placeholder; frozen from dev coverage curve (T6) before any measurement that counts"
+ }
+}

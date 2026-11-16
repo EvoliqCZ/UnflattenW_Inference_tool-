@@ -1,0 +1,163 @@
+# Portable `docker compose up` deployment of the private diagnostic PDF->Word
+# service (DEC-044 incl. Dodatok D). Distinct project name so this never
+# touches any other stack on the host.
+#
+# Base file only: the per-job PdfSandbox adapter (src/unflatten/service/pdf_sandbox.py)
+# needs the HOST docker/podman socket to start sibling sandbox containers.
+# Without the explicit `compose.sandbox-socket.yaml` override, the worker
+# fails closed at startup (`PdfSandbox.require_ready()` before any model
+# load) -- that is intended, not a bug; see deploy/docker/README.md.
+#
+# Usage:
+#   cd deploy/docker
+#   cp .env.example .env   # fill in every REPLACE_WITH_* value
+#   docker compose up                                    # api only reaches "unready", worker fails closed (no GPU/sandbox needed to check this)
+#   docker compose -f compose.yaml -f compose.sandbox-socket.yaml up   # full stack, needs GPU + a built/pulled sandbox image (see README)
+
+name: unflatten-diagnostic
+
+# Shared shape of the worker service(s) -- kept in one place.
+x-worker-common: &worker-common
+  entrypoint: ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-worker.sh"]
+  depends_on:
+    init:
+      condition: service_completed_successfully
+    # T43: builds/refreshes unflatten/pdf-sandbox:local before the worker's
+    # PdfSandbox.require_ready() checks for it -- owner rule "everyone
+    # builds containers themselves", no registry push.
+    sandbox-image:
+      condition: service_completed_successfully
+  env_file:
+    - .env
+  environment: &worker-common-environment
+    UNFLATTEN_DATA_DIR: /data
+    UNFLATTEN_SANDBOX_IMAGE: "${UNFLATTEN_SANDBOX_IMAGE:-unflatten/pdf-sandbox:local}"
+    # T47: worker_cli loads exactly one resident variant from this config
+    # (design §8.2) -- mutually exclusive with --model-bundle/
+    # UNFLATTEN_MODEL_BUNDLE, which entrypoint-worker.sh only adds when
+    # that env var is non-empty (unset by default now). `models.json`
+    # (dev-bundle.sh/README) must exist and validate before `docker
+    # compose up` -- run-local.sh's `up` refuses to start otherwise.
+    UNFLATTEN_MODELS_CONFIG: /config/models.json
+    UNFLATTEN_ENGINES: "${UNFLATTEN_ENGINES:-native}"
+  volumes:
+    - unflatten_data:/data
+    # Bundle-source variants in models.json point at /models/<subdir>;
+    # this is the same UNFLATTEN_HOST_MODEL_BUNDLE_DIR the api mounts.
+    - ${UNFLATTEN_HOST_MODEL_BUNDLE_DIR:-./models}:/models:ro
+    - ${UNFLATTEN_MODELS_CONFIG_FILE:-./models.json}:/config/models.json:ro
+  healthcheck:
+    disable: true
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: ["gpu"]
+  restart: unless-stopped
+
+services:
+  # Build-only: `docker compose up` builds this image once (its `restart: "no"`
+  # container exits immediately via /bin/true) so `unflatten/pdf-sandbox:local`
+  # exists locally before `worker` starts -- owner rule "everyone builds
+  # containers themselves", no registry push (design §8.2).
+  sandbox-image:
+    image: unflatten/pdf-sandbox:local
+    build:
+      context: ../pdf-sandbox
+      dockerfile: Containerfile
+    entrypoint: ["/bin/true"]
+    restart: "no"
+
+  init:
+    image: unflatten-diagnostic-api:local
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      target: runtime-api
+    entrypoint: ["/usr/local/bin/entrypoint-init.sh"]
+    env_file:
+      - .env
+    environment:
+      UNFLATTEN_PRINCIPAL_FILE: /data/principals.json
+    volumes:
+      - unflatten_data:/data
+    restart: "no"
+
+  api:
+    image: unflatten-diagnostic-api:local
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      target: runtime-api
+      args:
+        UNFLATTEN_GIT_SHA: "${UNFLATTEN_GIT_SHA:-unknown}"
+    entrypoint: ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-api.sh"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    environment:
+      UNFLATTEN_DATA_DIR: /data
+      UNFLATTEN_PRINCIPAL_FILE: /data/principals.json
+      # models.json variants live under /models/<variant> (deploy/local/dev-bundle.sh),
+      # so the api verifies the default variant's directory; /models stays the default
+      # for the older flat layout.
+      UNFLATTEN_MODEL_BUNDLE: "${UNFLATTEN_API_MODEL_BUNDLE:-/models}"
+      UNFLATTEN_HOST: 0.0.0.0
+      # Fixed regardless of .env's UNFLATTEN_PORT (that one only selects the
+      # HOST-published port below) -- uvicorn always listens on 8000 inside
+      # the container's own network namespace, which is what the healthcheck
+      # and the `ports:` mapping both assume.
+      UNFLATTEN_PORT: "8000"
+      # design §6.1/§8.4: `legacy` stays the default until chunk 4 flips it.
+      UNFLATTEN_WEB_UI: "${UNFLATTEN_WEB_UI:-legacy}"
+      UNFLATTEN_WEB_ALLOWED_HOSTS: "${UNFLATTEN_WEB_ALLOWED_HOSTS:-127.0.0.1,localhost,[::1]}"
+      UNFLATTEN_WEB_SESSION_IDLE_SECONDS: "${UNFLATTEN_WEB_SESSION_IDLE_SECONDS:-43200}"
+      UNFLATTEN_WEB_SESSION_MAX_SECONDS: "${UNFLATTEN_WEB_SESSION_MAX_SECONDS:-604800}"
+      UNFLATTEN_GIT_SHA: "${UNFLATTEN_GIT_SHA:-unknown}"
+      # Owner 2026-09-29 (DEC-052 addendum): password-only first-run setup.
+      # deploy/local/run-local.sh exports 1 only for a loopback
+      # UNFLATTEN_BIND_ADDRESS (and refuses 1 otherwise); a bare
+      # `docker compose up` stays at 0 = setup needs the init token.
+      UNFLATTEN_SETUP_TOKENLESS: "${UNFLATTEN_SETUP_TOKENLESS:-0}"
+      UNFLATTEN_MODELS_CONFIG: /config/models.json
+      # T43: without this, api_cli reads no HF_HOME at all (entrypoint-api.sh
+      # never defaults it, unlike the worker) and GET /v1/models' `downloaded`
+      # status / the base-model pin check silently see no cache.
+      HF_HOME: "${HF_HOME:-/data/hf-cache}"
+      # HF_TOKEN is only ever read by the worker's entrypoint-worker.sh (HF
+      # downloads at model-load time) -- the api container never needs it.
+      # `env_file: .env` above would otherwise leak the real secret into it
+      # just because .env also configures the worker (item 10).
+      HF_TOKEN: ""
+    volumes:
+      - unflatten_data:/data
+      - ${UNFLATTEN_HOST_MODEL_BUNDLE_DIR:-./models}:/models:ro
+      - ${UNFLATTEN_MODELS_CONFIG_FILE:-./models.json}:/config/models.json:ro
+    ports:
+      # loopback-only publish by default (DEC-044 §6/RUNBOOK §10) -- 0.0.0.0
+      # is only the bind address INSIDE the container's own network
+      # namespace. UNFLATTEN_BIND_ADDRESS is the HOST side; a non-loopback
+      # value turns tokenless setup off in run-local.sh (DEC-052 addendum).
+      - "${UNFLATTEN_BIND_ADDRESS:-127.0.0.1}:${UNFLATTEN_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request,os,sys; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=3).read(); sys.exit(0)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+    restart: unless-stopped
+
+  worker:
+    <<: *worker-common
+    image: unflatten-diagnostic-worker:local
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      target: runtime-worker
+
+volumes:
+  unflatten_data:

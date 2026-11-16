@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "INDENT_MUTUAL_EXCLUSION",
+      "path": "/sections/0/children/0/layout/indent"
+    }
+  ]
+}

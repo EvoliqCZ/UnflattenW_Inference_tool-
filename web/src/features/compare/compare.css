@@ -1,0 +1,124 @@
+/*
+ * Layout-only styles for the comparison canvases. The two continuously
+ * variable values (overlay opacity, swipe divider position) are never
+ * written as literal `style="opacity: ..."` / `style="clip-path: ..."` --
+ * only the underlying custom property is set inline (matching the same
+ * CSSOM-only mechanism `components/ui/progress.tsx`, T19, already relies
+ * on), and the visual effect itself lives here, in the stylesheet.
+ */
+
+.compare-page-slot {
+  position: relative;
+  aspect-ratio: 1 / 1.4142;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--surface-sunken);
+}
+
+.compare-page-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.compare-missing-preview {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  min-height: 200px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--ink-muted);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--border) 0,
+    var(--border) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+.compare-tint-source {
+  filter: sepia(1) saturate(4) hue-rotate(175deg);
+}
+
+.compare-tint-docx {
+  filter: sepia(1) saturate(4) hue-rotate(-30deg);
+  mix-blend-mode: multiply;
+}
+
+.compare-overlay {
+  position: relative;
+}
+
+.compare-overlay-top {
+  position: absolute;
+  inset: 0;
+  opacity: var(--compare-overlay-opacity, 0.5);
+}
+
+.compare-swipe {
+  position: relative;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.compare-swipe-docx {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 var(--compare-swipe-position, 50%));
+}
+
+.compare-swipe-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--compare-swipe-position, 50%);
+  width: 2px;
+  background-color: var(--accent);
+  cursor: ew-resize;
+}
+
+/* UX §5.3: shared zoom/pan transform, see `ZoomPanFrame.tsx`. */
+.compare-zoom-frame {
+  height: 100%;
+  width: 100%;
+  transform: translate(var(--compare-pan-x, 0%), var(--compare-pan-y, 0%)) scale(var(--compare-zoom, 1));
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .compare-zoom-frame {
+    transition: transform 150ms ease-out;
+  }
+}
+
+.compare-zoom-frame-draggable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.compare-zoom-frame-draggable:active {
+  cursor: grabbing;
+}
+
+/* UX §5.8: maximize fills the app's content area, banner excluded (owned by AppShell). */
+.compare-maximized {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: auto;
+  background-color: var(--surface);
+  padding: var(--space-4);
+}
+
+.compare-thumbnail {
+  height: 68px;
+  width: 48px;
+  object-fit: cover;
+}

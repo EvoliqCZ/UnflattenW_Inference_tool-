@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/general_stage_gate_policy.schema.json",
+  "title": "RFC005 §12.2 generalized StageGatePolicy (S6/S7/S8, DEC-047 dormant code)",
+  "$comment": "Closed envelope, v1. NEW, versioned, dormant registry (DEC-047): nothing in the S1/S2/S4 path reads this schema, and it does not touch stage_gate_policy.schema.json / s2_stage_gate_policy.schema.json / s4_selection_policy.schema.json. Identity (domain rfc005.general-stage-gate-policy/v1) is a domain_hash over the whole validated document, computed by unflatten.model.general_stage_gate_policy, never stored inside it -- same convention as s2_stage_gate_policy.schema.json. Every rate is MICRO-units (r*1e6, integer in [0, 1000000]) for the same reason (rfc8949-core-det-nfc-int-v0 has no float). `metrics[].is_placeholder` marks a floor the owner has not yet ratified; the evaluator in general_stage_gate_policy.py refuses to return 'pass' or 'fail' for a placeholder metric -- always insufficient_evidence -- mirroring s4_selection_policy.json's `is_placeholder` convention. `stage` is generalized to S6/S7/S8 per RFC005 §12.2/§20-§22; S1/S2/S4 keep their own existing, unmodified policy documents and hashes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "general_stage_gate_policy_schema_version",
+    "policy_version",
+    "stage",
+    "gate_name",
+    "metrics",
+    "missing_evidence_action"
+  ],
+  "properties": {
+    "general_stage_gate_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage": { "enum": ["S6", "S7", "S8"] },
+    "gate_name": { "type": "string", "minLength": 1 },
+    "missing_evidence_action": { "const": "insufficient_evidence" },
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/metric" }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "rate_micro": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "critical_slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slice_id", "minimum_fidelity_micro", "minimum_independent_lineages"],
+      "properties": {
+        "slice_id": { "type": "string", "minLength": 1 },
+        "minimum_fidelity_micro": { "$ref": "#/$defs/rate_micro" },
+        "minimum_independent_lineages": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "denominator",
+        "absolute_quality_floor_micro",
+        "relative_margin_micro",
+        "confidence_bound_method",
+        "alpha_micro",
+        "minimum_independent_lineages",
+        "minimum_attempted_denominator",
+        "critical_slices",
+        "is_placeholder",
+        "missing_evidence_action"
+      ],
+      "properties": {
+        "metric_id": { "type": "string", "minLength": 1 },
+        "denominator": { "enum": ["attempted", "accepted"] },
+        "absolute_quality_floor_micro": { "$ref": "#/$defs/rate_micro" },
+        "relative_margin_micro": { "$ref": "#/$defs/rate_micro" },
+        "confidence_bound_method": { "const": "paired_lineage_bootstrap" },
+        "alpha_micro": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "minimum_independent_lineages": { "type": "integer", "minimum": 1 },
+        "minimum_attempted_denominator": { "type": "integer", "minimum": 1 },
+        "minimum_accepted_denominator": { "type": "integer", "minimum": 1 },
+        "critical_slices": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/critical_slice" }
+        },
+        "is_placeholder": { "type": "boolean" },
+        "missing_evidence_action": { "const": "insufficient_evidence" }
+      },
+      "if": { "properties": { "denominator": { "const": "accepted" } } },
+      "then": { "required": ["minimum_accepted_denominator"] }
+    }
+  }
+}

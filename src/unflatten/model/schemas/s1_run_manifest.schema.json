@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s1_run_manifest.schema.json",
+  "title": "RFC005 S1 Run Manifest (design §8)",
+  "$comment": "Closed envelope. NOT the dataset-factory run_manifest.json written by src/unflatten/dataset/synthetic/factory.py:328,348 and read by src/unflatten/dataset/split/release.py and src/unflatten/dataset/gates/engine.py -- that artifact carries documents/recipe_id, not training bindings, and must never gain these fields. This is the model-side, RFC005 training artifact frozen before gradient per DEC-005 D3 / packet section 7. M1 ships this schema and RunManifestBindingVerifier (run_binding.py), never a populated manifest and never a run. gradient_bearing is declared, never inferred from run_class (design section 8 rule 3a). head_registry_hash is derived from the bound cache identity (non-null); a gradient-bearing manifest with a null head_registry_hash is refused (design section 8 rule 3, criterion 14).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s1_run_manifest_schema_version",
+    "run_id",
+    "run_class",
+    "gradient_bearing",
+    "required_admission",
+    "component_lock_hash",
+    "exact_text_cache_identity_hash",
+    "training_target_materializer_hash",
+    "loss_unit_schema_hash",
+    "stage_policy_hash",
+    "conditioning_policy_hash",
+    "runtime_limits_policy_hash",
+    "head_registry_hash",
+    "exact_text_cache_expectation_hash",
+    "program_id",
+    "stage_id",
+    "run_config",
+    "s1_run_manifest_hash"
+  ],
+  "properties": {
+    "s1_run_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "program_id": {
+      "$comment": "1.2.0 (owner decision 2026-09-13, #17 C): the training program this run belongs to, e.g. 'unflatten-training-v0/s1-canary@1'. A declaration the caller freezes, never derived; covered by s1_run_manifest_hash like every other field.",
+      "type": "string",
+      "minLength": 1
+    },
+    "stage_id": {
+      "$comment": "1.2.0 (owner decision 2026-09-13, #17 C): DERIVED, not declared -- the builder reads it off the stage policy document the caller presents and refuses the build unless that document hashes to the identity's stage_policy_hash, so a manifest can never name a stage its bound stage policy does not.",
+      "type": "string",
+      "pattern": "^S[0-9]+$"
+    },
+    "run_class": {
+      "$comment": "RFC005 section 9.3 / packet :511 vocabulary. Not a gradient predicate -- see gradient_bearing.",
+      "enum": ["discovery", "promotion"]
+    },
+    "gradient_bearing": {
+      "$comment": "Declared, never inferred from run_class (design section 8 rule 3a). No null variant: absent or null must fail schema validation, not default to false.",
+      "type": "boolean"
+    },
+    "required_admission": {
+      "$comment": "Pinned inside this frozen, hash-bound payload (design section 8 rules 3-5). A CLI flag, env var, or other runtime channel supplying this value is not a pin.",
+      "enum": ["strict", "dev_only"]
+    },
+    "component_lock_hash": { "$ref": "#/$defs/sha256" },
+    "exact_text_cache_identity_hash": { "$ref": "#/$defs/sha256" },
+    "training_target_materializer_hash": { "$ref": "#/$defs/sha256" },
+    "loss_unit_schema_hash": { "$ref": "#/$defs/sha256" },
+    "stage_policy_hash": { "$ref": "#/$defs/sha256" },
+    "conditioning_policy_hash": { "$ref": "#/$defs/sha256" },
+    "runtime_limits_policy_hash": { "$ref": "#/$defs/sha256" },
+    "head_registry_hash": {
+      "$comment": "Derived from the bound cache identity's head_registry_hash (design section 8 rule 3); a gradient-bearing run with a null head_registry_hash is refused by RunManifestBindingVerifier, not by this schema, because null is legal here for a non-gradient-bearing run.",
+      "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "exact_text_cache_expectation_hash": {
+      "$comment": "DEC-MP-4: domain_hash(\"rfc005.exact-text-cache-expectation/v1\", {expected_page_keys, approved_exclusions}) over the frozen expectation payload written beside this manifest (exact_text_cache_expectation.json). Null is legal here only for a non-gradient-bearing run; RunManifestBindingVerifier refuses a gradient-bearing run whose expectation hash is null or whose presented payload does not hash to it. Present but unread would be the defect this closes, so the payload is presented to verify(), never looked up.",
+      "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "run_config": {
+      "$comment": "1.2.0 (owner decision 2026-09-13, #21 C): the run's own budget -- how many optimizer steps it may spend, how it samples, what it augments with, and which optimizer it runs. Null is legal here only for a non-gradient-bearing run (a diagnostic read spends no budget); RunManifestBindingVerifier refuses a gradient-bearing run whose run_config is null, and a gradient-bearing run whose steps x sampler.batch_size exceeds the pinned cohort's page count (owner decision #19 B: at most one epoch over (bundle, page)). The optimizer fields are scaled integers, never floats: the CBOR profile rfc8949-core-det-nfc-int-v0 rejects them, so lr 1e-4 is lr_micro 100 (house style: loss_weights_milli, mass_micro).",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["steps", "sampler", "augmentation", "optimizer"],
+          "properties": {
+            "steps": { "type": "integer", "minimum": 1 },
+            "sampler": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["seed", "order", "batch_size"],
+              "properties": {
+                "seed": { "type": "integer", "minimum": 0 },
+                "order": {
+                  "$comment": "DEC-027 D2/T4a: added 's2_ordered_exposure_plan' for the S2 companion manifest, which draws pages from the frozen ordered exposure plan rather than a random permutation -- additive, so a literal frozen S1 canary manifest (1.2.0, seeded_randperm) still verifies unchanged.",
+                  "enum": ["seeded_randperm", "s2_ordered_exposure_plan"]
+                },
+                "batch_size": { "type": "integer", "minimum": 1 }
+              }
+            },
+            "augmentation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind"],
+              "properties": {
+                "kind": { "enum": ["none"] }
+              }
+            },
+            "optimizer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["algorithm", "lr_micro", "schedule", "grad_clip_micro"],
+              "properties": {
+                "algorithm": { "enum": ["sgd", "adamw"] },
+                "lr_micro": { "type": "integer", "minimum": 1 },
+                "schedule": { "enum": ["constant"] },
+                "grad_clip_micro": {
+                  "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "s1_run_manifest_hash": {
+      "$comment": "domain_hash(\"rfc005.s1-run-manifest/v1\", payload_without_self_hash).",
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

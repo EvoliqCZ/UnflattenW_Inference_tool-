@@ -1,0 +1,2 @@
+# Preserve upstream license bytes, including their existing whitespace.
+src/unflatten/service/swagger_ui/* -whitespace

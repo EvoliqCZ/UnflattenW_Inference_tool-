@@ -1,0 +1,140 @@
+{
+  "qpdf": [
+    {
+      "jsonversion": 2
+    },
+    {
+      "obj:3 0 R": {
+        "value": {
+          "/Type": "/Page",
+          "/MediaBox": [
+            0,
+            0,
+            600,
+            840
+          ],
+          "/Contents": "4 0 R",
+          "/Resources": {
+            "/Font": {
+              "/F1": "5 0 R"
+            }
+          }
+        }
+      }
+    },
+    {
+      "obj:4 0 R": {
+        "stream": {
+          "dict": {},
+          "data": "MCBnCkJUCi9GMSAxMiBUZgoxMDAgMTAwIFRkCihTeW50aGV0aWMgc2Nhbm5lciBmaXh0dXJlKSBUagpFVAowIGcgMjIwIDgwIDQgNDUgcmUgZgpxIDAuNSB3CjgwIDgwIG0gMzIwIDgwIGwgUwo4MCAxMjUgbSAzMjAgMTI1IGwgUwo4MCA4MCBtIDgwIDEyNSBsIFMKMzIwIDgwIG0gMzIwIDEyNSBsIFMKUQo="
+        }
+      }
+    },
+    {
+      "obj:5 0 R": {
+        "value": {
+          "/Type": "/Font",
+          "/Subtype": "/TrueType",
+          "/FirstChar": 32,
+          "/Widths": [
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300,
+            300
+          ]
+        }
+      }
+    }
+  ]
+}

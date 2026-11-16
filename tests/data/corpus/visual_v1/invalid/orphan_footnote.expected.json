@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "ORPHAN_FOOTNOTE",
+      "path": "/footnotes/0"
+    }
+  ]
+}

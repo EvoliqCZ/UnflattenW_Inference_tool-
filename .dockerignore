@@ -1,0 +1,33 @@
+# Keep the deploy/docker build context (repo root) to what the image
+# actually needs: src/, scripts/, vendor/, pyproject.toml, uv.lock.
+.git/
+.claude/
+.opencode/
+docs/
+notebooks/
+colab-out/
+tests/
+deploy/docker/.env
+deploy/docker/models/
+deploy/pdf-sandbox/
+web/node_modules/
+web/dist/
+web/playwright-report/
+web/coverage/
+web/test-results/
+web/e2e/csp-probe/dist/
+*.md
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage*
+htmlcov/
+*.egg-info/
+*.log
+scratchpad/
+unflatten-data/
+*.docx
+*.pdf

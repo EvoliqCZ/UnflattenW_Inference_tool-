@@ -1,0 +1,213 @@
+{
+ "cells": [
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "table_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P1",
+   "split": "train",
+   "task_kind": "table_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "table_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P2",
+   "split": "train",
+   "task_kind": "table_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 1000000,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "structure_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "paragraph_run_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "layout_v0"
+  },
+  {
+   "cohort": "docxcorp",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "table_v0"
+  },
+  {
+   "cohort": "synthetic_p1p2",
+   "mass_micro": 0,
+   "pyramid_level": "P4",
+   "split": "train",
+   "task_kind": "table_v0"
+  }
+ ],
+ "cohorts": [
+  "docxcorp",
+  "synthetic_p1p2"
+ ],
+ "declared_marginals": {
+  "cohort": {
+   "docxcorp": 1000000,
+   "synthetic_p1p2": 0
+  },
+  "pyramid_level": {
+   "P1": 0,
+   "P2": 0,
+   "P4": 1000000
+  },
+  "split": {
+   "train": 1000000
+  },
+  "task_kind": {
+   "layout_v0": 0,
+   "paragraph_run_v0": 0,
+   "structure_v0": 1000000,
+   "table_v0": 0
+  }
+ },
+ "matrix_version": "1.1.0",
+ "pyramid_levels": [
+  "P1",
+  "P2",
+  "P4"
+ ],
+ "splits": [
+  "train"
+ ],
+ "stage_data_matrix_schema_version": "1.0.0",
+ "stage_id": "S2",
+ "task_kinds": [
+  "structure_v0",
+  "paragraph_run_v0",
+  "layout_v0",
+  "table_v0"
+ ]
+}

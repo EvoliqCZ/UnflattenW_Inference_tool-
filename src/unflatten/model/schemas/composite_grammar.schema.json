@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/composite_grammar.schema.json",
+  "title": "M1 Composite Controller (design §4.5)",
+  "$comment": "Closed envelope. Wraps -- not forks -- the existing structural pushdown grammar (grammar.controller_hash(), unchanged) with text/byte mode transitions and a capability intersection. DEC-033 / RFC003-ERRATA-002 / RFC004-ERRATA-002 scope the widened empty-paragraph bound and the new TAB bound to STANDALONE_V1_PROFILE_ID only: two closed shapes exist, keyed by composite_grammar_schema_version and enforced by the sibling `oneOf` below -- legacy (1.1.0, empty_paragraph_policy_version 1.0.0, no max_consecutive_tabs, byte-identical to the pre-DEC-033 descriptor) and standalone (1.2.0, empty_paragraph_policy_version 2.0.0, max_consecutive_tabs required).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "composite_grammar_schema_version",
+    "base_structural_controller_hash",
+    "structural_token_map_hash",
+    "composite_vocabulary_hash",
+    "capability_profile_hash",
+    "mode_transition_policy_version",
+    "byte_frame_policy_version",
+    "empty_paragraph_policy_version",
+    "max_consecutive_empty_paragraphs",
+    "budget_policy_hash"
+  ],
+  "properties": {
+    "composite_grammar_schema_version": { "$ref": "#/$defs/semver" },
+    "base_structural_controller_hash": { "$ref": "#/$defs/sha256" },
+    "structural_token_map_hash": { "$ref": "#/$defs/sha256" },
+    "composite_vocabulary_hash": { "$ref": "#/$defs/sha256" },
+    "capability_profile_hash": { "$ref": "#/$defs/sha256" },
+    "mode_transition_policy_version": { "$ref": "#/$defs/semver" },
+    "byte_frame_policy_version": { "$ref": "#/$defs/semver" },
+    "empty_paragraph_policy_version": { "$ref": "#/$defs/semver" },
+    "max_consecutive_empty_paragraphs": { "type": "integer", "minimum": 1 },
+    "max_consecutive_tabs": { "type": "integer", "minimum": 1 },
+    "budget_policy_hash": { "$ref": "#/$defs/sha256" }
+  },
+  "oneOf": [
+    {
+      "$comment": "Legacy shape: every capability profile other than STANDALONE_V1_PROFILE_ID.",
+      "properties": {
+        "composite_grammar_schema_version": { "const": "1.1.0" },
+        "empty_paragraph_policy_version": { "const": "1.0.0" }
+      },
+      "not": { "required": ["max_consecutive_tabs"] }
+    },
+    {
+      "$comment": "Standalone shape: STANDALONE_V1_PROFILE_ID only.",
+      "properties": {
+        "composite_grammar_schema_version": { "const": "1.2.0" },
+        "empty_paragraph_policy_version": { "const": "2.0.0" }
+      },
+      "required": ["max_consecutive_tabs"]
+    }
+  ],
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+ "feature_coverage_bounds": {
+  "max_milli": 1000,
+  "min_milli": 1000
+ },
+ "hardness_bounds": {
+  "max_milli": 1000,
+  "min_milli": 1000
+ },
+ "policy_version": "1.0.0",
+ "s2_sampler_policy_schema_version": "1.0.0",
+ "stage_id": "S4",
+ "virtual_epoch_size": 15000,
+ "w_rare_cap_milli": 1000
+}

@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "entry": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "FONT_SUBSTITUTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/font_substitution_details"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "FONT_UNAVAILABLE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/font_unavailable_details"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "reason_code": {
+                "const": "NO_MODEL_CHANNEL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "$ref": "#/$defs/no_model_channel_details"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "details": {
+          "type": "object"
+        },
+        "known_mask": {
+          "type": "boolean"
+        },
+        "node_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "node_property_pointer": {
+          "pattern": "^(/[^/]+)+$",
+          "type": "string"
+        },
+        "observable_mask": {
+          "type": "boolean"
+        },
+        "reason_code": {
+          "enum": [
+            "FONT_SUBSTITUTED",
+            "FONT_UNAVAILABLE",
+            "NO_MODEL_CHANNEL"
+          ]
+        },
+        "supervision_mask": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_property_pointer",
+        "known_mask",
+        "observable_mask",
+        "supervision_mask",
+        "reason_code",
+        "details"
+      ],
+      "type": "object"
+    },
+    "font_substitution_details": {
+      "additionalProperties": false,
+      "properties": {
+        "requested": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "used": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "via": {
+          "enum": [
+            "map",
+            "default"
+          ]
+        }
+      },
+      "required": [
+        "requested",
+        "used",
+        "via"
+      ],
+      "type": "object"
+    },
+    "font_unavailable_details": {
+      "additionalProperties": false,
+      "properties": {
+        "requested": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "requested"
+      ],
+      "type": "object"
+    },
+    "no_model_channel_details": {
+      "additionalProperties": false,
+      "properties": {
+        "node_type": {
+          "enum": [
+            "hyperlink",
+            "note_ref"
+          ]
+        }
+      },
+      "required": [
+        "node_type"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unflatten.dev/schemas/mask_projection.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assessed_pointers": {
+      "items": {
+        "pattern": "^(/[^/]+)+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "ast_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "counts": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_runs": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "entries": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total_runs": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "entries",
+        "affected_runs",
+        "total_runs"
+      ],
+      "type": "object"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/entry"
+      },
+      "type": "array"
+    },
+    "font_pack_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "mask_projection_schema_version": {
+      "const": "0.3.0"
+    },
+    "strict_compile": {
+      "description": "RendererOptions.strict of the compile the mask was derived for; decides the FONT_NOT_IN_PACK rule (omit vs FONT_UNAVAILABLE).",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "mask_projection_schema_version",
+    "ast_hash",
+    "font_pack_hash",
+    "assessed_pointers",
+    "entries",
+    "counts",
+    "strict_compile"
+  ],
+  "title": "Unflatten Mask Projection v0.1 (RFC003 §29)",
+  "type": "object"
+}

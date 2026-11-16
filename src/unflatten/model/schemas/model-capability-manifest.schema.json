@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/model-capability-manifest.schema.json",
+  "title": "RFC004 §46 Model Capability Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_capability_manifest_schema_version",
+    "node_types",
+    "property_groups",
+    "max_structural_sizes",
+    "languages_scripts",
+    "input_kinds",
+    "dpi_range",
+    "document_modes",
+    "resource_recovery_modes",
+    "optional_modules",
+    "confidence_calibration_available"
+  ],
+  "properties": {
+    "model_capability_manifest_schema_version": { "const": "0.1.0" },
+    "node_types": {
+      "type": "object",
+      "propertyNames": { "type": "string" },
+      "additionalProperties": { "$ref": "#/$defs/capability_status" },
+      "minProperties": 1
+    },
+    "property_groups": {
+      "type": "object",
+      "propertyNames": { "type": "string" },
+      "additionalProperties": { "$ref": "#/$defs/capability_status" },
+      "minProperties": 1
+    },
+    "max_structural_sizes": {
+      "type": "object",
+      "propertyNames": { "type": "string" },
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "languages_scripts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "input_kinds": {
+      "type": "array",
+      "items": { "enum": ["pdf_page", "image"] },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "dpi_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_dpi", "max_dpi"],
+      "properties": {
+        "min_dpi": { "type": "integer", "minimum": 1 },
+        "max_dpi": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "document_modes": {
+      "type": "object",
+      "propertyNames": { "enum": ["single_page", "full_document", "bounded_multi_page", "region_diagnostic"] },
+      "additionalProperties": { "$ref": "#/$defs/capability_status" },
+      "minProperties": 1
+    },
+    "resource_recovery_modes": {
+      "type": "object",
+      "propertyNames": { "type": "string" },
+      "additionalProperties": { "$ref": "#/$defs/capability_status" }
+    },
+    "optional_modules": {
+      "type": "object",
+      "propertyNames": { "type": "string" },
+      "additionalProperties": { "$ref": "#/$defs/capability_status" }
+    },
+    "confidence_calibration_available": { "type": "boolean" }
+  },
+  "$defs": {
+    "capability_status": { "enum": ["strict", "partial", "unsupported", "experimental"] }
+  }
+}

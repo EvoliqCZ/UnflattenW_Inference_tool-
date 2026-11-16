@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unflatten.s4-external-views/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "seed", "fraction_milli", "control_sample_sha256", "sources", "entries"],
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "milli": {"type": "integer", "minimum": 0, "maximum": 1000},
+    "kindSources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paired_sha256": {"$ref": "#/$defs/sha"},
+        "pilot_sample_sha256": {"$ref": "#/$defs/sha"}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "unflatten.s4-external-views/v1"},
+    "seed": {"type": "integer"},
+    "fraction_milli": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scan", "photo", "augraphy"],
+      "properties": {
+        "scan": {"$ref": "#/$defs/milli"},
+        "photo": {"$ref": "#/$defs/milli"},
+        "augraphy": {"$ref": "#/$defs/milli"}
+      }
+    },
+    "control_sample_sha256": {"$ref": "#/$defs/sha"},
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "augraphy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {"manifest_sha256": {"$ref": "#/$defs/sha"}}
+        },
+        "scan": {"$ref": "#/$defs/kindSources"},
+        "photo": {"$ref": "#/$defs/kindSources"}
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "document_bundle_id", "page_index", "path", "sha256", "width_px",
+                     "height_px", "matrix_ref_to_view", "alignment_usable", "color_lost"],
+        "properties": {
+          "kind": {"enum": ["scan", "photo", "augraphy"]},
+          "document_bundle_id": {"type": "string", "minLength": 1},
+          "page_index": {"type": "integer", "minimum": 0},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "#/$defs/sha"},
+          "width_px": {"type": "integer", "minimum": 1},
+          "height_px": {"type": "integer", "minimum": 1},
+          "matrix_ref_to_view": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "array", "minItems": 3, "maxItems": 3,
+               "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}}
+            ]
+          },
+          "alignment_usable": {"type": "boolean"},
+          "color_lost": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

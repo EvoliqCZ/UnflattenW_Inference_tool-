@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc003/task_view.schema.json",
+  "title": "RFC003 TaskView envelope (D0 subset)",
+  "$comment": "D0 subset of RFC003 §30.8, extended by RFC003-ERRATA-003 (E1/E2 §30.11 reasoning_constructive_v0, E3 §30.12 reasoning_corrective_v0). eligibility and derived_outputs are EXCLUDED from task_view_id identity: the §12.5 projection covers only {render_view_id, task_kind, input_selection_hash, projection_hash, mask_policy_hash, mask_projection_hash}, extended per ERRATA-003 E2 rule 6 with {reasoning_spec_id, reasoning_derivation_policy_hash} ONLY when task_kind is reasoning_constructive_v0 (both fields are then omitted from the payload for every other task_kind, so 0.1.0 identities are unchanged); this D0 envelope stores no derived_outputs block. Semantic rules: crop_bbox_ppm requires x1<x2 and y1<y2 (§24.1); page_indices unique ascending; training_allowed ⇒ status train_ready or partial_ready; authority_target_hash equals the chosen target ArtifactRef sha256. reasoning_spec_id/reasoning_derivation_policy_hash/reasoning_aux_target_ref are required (nullable) from schema version 0.2.0 and MUST be null for every task_kind other than reasoning_constructive_v0 (ERRATA-003 E2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_view_schema_version",
+    "task_view_id",
+    "render_view_id",
+    "task_kind",
+    "input_selection",
+    "target_projection",
+    "masks",
+    "eligibility"
+  ],
+  "allOf": [
+    {
+      "$comment": "0.2.0 makes the three reasoning fields mandatory (nullable); 0.1.0 envelopes never carry them (additionalProperties: false above forbids the keys entirely for 0.1.0).",
+      "if": { "properties": { "task_view_schema_version": { "const": "0.2.0" } } },
+      "then": {
+        "required": ["reasoning_spec_id", "reasoning_derivation_policy_hash", "reasoning_aux_target_ref"]
+      },
+      "else": {
+        "properties": {
+          "reasoning_spec_id": false,
+          "reasoning_derivation_policy_hash": false,
+          "reasoning_aux_target_ref": false
+        }
+      }
+    }
+  ],
+  "properties": {
+    "task_view_schema_version": { "enum": ["0.1.0", "0.2.0"] },
+    "task_view_id": { "type": "string", "pattern": "^task_[0-9a-f]{64}$" },
+    "render_view_id": { "type": "string", "pattern": "^render_[0-9a-f]{64}$" },
+    "task_kind": {
+      "enum": [
+        "layout_v0",
+        "paragraph_run_v0",
+        "table_v0",
+        "image_v0",
+        "structure_v0",
+        "full_ast_exact_v0",
+        "partial_ast_v0",
+        "renderer_negative_v0",
+        "reasoning_constructive_v0",
+        "reasoning_corrective_v0"
+      ]
+    },
+    "reasoning_spec_id": {
+      "$comment": "§30.11 (RFC003-ERRATA-003 E2). Non-null iff task_kind == reasoning_constructive_v0. The 'continuation.*' family is forbidden while DEC-033 stands (E2 rule 3).",
+      "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^reasoning\\.[^.]+\\.[^.]+$" }]
+    },
+    "reasoning_derivation_policy_hash": {
+      "$comment": "§30.11 (RFC003-ERRATA-003 E2). Non-null iff task_kind == reasoning_constructive_v0.",
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }]
+    },
+    "reasoning_aux_target_ref": {
+      "$comment": "§30.11 (RFC003-ERRATA-003 E2). Non-null iff task_kind == reasoning_constructive_v0.",
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/artifact_ref" }]
+    },
+    "input_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_selection_hash",
+        "page_indices",
+        "crop_bbox_ppm",
+        "window_policy",
+        "input_artifacts",
+        "transform_chain_hash"
+      ],
+      "properties": {
+        "input_selection_hash": { "$ref": "#/$defs/sha256" },
+        "page_indices": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "crop_bbox_ppm": {
+          "$comment": "[x1, y1, x2, y2] in ppm of the post-transform page (§24.1); semantic rule: x1<x2 and y1<y2. Null means whole-input selection.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+            }
+          ]
+        },
+        "window_policy": {
+          "enum": ["single_page", "two_page_overlap", "bounded_multi_page", "full_document"]
+        },
+        "input_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/artifact_ref" }
+        },
+        "transform_chain_hash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "target_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projection_hash",
+        "authority_target_hash",
+        "canonical_target_bundle",
+        "candidate_target_bundle"
+      ],
+      "properties": {
+        "projection_hash": { "$ref": "#/$defs/sha256" },
+        "authority_target_hash": { "$ref": "#/$defs/sha256" },
+        "canonical_target_bundle": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/artifact_ref" }]
+        },
+        "candidate_target_bundle": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/artifact_ref" }]
+        }
+      },
+      "oneOf": [
+        {
+          "$comment": "DocumentBundle authority target.",
+          "properties": {
+            "canonical_target_bundle": { "type": "object" },
+            "candidate_target_bundle": { "type": "null" }
+          }
+        },
+        {
+          "$comment": "Candidate authority target.",
+          "properties": {
+            "canonical_target_bundle": { "type": "null" },
+            "candidate_target_bundle": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "masks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mask_policy_hash", "mask_projection_hash", "mask_artifact"],
+      "properties": {
+        "mask_policy_hash": { "$ref": "#/$defs/sha256" },
+        "mask_projection_hash": { "$ref": "#/$defs/sha256" },
+        "mask_artifact": { "$ref": "#/$defs/artifact_ref" }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "verification_tier",
+        "reason_codes",
+        "training_allowed",
+        "evaluation_allowed",
+        "policy_hash"
+      ],
+      "properties": {
+        "status": { "enum": ["train_ready", "eval_ready", "partial_ready", "ineligible"] },
+        "verification_tier": {
+          "enum": ["unverified", "machine_verified", "human_verified", "human_gold"]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "training_allowed": { "type": "boolean" },
+        "evaluation_allowed": { "type": "boolean" },
+        "policy_hash": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "size_bytes", "mime_type"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mime_type": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

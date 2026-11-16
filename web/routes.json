@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "spa_routes": [
+    "/",
+    "/setup",
+    "/login",
+    "/jobs",
+    "/jobs/:jobId",
+    "/models",
+    "/settings"
+  ]
+}

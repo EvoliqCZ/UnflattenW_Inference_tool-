@@ -1,0 +1,14 @@
+{
+  "source_kind": "Inference application source snapshot; local development history retained separately",
+  "imported_source_commit": "5a79432906e4e1534177acddd34eff85e30d46a3",
+  "application_source_commit": "a0411242c0567fcd5e8f9c7a17ac12f05330673a",
+  "scope": "Complete inference app packages, web UI, deployment, app tests and synthetic fixtures, model export/bundle helpers, branding and licences",
+  "excluded": [
+    "training operation scripts and independent training tests",
+    "internal project decision documents and corpus review UI",
+    "model weights, credentials, databases and live documents"
+  ],
+  "public_release": "1.0.0",
+  "public_release_prepared": "2026-11-16",
+  "publication_history": "Clean public release snapshot; original development history retained privately."
+}

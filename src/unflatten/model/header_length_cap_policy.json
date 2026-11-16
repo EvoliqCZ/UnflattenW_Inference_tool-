@@ -1,0 +1,15 @@
+{
+ "schema": "header-length-cap-policy/1",
+ "policy_id": "header-length-cap.v0",
+ "status": "PROPOSED",
+ "semantics": "header-length-cap-semantics/1",
+ "unit": "tokens_in_story",
+ "byte_mode": "defer",
+ "closing_rule": "innermost_close_else_paragraph_open",
+ "cap_header_tokens": null,
+ "cap_footer_tokens": null,
+ "provenance": {
+  "cap_header_tokens": "placeholder; candidates 500 / 700 from docs/runs/header-length-cap-analysis-2026-10-11.md §3; frozen by owner before the first measurement that counts",
+  "cap_footer_tokens": "placeholder; same tail as headers in gold, so the same value as cap_header_tokens"
+ }
+}

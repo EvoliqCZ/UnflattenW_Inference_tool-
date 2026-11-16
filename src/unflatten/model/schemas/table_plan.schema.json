@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/table_plan.schema.json",
+  "title": "TablePlan (RFC004 §53.1)",
+  "$comment": "Closed contract. Tree Decoder is the sole authority for the existence and order of Table/Row/Cell nodes; TablePlan only references already-existing local slots and binds them to a bounded grid contract. `boundary_claims` and `repeated_header_observations` are validated structurally here (§53.1 field shapes); cross-fragment merge semantics (§53.3) are out of scope for this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "table_plan_schema_version",
+    "table_local_node_id",
+    "row_local_node_ids",
+    "grid_column_count",
+    "columns",
+    "cells",
+    "boundary_claims",
+    "repeated_header_observations"
+  ],
+  "properties": {
+    "table_plan_schema_version": { "$ref": "#/$defs/semver" },
+    "table_local_node_id": { "type": "string", "minLength": 1 },
+    "row_local_node_ids": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "grid_column_count": { "type": "integer", "minimum": 1 },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["column_index", "width_mpt"],
+        "properties": {
+          "column_index": { "type": "integer", "minimum": 0 },
+          "width_mpt": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cell_local_node_id",
+          "row_local_node_id",
+          "row_index",
+          "grid_column",
+          "col_span",
+          "row_span"
+        ],
+        "properties": {
+          "cell_local_node_id": { "type": "string", "minLength": 1 },
+          "row_local_node_id": { "type": "string", "minLength": 1 },
+          "row_index": { "type": "integer", "minimum": 0 },
+          "grid_column": { "type": "integer", "minimum": 0 },
+          "col_span": { "type": "integer", "minimum": 1 },
+          "row_span": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "boundary_claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/boundary_claim" }
+    },
+    "repeated_header_observations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/repeated_header_observation" }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "boundary_claim": {
+      "type": "object",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": [
+            "side", "kind", "table_local_node_id", "row_local_node_id",
+            "cell_local_node_ids", "grid_fingerprint",
+            "table_property_fingerprint", "boundary_stack_fingerprint"
+          ],
+          "properties": {
+            "side": { "enum": ["left", "right"] },
+            "kind": { "const": "table_continuation" },
+            "table_local_node_id": { "type": "string", "minLength": 1 },
+            "row_local_node_id": { "type": "null" },
+            "cell_local_node_ids": { "type": "array", "maxItems": 0 },
+            "grid_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "table_property_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "boundary_stack_fingerprint": { "$ref": "#/$defs/sha256_hash" }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": [
+            "side", "kind", "table_local_node_id", "row_local_node_id",
+            "cell_local_node_ids", "grid_fingerprint",
+            "table_property_fingerprint", "boundary_stack_fingerprint"
+          ],
+          "properties": {
+            "side": { "enum": ["left", "right"] },
+            "kind": { "const": "row_continuation" },
+            "table_local_node_id": { "type": "string", "minLength": 1 },
+            "row_local_node_id": { "type": "string", "minLength": 1 },
+            "cell_local_node_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "grid_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "table_property_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "boundary_stack_fingerprint": { "$ref": "#/$defs/sha256_hash" }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": [
+            "side", "kind", "table_local_node_id", "row_local_node_id",
+            "cell_local_node_ids", "grid_fingerprint",
+            "table_property_fingerprint", "boundary_stack_fingerprint"
+          ],
+          "properties": {
+            "side": { "enum": ["left", "right"] },
+            "kind": { "const": "cell_continuation" },
+            "table_local_node_id": { "type": "string", "minLength": 1 },
+            "row_local_node_id": { "type": "string", "minLength": 1 },
+            "cell_local_node_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "grid_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "table_property_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+            "boundary_stack_fingerprint": { "$ref": "#/$defs/sha256_hash" }
+          }
+        }
+      ]
+    },
+    "repeated_header_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "table_local_node_id",
+        "page_ordinal",
+        "source_row_fingerprint",
+        "visible_text_hash",
+        "resolved_property_hash",
+        "alignment_record_ids",
+        "confidence_ppm"
+      ],
+      "properties": {
+        "table_local_node_id": { "type": "string", "minLength": 1 },
+        "page_ordinal": { "type": "integer", "minimum": 0 },
+        "source_row_fingerprint": { "$ref": "#/$defs/sha256_hash" },
+        "visible_text_hash": { "$ref": "#/$defs/sha256_hash" },
+        "resolved_property_hash": { "$ref": "#/$defs/sha256_hash" },
+        "alignment_record_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "confidence_ppm": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    }
+  }
+}

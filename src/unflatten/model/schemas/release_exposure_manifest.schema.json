@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/release_exposure_manifest.schema.json",
+  "title": "RFC005 §44.2 S2 Release Exposure Manifest",
+  "$comment": "Closed envelope summarising the exposure one S2 run has recorded so far, derived ENTIRELY from the append-only exposure ledger (§44.2). Nothing here is asserted from memory or from a model: every set is the union over the ledger's records. Merging a new attempt into a release (§44.3's crash-safe resume) is a MONOTONIC union — the ledger only grows, so every lineage's exposure count and the total record count can only go up; a decrease is a ledger/attempt identity mismatch and is refused, not repaired. An attempt that crashed before recording any exposure legitimately contributes zero records: it still appears in `attempt_ids` because the RunAttemptManifest for it exists, but adds nothing to the sets.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "release_exposure_manifest_schema_version",
+    "release_id",
+    "run_id",
+    "attempt_ids",
+    "exposure_ledger_root_hash",
+    "exposure_record_count",
+    "lineage_exposure",
+    "fragment_ids",
+    "augmentation_ids",
+    "release_exposure_manifest_hash"
+  ],
+  "properties": {
+    "release_exposure_manifest_schema_version": { "$ref": "#/$defs/semver" },
+    "release_id": {
+      "$comment": "make_id(\"release\", \"rfc005.s2-release-exposure-id/v1\", payload without release_id and without the self-hash) — one release identity per (run, set of attempts, ledger state).",
+      "type": "string",
+      "pattern": "^release_[0-9a-f]{64}$"
+    },
+    "run_id": { "type": "string", "minLength": 1 },
+    "attempt_ids": {
+      "$comment": "The RunAttemptManifests this release was built from, sorted, unique.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^attempt_[0-9a-f]{64}$"
+      }
+    },
+    "exposure_ledger_root_hash": {
+      "$comment": "The ledger's root hash (domain_hash over {run_id, record_count, last_record_hash}) at the moment the release was built. The ledger is the authority; this is a pointer into it.",
+      "$ref": "#/$defs/sha256"
+    },
+    "exposure_record_count": { "type": "integer", "minimum": 0 },
+    "lineage_exposure": {
+      "$comment": "{lineage_root_id: views} where views = the number of ledger records naming that lineage as the drawn lineage root. Monotone under merge.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "fragment_ids": {
+      "$comment": "Sorted union of every fragment id appearing in any record. Sorted, unique.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "augmentation_ids": {
+      "$comment": "Sorted union of every augmentation id appearing in any record. Sorted, unique.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "release_exposure_manifest_hash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

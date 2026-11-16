@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "SCHEMA_VALIDATION_ERROR",
+      "path": "/sections/0/headers/0/children/1"
+    }
+  ]
+}

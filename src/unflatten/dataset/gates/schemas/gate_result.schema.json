@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RFC003 D5 gate result (per index.jsonl record)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gate_result_schema_version",
+    "document_bundle_id",
+    "eligibility",
+    "disposition",
+    "reason_codes",
+    "gate_report"
+  ],
+  "properties": {
+    "gate_result_schema_version": { "const": "0.1.0" },
+    "document_bundle_id": { "type": "string", "minLength": 1 },
+    "eligibility": {
+      "enum": ["train_ready", "eval_ready", "partial_ready", "ineligible"]
+    },
+    "disposition": { "enum": ["active", "quarantine"] },
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "PROFILE_UNSUPPORTED",
+          "VISIBLE_CONTENT_DROPPED",
+          "AST_INVALID",
+          "RESOURCE_INVALID",
+          "FONT_UNAVAILABLE",
+          "APPROXIMATION_NOT_ALLOWED",
+          "TEXT_CONSERVATION_FAILED",
+          "STRUCTURE_CONSERVATION_FAILED",
+          "RENDER_FAILED",
+          "MAPPING_INCOMPLETE",
+          "TABLE_MAPPING_AMBIGUOUS",
+          "OBSERVABILITY_AMBIGUOUS",
+          "RIGHTS_UNKNOWN",
+          "PRIVACY_REVIEW_REQUIRED",
+          "SPLIT_COLLISION",
+          "NEAR_DUPLICATE_COLLISION",
+          "NONDETERMINISTIC_BUILD",
+          "OBJECT_INTEGRITY_FAILED",
+          "TARGETS_INVALID",
+          "RENDER_SKIPPED",
+          "RECORD_MALFORMED"
+        ]
+      }
+    },
+    "gate_report": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gate_check" }
+    }
+  },
+  "$defs": {
+    "gate_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "status", "issues", "details"],
+      "properties": {
+        "gate_id": {
+          "enum": [
+            "integrity",
+            "rights",
+            "privacy",
+            "ast_schema",
+            "ast_semantics",
+            "profile",
+            "canonicalization",
+            "compile",
+            "build_determinism",
+            "text_conservation",
+            "no_silent_loss",
+            "approximations",
+            "observation",
+            "targets"
+          ]
+        },
+        "status": { "enum": ["pass", "fail", "not_applicable"] },
+        "issues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/issue" }
+        },
+        "details": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["privacy_class", "training_allowed", "basis"],
+              "properties": {
+                "privacy_class": {
+                  "enum": [
+                    "synthetic",
+                    "public_non_personal",
+                    "public_personal",
+                    "internal_non_sensitive",
+                    "internal_restricted",
+                    "sensitive_personal",
+                    "prohibited"
+                  ]
+                },
+                "training_allowed": { "type": "boolean" },
+                "basis": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "node_id", "path", "message"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["info", "warning", "error", "fatal"] },
+        "node_id": { "type": ["string", "null"] },
+        "path": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

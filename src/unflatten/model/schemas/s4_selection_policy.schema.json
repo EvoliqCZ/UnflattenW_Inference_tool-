@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s4_selection_policy.schema.json",
+  "title": "RFC005 §40 checkpoint selection policy (DEC-041 A)",
+  "$comment": "Closed envelope, v1. Carries no embedded self-hash -- like s2_stage_gate_policy.schema.json, its identity (domain rfc005.s4-selection-policy/v1) is a domain_hash over the whole validated document, computed by unflatten.model.s4_selection_policy, never stored inside it. `gates` is an ordered list, levels 1..7 of RFC005 §40.1's eight-level lexicographic order (hard contract/security/exposure; exact text/structure minimum; strict-valid/renderer-ready minimum; critical-slice non-regression; typed/table/layout/resource macro metrics; P5 development quality; review/partial/failure behavior). Level 8 (§40.1's own 'performance tie-break') is `tie_break`, a single field, not a floored gate -- it only orders candidates that tie on every gate above. Every rate is carried in MICRO-units (see s2_stage_gate_policy.schema.json's comment: the deterministic CBOR profile these identities hash under has no float in its data model). `is_placeholder` on a gate marks a floor the owner has not yet ratified (DEC-035 §5); `unflatten.model.select_checkpoint` refuses to declare a 'best' checkpoint while any gate carries `is_placeholder: true`, unless run with --report-only, in which case it ranks and reports but declares no best. `cohort.pinned_pages` is the frozen selection cohort (val_iid only, RFC005 §40.4 -- never a calibration split); it must be disjoint from the run's own `s4_eval_pages.json` diagnostic-eval pages, checked by the tool against the run directory at load time, not by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s4_selection_policy_schema_version",
+    "policy_version",
+    "cohort",
+    "decode",
+    "gates",
+    "tie_break",
+    "trial_budget"
+  ],
+  "properties": {
+    "s4_selection_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "note": {
+      "type": "string",
+      "description": "free-text provenance/caveat note, e.g. marking an illustrative cohort pending the owner's real val_iid pin -- never read by select_checkpoint"
+    },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "pinned_pages", "pages_sha256"],
+      "properties": {
+        "role": { "const": "s4_selection_val_iid" },
+        "pinned_pages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string", "minLength": 1 },
+              { "type": "integer", "minimum": 0 }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "pages_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "decode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_steps", "typed_decode", "region_decode", "loop_guard"],
+      "$comment": "RFC005 §12.2: selection uses production-equivalent free-running output -- typed heads (level 5), NodeVisualAligner regions (image recovery) and the DEC-036 loop guard, exactly as eval/s2_gate --typed-decode/--region-decode/--loop-guard.",
+      "properties": {
+        "max_steps": { "type": "integer", "minimum": 1 },
+        "typed_decode": { "type": "boolean" },
+        "region_decode": { "type": "boolean" },
+        "loop_guard": { "enum": ["none", "v1", "v2"] }
+      }
+    },
+    "gates": {
+      "$comment": "Schema 1.0.0 documents carry exactly one gate per level 1..7. Schema 1.1.0 (fresh S4, DEC-055 V5) may carry more than one gate per level; within a level the list order is the lexicographic order. Enforced by unflatten.model.s4_selection_policy (a >7-gate document must declare s4_selection_policy_schema_version 1.1.0).",
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/gate" }
+    },
+    "tie_break": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric_id", "direction"],
+      "properties": {
+        "metric_id": { "type": "string", "minLength": 1 },
+        "direction": { "enum": ["min", "max"] }
+      }
+    },
+    "trial_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_candidates"],
+      "properties": {
+        "max_candidates": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "reference_floor_bootstrap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "num_resamples", "alpha_micro", "seed"],
+      "properties": {
+        "method": { "const": "lineage_bootstrap_percentile" },
+        "num_resamples": { "type": "integer", "minimum": 1 },
+        "alpha_micro": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "seed": { "type": "integer" }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "rate_micro": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "metric_id",
+        "denominator",
+        "floor_micro",
+        "is_placeholder",
+        "missing_evidence_action"
+      ],
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 7 },
+        "metric_id": { "type": "string", "minLength": 1 },
+        "denominator": { "const": "attempted" },
+        "floor_micro": { "$ref": "#/$defs/rate_micro" },
+        "is_placeholder": { "type": "boolean" },
+        "missing_evidence_action": { "const": "insufficient_evidence" },
+        "floor_source": { "$ref": "#/$defs/floor_source" }
+      }
+    },
+    "floor_source": {
+      "$comment": "RFC005-ERRATA-005 E3 (owner decision 2026-09-24): a gate's floor MAY be derived from a reference checkpoint ('not worse than v14-r4') rather than a fixed number the owner typed in. kind='fixed' (default reading when this field is absent entirely) makes no claim beyond the gate's own floor_micro. kind='reference' records the provenance select_checkpoint.propose_reference_floors computed it from -- validate_s4_selection_policy recomputes floor_micro = max(0, reference_value_micro - margin_micro) and refuses a mismatch, so a hand-edited floor can never silently disagree with its own recorded provenance.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["fixed", "reference"] },
+        "reference_checkpoint_sha256": { "type": "string", "minLength": 1 },
+        "reference_value_micro": { "$ref": "#/$defs/rate_micro" },
+        "margin_micro": { "$ref": "#/$defs/rate_micro" }
+      },
+      "if": { "properties": { "kind": { "const": "reference" } } },
+      "then": {
+        "required": ["reference_checkpoint_sha256", "reference_value_micro", "margin_micro"]
+      }
+    }
+  }
+}

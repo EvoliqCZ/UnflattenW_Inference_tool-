@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL run manifest (RFC005-ERRATA-010 E2/E7.1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "stage_id", "run_class", "run_seed", "run_id",
+    "reward_policy_hash", "rollout_policy_hash", "rl_training_policy_hash",
+    "dataset_manifest_hash", "stage_policy_hash", "state_map_hash", "selected_typed_heads",
+    "reference", "policy_parent", "cache_identity", "typed_head_config_hash",
+    "visual_feature_tap", "composite_policy_hash", "ratification_record_hash", "loss_scope",
+    "s1_run_manifest_hash", "run_manifest_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.2.0" },
+    "stage_id": { "const": "S4_5_reward_guided_reconstruction_refinement" },
+    "run_class": { "enum": ["discovery", "promotion"] },
+    "run_seed": { "type": "integer", "minimum": 0 },
+    "run_id": { "type": "string", "pattern": "^s45run_[0-9a-f]{64}$" },
+    "reward_policy_hash": { "$ref": "#/$defs/hash" },
+    "rollout_policy_hash": { "$ref": "#/$defs/hash" },
+    "rl_training_policy_hash": { "$ref": "#/$defs/hash" },
+    "dataset_manifest_hash": { "$ref": "#/$defs/hash" },
+    "stage_policy_hash": { "$ref": "#/$defs/hash" },
+    "state_map_hash": { "$ref": "#/$defs/hash" },
+    "selected_typed_heads": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^typed_heads\\." }
+    },
+    "reference": { "$ref": "#/$defs/identity" },
+    "policy_parent": { "$ref": "#/$defs/identity" },
+    "cache_identity": { "type": "string", "minLength": 1 },
+    "typed_head_config_hash": { "type": "string", "minLength": 1 },
+    "visual_feature_tap": { "type": "string", "minLength": 1 },
+    "composite_policy_hash": { "$ref": "#/$defs/hash" },
+    "ratification_record_hash": {
+      "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }]
+    },
+    "loss_scope": { "$ref": "#/$defs/loss_scope" },
+    "s1_run_manifest_hash": { "$ref": "#/$defs/hash" },
+    "run_manifest_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "loss_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class", "owner_scope", "dataset_manifest_hash", "rights_privacy_refs_hash",
+        "reward_policy_hash", "rollout_policy_hash", "reference", "output_locator"
+      ],
+      "properties": {
+        "class": { "const": "rollout_reward" },
+        "owner_scope": { "const": "example_local" },
+        "dataset_manifest_hash": { "$ref": "#/$defs/hash" },
+        "rights_privacy_refs_hash": { "$ref": "#/$defs/hash" },
+        "reward_policy_hash": { "$ref": "#/$defs/hash" },
+        "rollout_policy_hash": { "$ref": "#/$defs/hash" },
+        "reference": { "$ref": "#/$defs/identity" },
+        "output_locator": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ancestry_hash", "checkpoint_id", "checkpoint_sha256", "typed_head_config_hash", "run_class"
+      ],
+      "properties": {
+        "ancestry_hash": { "type": "string", "minLength": 1 },
+        "checkpoint_id": { "type": "string", "minLength": 1 },
+        "checkpoint_sha256": { "type": "string", "minLength": 1 },
+        "typed_head_config_hash": { "type": "string", "minLength": 1 },
+        "run_class": { "enum": ["discovery", "promotion"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+Unflatten W 1.0
+Copyright (c) 2026 EVOLIQ s.r.o.
+https://www.evoliq.cz/sk
+
+EVOLIQ's original application contributions are provided under the EVOLIQ
+Personal Use and Commercial License 1.0 in LICENSE. Private personal use is
+free; commercial and organizational use requires a separate paid agreement.
+
+This application can download Unflatten W Dense 1.0, based on the unmodified
+Qwen/Qwen3-VL-4B-Instruct revision ebb281ec70b05090aa6165b016eac8ec08e71b17
+by Qwen / Alibaba Cloud. Model weights are not bundled in this application
+archive. The separately downloaded model includes its own provenance and
+license notices. Qwen's independent Apache License 2.0 rights are unchanged;
+a copy is provided in LICENSE-APACHE-2.0.
+
+Third-party source components and vendored ECMA-376 schemas retain their
+applicable licenses and notices. See vendor/ecma376 and dependency packages.
+
+Swagger UI 5.35.0 (swagger-ui-dist), Copyright SmartBear Software,
+is bundled under Apache License 2.0 for same-origin API documentation.
+Its license, NOTICE, bundled dependency notices and archive/file integrity
+metadata are in src/unflatten/service/swagger_ui/.
+
+Distribution changes: pinned Dense 1.0 model catalog, isolated Docker
+deployment, automatic CUDA startup, worker-only private HF credential mount,
+EVOLIQ / Unflatten W 1.0 branding and local launch documentation. The existing
+document reconstruction, job management and PDF-sandbox architecture is reused.

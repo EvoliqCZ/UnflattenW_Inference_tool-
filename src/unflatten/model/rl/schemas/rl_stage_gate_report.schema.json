@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL stage gate report (RFC005-ERRATA-010 E7.1/E7.3, RFC006-ERRATA-001 E5.2)",
+  "$comment": "decision 'promoted' is structurally impossible unless policy_status is RATIFIED, the run is a promotion run, a ratification record is bound, an SFT-continuation arm is bound and there is no blocker. All quantities are integer micro units.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "stage_id", "run_class", "run_id", "run_manifest_hash",
+    "stage_policy_hash", "policy_status", "ratification_record_hash",
+    "dataset_manifest_hash", "exposure_ledger_hash", "exposure_record_count",
+    "rl_arm_hash", "sft_arm_hash", "parent_checkpoint_id", "candidate_checkpoint_id",
+    "rfc006_conditions", "zero_advantage_rate_micro", "reward_hacking_signal",
+    "reward_quality", "gate_evidence", "results", "blockers", "decision",
+    "decision_reason", "stage_gate_report_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "stage_id": { "const": "S4_5_reward_guided_reconstruction_refinement" },
+    "run_class": { "enum": ["discovery", "promotion"] },
+    "run_id": { "type": "string", "pattern": "^s45run_[0-9a-f]{64}$" },
+    "run_manifest_hash": { "$ref": "#/$defs/hash" },
+    "stage_policy_hash": { "$ref": "#/$defs/hash" },
+    "policy_status": { "enum": ["PROPOSED", "RATIFIED"] },
+    "ratification_record_hash": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+    "dataset_manifest_hash": { "$ref": "#/$defs/hash" },
+    "exposure_ledger_hash": { "$ref": "#/$defs/hash" },
+    "exposure_record_count": { "type": "integer", "minimum": 0 },
+    "rl_arm_hash": { "$ref": "#/$defs/hash" },
+    "sft_arm_hash": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+    "parent_checkpoint_id": { "type": "string", "minLength": 1 },
+    "candidate_checkpoint_id": { "type": "string", "minLength": 1 },
+    "rfc006_conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_authority_unchanged", "renderer_evaluator_no_gradient",
+        "no_refiner_weights_learned", "reward_lexicographic",
+        "rollouts_host_side_only", "train_data_only",
+        "no_refiner_component_lock_dependency"
+      ],
+      "properties": {
+        "commit_authority_unchanged": { "$ref": "#/$defs/condition" },
+        "renderer_evaluator_no_gradient": { "$ref": "#/$defs/condition" },
+        "no_refiner_weights_learned": { "$ref": "#/$defs/condition" },
+        "reward_lexicographic": { "$ref": "#/$defs/condition" },
+        "rollouts_host_side_only": { "$ref": "#/$defs/condition" },
+        "train_data_only": { "$ref": "#/$defs/condition" },
+        "no_refiner_component_lock_dependency": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "zero_advantage_rate_micro": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "reward_hacking_signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["detected", "evidence_ref"],
+      "properties": {
+        "detected": { "type": "boolean" },
+        "evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "reward_quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cohort", "lineage_ids", "correlation_micro", "evidence_ref"],
+      "properties": {
+        "cohort": { "const": "dev_validation_free_running" },
+        "lineage_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "correlation_micro": { "type": "integer", "minimum": -1000000, "maximum": 1000000 },
+        "evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "gate_evidence": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/evidence" }
+    },
+    "results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gates", "reward_quality", "zero_advantage"],
+      "properties": {
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gate_id", "verdict", "reason"],
+            "properties": {
+              "gate_id": { "type": "string", "minLength": 1 },
+              "verdict": { "enum": ["pass", "fail", "insufficient_evidence"] },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "reward_quality": { "$ref": "#/$defs/result" },
+        "zero_advantage": { "$ref": "#/$defs/result" }
+      }
+    },
+    "blockers": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "decision": { "enum": ["promoted", "rejected", "insufficient_evidence", "blocked"] },
+    "decision_reason": {
+      "enum": [
+        "blocked", "placeholder_or_missing_evidence", "gate_failed", "policy_not_ratified",
+        "discovery_run_not_promotable", "ratification_record_missing", "all_gates_passed"
+      ]
+    },
+    "stage_gate_report_hash": { "$ref": "#/$defs/hash" }
+  },
+  "if": { "properties": { "decision": { "const": "promoted" } }, "required": ["decision"] },
+  "then": {
+    "properties": {
+      "policy_status": { "const": "RATIFIED" },
+      "run_class": { "const": "promotion" },
+      "ratification_record_hash": { "$ref": "#/$defs/hash" },
+      "sft_arm_hash": { "$ref": "#/$defs/hash" },
+      "blockers": { "maxItems": 0 },
+      "decision_reason": { "const": "all_gates_passed" }
+    }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holds", "evidence_ref"],
+      "properties": {
+        "holds": { "type": "boolean" },
+        "evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "reason"],
+      "properties": {
+        "verdict": { "enum": ["pass", "fail", "insufficient_evidence"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "independent_lineages", "attempted_denominator", "evidence_ref", "count"],
+          "properties": {
+            "kind": { "const": "zero_count" },
+            "independent_lineages": { "type": "integer", "minimum": 0 },
+            "attempted_denominator": { "type": "integer", "minimum": 0 },
+            "evidence_ref": { "type": "string", "minLength": 1 },
+            "count": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind", "independent_lineages", "attempted_denominator", "evidence_ref",
+            "candidate_lower_bound_micro", "diff_lower_bound_micro"
+          ],
+          "properties": {
+            "kind": { "const": "non_regression" },
+            "independent_lineages": { "type": "integer", "minimum": 0 },
+            "attempted_denominator": { "type": "integer", "minimum": 0 },
+            "evidence_ref": { "type": "string", "minLength": 1 },
+            "candidate_lower_bound_micro": { "type": "integer", "minimum": -1000000, "maximum": 1000000 },
+            "diff_lower_bound_micro": { "type": "integer", "minimum": -1000000, "maximum": 1000000 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind", "independent_lineages", "attempted_denominator", "evidence_ref",
+            "diff_lower_bound_micro"
+          ],
+          "properties": {
+            "kind": { "enum": ["benefit", "not_worse"] },
+            "independent_lineages": { "type": "integer", "minimum": 0 },
+            "attempted_denominator": { "type": "integer", "minimum": 0 },
+            "evidence_ref": { "type": "string", "minLength": 1 },
+            "diff_lower_bound_micro": { "type": "integer", "minimum": -1000000, "maximum": 1000000 }
+          }
+        }
+      ]
+    }
+  }
+}

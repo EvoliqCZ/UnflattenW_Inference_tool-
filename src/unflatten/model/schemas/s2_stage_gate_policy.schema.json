@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s2_stage_gate_policy.schema.json",
+  "title": "RFC005 S2 Stage Gate Policy (DEC-012, §12.2)",
+  "$comment": "Closed envelope, v1. Carries no embedded self-hash -- like stage_gate_policy.schema.json, its identity (domain rfc005.s2-stage-gate-policy/v1) is a domain_hash over the whole validated document, computed by the module that loads it, never stored inside it. Every rate is carried in MICRO-units (a rate r is r*1e6, an integer in [0, 1000000]) because the deterministic CBOR profile these identities hash under (rfc8949-core-det-nfc-int-v0) has no float in its data model: a float floor could be validated but never hashed. The unit is in the name so the scaling cannot be forgotten at a call site. S2 is the first stage whose quality branch is 'applies' (DEC-012): the S1 policy's contract-only shape (owner R5 2026-09-07, D4) does NOT carry over, so this schema has no not_applicable quality branch at all -- a policy that skips quality is malformed, not conservative. `absolute_quality_floor_micro` must be an absolute statement about acceptable reconstruction, argued from what the product needs: the frozen-init baseline scores 0.00 exact match and emits nothing usable, so a floor set relative to that baseline is meaningless (DEC-012 warning). `relative_margin_micro` is the optional non-inferiority margin of §12.2 and may not compensate a failed floor -- the determination path in unflatten.eval.s2_gate.report enforces floor AND margin, never either/or. `critical_slices[].minimum_fidelity_micro` is the §12.2 regression margin reduced to an absolute fidelity floor for the same reason: the frozen-init baseline emits no usable slice, so a relative-to-baseline reading is vacuous at S2. `gates` is the same fifteen contract gates as stage_gate_policy.schema.json (RFC005 §14.4), kind and missing-evidence action closed; gate names must equal the s1_runner.py GateResult name literals (checked out-of-band by test_s2_stage_gate_policy.py against the runner SOURCE, never by importing it), and the module adds the distinct-1..15 and distinct-slice_id checks this schema cannot express on its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s2_stage_gate_policy_schema_version",
+    "policy_version",
+    "stage",
+    "gates",
+    "quality",
+    "missing_evidence_action_gates",
+    "missing_evidence_action_quality"
+  ],
+  "properties": {
+    "s2_stage_gate_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage": { "const": "S2" },
+    "gates": {
+      "type": "array",
+      "minItems": 15,
+      "maxItems": 15,
+      "items": { "$ref": "#/$defs/gate" }
+    },
+    "quality": { "$ref": "#/$defs/quality" },
+    "missing_evidence_action_gates": { "const": "blocked" },
+    "missing_evidence_action_quality": { "const": "insufficient_evidence" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "rate_micro": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "name", "kind", "missing_evidence_action"],
+      "properties": {
+        "gate": { "type": "integer", "minimum": 1, "maximum": 15 },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "const": "contract" },
+        "missing_evidence_action": { "const": "blocked" }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "metrics", "critical_slices"],
+      "properties": {
+        "status": { "const": "applies" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["exact_match_rate"],
+          "properties": {
+            "exact_match_rate": { "$ref": "#/$defs/exact_match_rate_metric" }
+          }
+        },
+        "critical_slices": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["slice_id", "minimum_fidelity_micro"],
+            "properties": {
+              "slice_id": { "enum": ["diacritic_slice", "control_event_slice"] },
+              "minimum_fidelity_micro": { "$ref": "#/$defs/rate_micro" }
+            }
+          }
+        }
+      }
+    },
+    "exact_match_rate_metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "denominator",
+        "absolute_quality_floor_micro",
+        "relative_margin_micro",
+        "confidence_bound_method",
+        "alpha_micro",
+        "minimum_independent_lineages",
+        "minimum_attempted_denominator",
+        "missing_evidence_action"
+      ],
+      "properties": {
+        "metric_id": { "const": "exact_match_rate" },
+        "denominator": { "const": "attempted" },
+        "absolute_quality_floor_micro": { "$ref": "#/$defs/rate_micro" },
+        "relative_margin_micro": { "$ref": "#/$defs/rate_micro" },
+        "confidence_bound_method": { "const": "paired_normal_approximation" },
+        "alpha_micro": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "minimum_independent_lineages": { "type": "integer", "minimum": 1 },
+        "minimum_attempted_denominator": { "type": "integer", "minimum": 1 },
+        "missing_evidence_action": { "const": "insufficient_evidence" }
+      }
+    }
+  }
+}

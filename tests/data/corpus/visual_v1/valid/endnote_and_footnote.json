@@ -1,0 +1,268 @@
+{
+  "ast_version": "0.1.0",
+  "profile": "word-visual-v1",
+  "document_id": "doc",
+  "metadata": {
+    "language": "en-US",
+    "title": null,
+    "subject": null
+  },
+  "resources": [],
+  "sections": [
+    {
+      "id": "s1",
+      "type": "section",
+      "break_type": "next_page",
+      "page": {
+        "width_mpt": 595276,
+        "height_mpt": 841890,
+        "orientation": "portrait"
+      },
+      "margins": {
+        "top_mpt": 72000,
+        "right_mpt": 72000,
+        "bottom_mpt": 72000,
+        "left_mpt": 72000,
+        "gutter_mpt": 0
+      },
+      "columns": {
+        "count": 1,
+        "equal_width": true,
+        "gap_mpt": 18000,
+        "widths_mpt": []
+      },
+      "children": [
+        {
+          "id": "p1",
+          "type": "paragraph",
+          "semantic": {
+            "role": "body",
+            "heading_level": null,
+            "outline_level": null
+          },
+          "layout": {
+            "alignment": "left",
+            "direction": "ltr",
+            "indent": {
+              "left_mpt": 0,
+              "right_mpt": 0,
+              "first_line_mpt": 0,
+              "hanging_mpt": 0
+            },
+            "spacing": {
+              "before_mpt": 0,
+              "after_mpt": 0,
+              "line": {
+                "mode": "single"
+              }
+            },
+            "pagination": {
+              "keep_with_next": false,
+              "keep_lines": false,
+              "page_break_before": false,
+              "widow_control": true
+            },
+            "tabs": []
+          },
+          "style": {
+            "background": null,
+            "borders": null
+          },
+          "children": [
+            {
+              "id": "r1",
+              "type": "run",
+              "text": "Claim",
+              "language": "en-US",
+              "style": {
+                "font_family": "Arial",
+                "font_size_mpt": 11000,
+                "bold": false,
+                "italic": false,
+                "underline": "none",
+                "strike": false,
+                "color": "#000000",
+                "highlight": null,
+                "superscript": false,
+                "subscript": false,
+                "character_spacing_mpt": 0,
+                "small_caps": false,
+                "all_caps": false
+              }
+            },
+            {
+              "id": "nr1",
+              "type": "note_ref",
+              "note_id": "fn1",
+              "marker_text": "1"
+            },
+            {
+              "id": "r2",
+              "type": "run",
+              "text": " and more",
+              "language": "en-US",
+              "style": {
+                "font_family": "Arial",
+                "font_size_mpt": 11000,
+                "bold": false,
+                "italic": false,
+                "underline": "none",
+                "strike": false,
+                "color": "#000000",
+                "highlight": null,
+                "superscript": false,
+                "subscript": false,
+                "character_spacing_mpt": 0,
+                "small_caps": false,
+                "all_caps": false
+              }
+            },
+            {
+              "id": "nr2",
+              "type": "note_ref",
+              "note_id": "en1",
+              "marker_text": "i"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "extensions": {},
+  "footnotes": [
+    {
+      "id": "fn1",
+      "type": "footnote",
+      "children": [
+        {
+          "id": "fnp1",
+          "type": "paragraph",
+          "semantic": {
+            "role": "body",
+            "heading_level": null,
+            "outline_level": null
+          },
+          "layout": {
+            "alignment": "left",
+            "direction": "ltr",
+            "indent": {
+              "left_mpt": 0,
+              "right_mpt": 0,
+              "first_line_mpt": 0,
+              "hanging_mpt": 0
+            },
+            "spacing": {
+              "before_mpt": 0,
+              "after_mpt": 0,
+              "line": {
+                "mode": "single"
+              }
+            },
+            "pagination": {
+              "keep_with_next": false,
+              "keep_lines": false,
+              "page_break_before": false,
+              "widow_control": true
+            },
+            "tabs": []
+          },
+          "style": {
+            "background": null,
+            "borders": null
+          },
+          "children": [
+            {
+              "id": "fnr1",
+              "type": "run",
+              "text": "Page note.",
+              "language": "en-US",
+              "style": {
+                "font_family": "Arial",
+                "font_size_mpt": 11000,
+                "bold": false,
+                "italic": false,
+                "underline": "none",
+                "strike": false,
+                "color": "#000000",
+                "highlight": null,
+                "superscript": false,
+                "subscript": false,
+                "character_spacing_mpt": 0,
+                "small_caps": false,
+                "all_caps": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "endnotes": [
+    {
+      "id": "en1",
+      "type": "endnote",
+      "children": [
+        {
+          "id": "enp1",
+          "type": "paragraph",
+          "semantic": {
+            "role": "body",
+            "heading_level": null,
+            "outline_level": null
+          },
+          "layout": {
+            "alignment": "left",
+            "direction": "ltr",
+            "indent": {
+              "left_mpt": 0,
+              "right_mpt": 0,
+              "first_line_mpt": 0,
+              "hanging_mpt": 0
+            },
+            "spacing": {
+              "before_mpt": 0,
+              "after_mpt": 0,
+              "line": {
+                "mode": "single"
+              }
+            },
+            "pagination": {
+              "keep_with_next": false,
+              "keep_lines": false,
+              "page_break_before": false,
+              "widow_control": true
+            },
+            "tabs": []
+          },
+          "style": {
+            "background": null,
+            "borders": null
+          },
+          "children": [
+            {
+              "id": "enr1",
+              "type": "run",
+              "text": "End note.",
+              "language": "en-US",
+              "style": {
+                "font_family": "Arial",
+                "font_size_mpt": 11000,
+                "bold": false,
+                "italic": false,
+                "underline": "none",
+                "strike": false,
+                "color": "#000000",
+                "highlight": null,
+                "superscript": false,
+                "subscript": false,
+                "character_spacing_mpt": 0,
+                "small_caps": false,
+                "all_caps": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/stage_gate_policy.schema.json",
+  "title": "RFC005 Stage Gate Policy (§12.2/§14.4, plan spec-stage-gate-report-c5)",
+  "$comment": "Closed envelope, v1. Carries no embedded self-hash -- like runtime_limits_policy.schema.json, its identity (domain rfc005.stage-gate-policy/v1) is a domain_hash over the whole validated document, computed by the module that loads it, never stored inside it. Exactly 15 contract gates (RFC005 §14.4's fifteen S1/S2 gates); gate names must equal the s1_runner.py GateResult name literals (checked out-of-band by test_stage_gate_report.py against the runner SOURCE, never by importing it). quality and minimum_independent_lineages are closed two-branch unions: the not_applicable branch is the only one this policy's stage (S1/S2) may use (owner R5 2026-09-07, D4) -- stage_gate_report.py refuses to build a document whose quality.status is 'applies' for stage S1/S2, a refusal this schema cannot express on its own since the schema has no way to see the sibling 'stage' field's value from inside quality's own subschema. `stage` names the LOSS POLICY stage this gate policy is bound to (governance 2026-09-07): it must equal the frozen `stage_policy.json`'s own `stage_id`, read and cross-checked by `stage_gate_report.py`, never a free-standing declaration -- a run executed under a different stage (e.g. DEC-009's S2 run evaluated under the frozen S1 loss policy) records that as the report's own `run_stage`, not as a second value of this field. `quality.not_applicable.reason` must say that gate 12's tolerances (atol/rtol) are runner-declared per run and reported in each run's own gate evidence, never a value this frozen policy pins.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stage_gate_policy_schema_version",
+    "policy_version",
+    "stage",
+    "gates",
+    "quality",
+    "minimum_independent_lineages",
+    "missing_evidence_action_policy_wide"
+  ],
+  "properties": {
+    "stage_gate_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage": { "enum": ["S1", "S2"] },
+    "gates": {
+      "type": "array",
+      "minItems": 15,
+      "maxItems": 15,
+      "items": { "$ref": "#/$defs/gate" }
+    },
+    "quality": { "$ref": "#/$defs/quality" },
+    "minimum_independent_lineages": { "$ref": "#/$defs/minimum_independent_lineages" },
+    "missing_evidence_action_policy_wide": { "const": "blocked" }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "name", "kind", "missing_evidence_action"],
+      "properties": {
+        "gate": { "type": "integer", "minimum": 1, "maximum": 15 },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "const": "contract" },
+        "missing_evidence_action": { "const": "blocked" }
+      }
+    },
+    "quality": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": { "const": "not_applicable" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "metrics"],
+          "properties": {
+            "status": { "const": "applies" },
+            "metrics": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "minimum_independent_lineages": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason"],
+          "properties": {
+            "status": { "const": "not_applicable" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "minimum"],
+          "properties": {
+            "status": { "const": "required" },
+            "minimum": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

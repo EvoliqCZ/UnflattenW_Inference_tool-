@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/runtime_limits_policy.schema.json",
+  "title": "M1 Runtime Limits Policy (design §4.7)",
+  "$comment": "Closed envelope. The one artifact carrying every pinned M1 limit, so 'fail closed' is mechanized rather than asserted. Concrete values are frozen run/security policy set before use, not quality thresholds invented here (design §12, §18). A null, absent or unequal runtime_limits_policy_hash fails lock/run verification (design §4.7).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runtime_limits_policy_schema_version",
+    "policy_version",
+    "text_encoding_budget_ops",
+    "max_scalars_per_sample",
+    "max_materialized_tokens_per_sample",
+    "max_tokenizer_probes_per_range",
+    "max_structural_events_per_sample",
+    "max_controller_steps_per_sample",
+    "max_byte_frames_per_sample",
+    "max_cache_row_bytes",
+    "max_cache_shard_bytes",
+    "max_cache_rows_per_shard",
+    "max_json_nesting_depth",
+    "max_cbor_nesting_depth",
+    "max_tokenizer_file_bytes"
+  ],
+  "properties": {
+    "runtime_limits_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "text_encoding_budget_ops": { "type": "integer", "minimum": 1 },
+    "max_scalars_per_sample": { "type": "integer", "minimum": 1 },
+    "max_materialized_tokens_per_sample": { "type": "integer", "minimum": 1 },
+    "max_tokenizer_probes_per_range": { "type": "integer", "minimum": 1 },
+    "max_structural_events_per_sample": { "type": "integer", "minimum": 1 },
+    "max_controller_steps_per_sample": { "type": "integer", "minimum": 1 },
+    "max_byte_frames_per_sample": { "type": "integer", "minimum": 1 },
+    "max_cache_row_bytes": { "type": "integer", "minimum": 1 },
+    "max_cache_shard_bytes": { "type": "integer", "minimum": 1 },
+    "max_cache_rows_per_shard": { "type": "integer", "minimum": 1 },
+    "max_json_nesting_depth": { "type": "integer", "minimum": 1 },
+    "max_cbor_nesting_depth": { "type": "integer", "minimum": 1 },
+    "max_tokenizer_file_bytes": { "type": "integer", "minimum": 1 }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "V1_FEATURE_IN_V0_PROFILE",
+      "path": "/sections/0/children/0/children/1"
+    }
+  ]
+}

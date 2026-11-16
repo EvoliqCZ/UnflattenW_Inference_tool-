@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "DUPLICATE_STORY_KIND",
+      "path": "/sections/0/headers/1"
+    }
+  ]
+}

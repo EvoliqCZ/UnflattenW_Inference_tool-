@@ -1,0 +1,19 @@
+{
+  "attachments": [
+    {
+      "attachment": "decoder_step",
+      "mode": "gold_prefix"
+    }
+  ],
+  "conditioning_policy_schema_version": "1.0.0",
+  "gold_input_prohibitions": {
+    "gold_continuation_edges_as_neural_input": false,
+    "gold_crops_as_neural_input": false,
+    "gold_property_values_or_applicability_as_neural_input": false,
+    "gold_regions_as_neural_input": false,
+    "gold_table_plan_as_neural_input": false
+  },
+  "gold_structural_prefix_teacher_forced_slots": true,
+  "oracle_diagnostic_updates_product_ancestor_weights": false,
+  "policy_version": "1.0.0"
+}

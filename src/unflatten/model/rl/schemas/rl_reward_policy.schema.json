@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL reward policy (RFC005-ERRATA-010 E3.4)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "component_weights_micro", "hard_gates",
+    "severe_structural_error", "candidate_repair", "chain_policy_flags", "alignment_policy",
+    "pixel_component", "thresholds", "reward_policy_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["PROPOSED", "RATIFIED"] },
+    "component_weights_micro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visible_text_control_events", "strict_ast_tree_semantics", "typed_layout_typography",
+        "grid_span_cell_ownership", "alignment_fragment_continuity", "render_geometry_perceptual"
+      ],
+      "properties": {
+        "visible_text_control_events": { "$ref": "#/$defs/micro" },
+        "strict_ast_tree_semantics": { "$ref": "#/$defs/micro" },
+        "typed_layout_typography": { "$ref": "#/$defs/micro" },
+        "grid_span_cell_ownership": { "$ref": "#/$defs/micro" },
+        "alignment_fragment_continuity": { "$ref": "#/$defs/micro" },
+        "render_geometry_perceptual": { "$ref": "#/$defs/micro" }
+      }
+    },
+    "hard_gates": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "missing_or_invented_text",
+          "invalid_ast",
+          "resource_fragment_integrity",
+          "severe_structural_error",
+          "rfc002_render"
+        ]
+      }
+    },
+    "severe_structural_error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tree_f1_floor_micro", "grid_f1_floor_micro"],
+      "properties": {
+        "tree_f1_floor_micro": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/micro" }] },
+        "grid_f1_floor_micro": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/micro" }] }
+      }
+    },
+    "candidate_repair": { "const": "none_beyond_pinned_chain_policies" },
+    "chain_policy_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "headless_defaults", "table_geometry", "recovered_image_materialization", "story_dedup",
+        "language_detect", "page_number_fields", "autolink", "page_geometry_from_raster",
+        "runaway_row_repair", "leader_fill"
+      ],
+      "properties": {
+        "headless_defaults": { "type": "boolean" },
+        "table_geometry": { "type": "boolean" },
+        "recovered_image_materialization": { "type": "boolean" },
+        "story_dedup": { "type": "boolean" },
+        "language_detect": { "type": "boolean" },
+        "page_number_fields": { "type": "boolean" },
+        "autolink": { "type": "boolean" },
+        "page_geometry_from_raster": { "type": "boolean" },
+        "runaway_row_repair": { "type": "boolean" },
+        "leader_fill": { "type": "boolean" }
+      }
+    },
+    "text_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "max_ppm", "control_events_exact"],
+      "properties": {
+        "metric": { "const": "dec030_cer" },
+        "max_ppm": { "$ref": "#/$defs/micro" },
+        "control_events_exact": {
+          "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 }
+        },
+        "control_events_total": {
+          "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "alignment_policy": { "const": "preorder-edit-script.v0" },
+    "pixel_component": { "const": "off" },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_group_reward_variance", "min_reward_quality_correlation",
+        "min_independent_lineages", "max_zero_advantage_rate"
+      ],
+      "properties": {
+        "min_group_reward_variance": { "const": null },
+        "min_reward_quality_correlation": { "const": null },
+        "min_independent_lineages": { "const": null },
+        "max_zero_advantage_rate": { "const": null }
+      }
+    },
+    "reward_policy_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "micro": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

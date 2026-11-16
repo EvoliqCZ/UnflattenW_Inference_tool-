@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/stage_data_matrix.schema.json",
+  "title": "RFC005 §30.2 StageDataMatrix",
+  "$comment": "Closed envelope for the joint sampling matrix `stage_data_matrix_hash` names. RFC005 §30.2: the normative sampler draws from a closed joint (split, pyramid_level, task_kind, cohort) -> probability mass over lineage-root draws, applied BEFORE fragment/view/augmentation expansion. Every infeasible combination must be an explicit `0` and a missing cell is a schema error -- which is why the axis domains are declared here and the producer requires `cells` to be their exact Cartesian product. The schema fixes the SHAPE; the masses are an owner content decision and this document supplies none. Mass is carried in MICRO-units summing to exactly 1000000, integer because the deterministic CBOR profile this hash is computed under (`rfc8949-core-det-nfc-int-v0`) has no float in its data model, and because §30.2's 'row/column marginals musia presne reconcile' admits no tolerance argument.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stage_data_matrix_schema_version",
+    "matrix_version",
+    "stage_id",
+    "splits",
+    "pyramid_levels",
+    "task_kinds",
+    "cohorts",
+    "cells",
+    "declared_marginals"
+  ],
+  "properties": {
+    "stage_data_matrix_schema_version": { "$ref": "#/$defs/semver" },
+    "matrix_version": { "$ref": "#/$defs/semver" },
+    "stage_id": {
+      "$comment": "The RFC005 §12 stage this matrix is frozen for. Named, never inferred from a run class.",
+      "type": "string",
+      "pattern": "^S[0-9]+$"
+    },
+    "splits": {
+      "$comment": "Declared split axis domain. Exact membership in the RFC003 split set is checked by the producer.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/split" }
+    },
+    "pyramid_levels": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pyramid_level" }
+    },
+    "task_kinds": {
+      "$comment": "Exact RFC003 task kinds. Membership in the closed enum is checked by the producer against `unflatten.dataset.gates.task_eligibility.TASK_KINDS`, not restated here; the pattern only rules out wildcards and loose names.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/task_kind" }
+    },
+    "cohorts": {
+      "$comment": "The source/domain cohort axis. Free-form declared strings -- RFC005 §30.2 names no closed cohort enum, so the matrix declares its own domain and the producer holds `cells` to it.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/cohort" }
+    },
+    "cells": {
+      "$comment": "Exactly the full Cartesian product of the four declared axes, in any order. An infeasible combination is present with `mass_micro: 0`; omitting it is a schema error (§30.2), which is what makes 'missing cell' distinguishable from 'zero mass' at all.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["split", "pyramid_level", "task_kind", "cohort", "mass_micro"],
+        "properties": {
+          "split": { "$ref": "#/$defs/split" },
+          "pyramid_level": { "$ref": "#/$defs/pyramid_level" },
+          "task_kind": { "$ref": "#/$defs/task_kind" },
+          "cohort": { "$ref": "#/$defs/cohort" },
+          "mass_micro": {
+            "$comment": "Lineage-root draw mass in millionths, applied before fragment/view/augmentation expansion. `0` is legal and means explicitly infeasible.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          }
+        }
+      }
+    },
+    "declared_marginals": {
+      "$comment": "§30.2: row/column marginals must reconcile exactly with the stage profile. Per axis, a complete map from axis value to expected summed `mass_micro`. An axis may be omitted (nothing was declared for it); an axis that is present must be complete and exact -- a partial marginal would let an undeclared value drift unnoticed.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "split": { "$ref": "#/$defs/marginal" },
+        "pyramid_level": { "$ref": "#/$defs/marginal" },
+        "task_kind": { "$ref": "#/$defs/marginal" },
+        "cohort": { "$ref": "#/$defs/marginal" }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "split": { "type": "string", "enum": ["train", "val", "test"] },
+    "pyramid_level": { "type": "string", "pattern": "^P[0-5]$" },
+    "task_kind": { "type": "string", "pattern": "^[a-z][a-z0-9_]*_v[0-9]+$" },
+    "cohort": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "marginal": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+    }
+  }
+}

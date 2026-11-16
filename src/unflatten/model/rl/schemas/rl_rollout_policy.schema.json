@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL rollout policy (RFC005-ERRATA-010 E3.3)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "temperature_micro", "top_p_micro", "seed_scheme",
+    "renormalise", "typed_head_sampling", "integer_regression_heads", "loop_guards_in_policy",
+    "loop_guard_rewind_recorded_in_trajectory", "group_size", "rollout_budget",
+    "max_steps", "loop_guard_arm", "execution_profile", "render_probe", "rollout_policy_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["PROPOSED", "RATIFIED"] },
+    "temperature_micro": { "type": "integer", "minimum": 1, "maximum": 2000000 },
+    "top_p_micro": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+    "seed_scheme": { "const": "H(run_seed, doc_id, rollout_index)" },
+    "renormalise": { "const": "grammar_legal" },
+    "typed_head_sampling": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["boolean", "enum", "cardinality", "palette"] }
+    },
+    "integer_regression_heads": { "const": "argmax" },
+    "loop_guards_in_policy": { "type": "boolean" },
+    "loop_guard_rewind_recorded_in_trajectory": { "const": true },
+    "group_size": { "type": "integer", "minimum": 2 },
+    "rollout_budget": { "type": "integer", "minimum": 1 },
+    "max_steps": { "type": "integer", "minimum": 1 },
+    "loop_guard_arm": { "type": "string", "minLength": 1 },
+    "execution_profile": { "$ref": "#/$defs/execution_profile" },
+    "render_probe": { "enum": ["off", "status_only"] },
+    "rollout_policy_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "execution_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kv_cache_mode", "quantization", "prefill_chunk_tokens", "deepstack"],
+      "properties": {
+        "kv_cache_mode": { "const": "bf16_dynamic" },
+        "quantization": { "const": "none" },
+        "prefill_chunk_tokens": {
+          "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }]
+        },
+        "deepstack": { "enum": ["from_checkpoint"] }
+      }
+    }
+  }
+}

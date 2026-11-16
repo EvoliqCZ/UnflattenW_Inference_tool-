@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/conditioning_policy.schema.json",
+  "title": "RFC005 §26.5 Training Conditioning Policy",
+  "$comment": "Closed envelope for the artifact `conditioning_policy_hash` names. RFC005 §26.5: optimization conditioning is separate from evaluation mode; every run pins a conditioning_policy_hash and declares, per attachment, exactly one of gold_prefix / predicted_prefix_stop_gradient / versioned_mixed_policy. The mode is a required field with NO default: `gold_prefix` is the obvious choice for a teacher-forced exact-text canary and obvious is not ratified. The same section's prohibitions are carried as required const-false declarations rather than as prose: gold crops, regions, continuation edges, TablePlan and property values/applicability must not be production neural inputs, and oracle_diagnostic must not update product-ancestor weights. Declaring them inside the document puts them in the policy identity, so a run cannot claim a hash whose policy says otherwise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conditioning_policy_schema_version",
+    "policy_version",
+    "attachments",
+    "gold_structural_prefix_teacher_forced_slots",
+    "gold_input_prohibitions",
+    "oracle_diagnostic_updates_product_ancestor_weights"
+  ],
+  "properties": {
+    "conditioning_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "attachments": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attachment", "mode"],
+        "properties": {
+          "attachment": {
+            "$comment": "Mirrors loss_unit.schema.json: `decoder_step` is the only attachment that exists in M1, and widening it here without a corresponding output would let a policy declare conditioning for something that cannot be conditioned.",
+            "enum": ["decoder_step"]
+          },
+          "mode": {
+            "$comment": "§26.5, the three ratified values, closed. No default.",
+            "enum": [
+              "gold_prefix",
+              "predicted_prefix_stop_gradient",
+              "versioned_mixed_policy"
+            ]
+          },
+          "mixed_policy_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "mixed_policy_hash": { "$ref": "#/$defs/sha256" }
+        },
+        "allOf": [
+          {
+            "$comment": "'versioned_mixed_policy' is only versioned if it names its version: the mixing rule must carry its own id and hash, exactly as §26.4 requires of a dynamic weighting algorithm.",
+            "if": {
+              "properties": { "mode": { "const": "versioned_mixed_policy" } },
+              "required": ["mode"]
+            },
+            "then": { "required": ["mixed_policy_id", "mixed_policy_hash"] },
+            "else": {
+              "not": {
+                "anyOf": [
+                  { "required": ["mixed_policy_id"] },
+                  { "required": ["mixed_policy_hash"] }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "gold_structural_prefix_teacher_forced_slots": {
+      "$comment": "§26.5 PERMITS this one: 'Gold structural prefix smie vytvoriť teacher-forced local slots počas optimization.' Boolean, required, not constrained -- declared either way, never assumed.",
+      "type": "boolean"
+    },
+    "gold_input_prohibitions": {
+      "$comment": "§26.5's forbidden production neural inputs, one field each, every one required and const false. They are supplied by the caller rather than filled in here: a producer that wrote them itself would turn the run owner's declaration into this file's opinion.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gold_crops_as_neural_input",
+        "gold_regions_as_neural_input",
+        "gold_continuation_edges_as_neural_input",
+        "gold_table_plan_as_neural_input",
+        "gold_property_values_or_applicability_as_neural_input"
+      ],
+      "properties": {
+        "gold_crops_as_neural_input": { "const": false },
+        "gold_regions_as_neural_input": { "const": false },
+        "gold_continuation_edges_as_neural_input": { "const": false },
+        "gold_table_plan_as_neural_input": { "const": false },
+        "gold_property_values_or_applicability_as_neural_input": { "const": false }
+      }
+    },
+    "oracle_diagnostic_updates_product_ancestor_weights": {
+      "$comment": "§26.5: 'oracle_diagnostic nesmie aktualizovať product-ancestor weights.'",
+      "const": false
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

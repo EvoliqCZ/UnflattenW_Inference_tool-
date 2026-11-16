@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/loss_unit.schema.json",
+  "title": "M1 LossUnit (design §4.6, RFC005 §29.6)",
+  "$comment": "Closed envelope. Every RFC005 §29.6 field has an explicit disposition in design §4.6 -- none is silently dropped. owner_scope keeps the full ratified four-value enum; M1 validates at runtime that only global_target and fragment_local occur, because narrowing a ratified closed enum in the type would be an implicit RFC005 amendment. head_registry_hash is nullable and non-null once the typed-head registry is bound as an artefact (DEC-008 addendum A); a non-null value is required only for a gradient-bearing run. locator is closed to TextRangeLocator | EventRangeLocator, discriminated structurally since M1 has no property/region outputs. ownership_proof carries the immutable RFC003 ownership proof verbatim -- it is not recomputed, defaulted or inferred.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "loss_unit_schema_version",
+    "loss_unit_id",
+    "loss_unit_kind",
+    "output_locator",
+    "attachment",
+    "loss_family",
+    "stage_enabled",
+    "owner_scope",
+    "owner_fragment_id",
+    "locator",
+    "authority_target_hash",
+    "projection_hash",
+    "mask_projection_hash",
+    "ownership_proof",
+    "effective_mask",
+    "composite_vocabulary_hash",
+    "composite_grammar_hash",
+    "capability_profile_hash",
+    "head_registry_hash"
+  ],
+  "properties": {
+    "loss_unit_schema_version": { "$ref": "#/$defs/semver" },
+    "loss_unit_id": { "type": "string", "minLength": 1 },
+    "loss_unit_kind": { "enum": ["rfc003_supervised"] },
+    "output_locator": { "type": "string", "minLength": 1 },
+    "attachment": { "enum": ["decoder_step"] },
+    "loss_family": { "enum": ["L_structure", "L_text"] },
+    "stage_enabled": { "type": "boolean" },
+    "owner_scope": {
+      "enum": ["global_target", "fragment_local", "example_local", "document_scope"]
+    },
+    "owner_fragment_id": { "type": ["string", "null"], "minLength": 1 },
+    "locator": {
+      "oneOf": [
+        { "$ref": "#/$defs/text_range_locator" },
+        { "$ref": "#/$defs/event_range_locator" }
+      ]
+    },
+    "authority_target_hash": { "$ref": "#/$defs/sha256" },
+    "projection_hash": { "$ref": "#/$defs/sha256" },
+    "mask_projection_hash": { "$ref": "#/$defs/sha256" },
+    "ownership_proof": { "$ref": "#/$defs/rfc003_ownership_proof" },
+    "effective_mask": { "$ref": "#/$defs/effective_loss_mask" },
+    "composite_vocabulary_hash": { "$ref": "#/$defs/sha256" },
+    "composite_grammar_hash": { "$ref": "#/$defs/sha256" },
+    "capability_profile_hash": { "$ref": "#/$defs/sha256" },
+    "head_registry_hash": {
+      "$comment": "Non-null once the typed-head registry is bound as an artefact and supplied through --bindings (cache 2.0.0, ERRATUM E1); required non-null for any gradient-bearing run.",
+      "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "text_range_locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_span_id", "scalar_start", "scalar_end"],
+      "properties": {
+        "text_span_id": { "type": "string", "minLength": 1 },
+        "scalar_start": { "type": "integer", "minimum": 0 },
+        "scalar_end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "event_range_locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_start", "event_end"],
+      "properties": {
+        "event_start": { "type": "integer", "minimum": 0 },
+        "event_end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "effective_loss_mask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mask_projection_hash",
+        "known_mask",
+        "observable_mask",
+        "supervision_mask",
+        "ownership_enabled",
+        "stage_enabled",
+        "effective",
+        "reason_codes"
+      ],
+      "properties": {
+        "mask_projection_hash": { "$ref": "#/$defs/sha256" },
+        "known_mask": { "type": "boolean" },
+        "observable_mask": { "type": "boolean" },
+        "supervision_mask": { "type": "boolean" },
+        "ownership_enabled": { "type": "boolean" },
+        "stage_enabled": { "type": "boolean" },
+        "effective": { "type": "boolean" },
+        "reason_codes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "rfc003_ownership_proof": {
+      "$comment": "Immutable RFC003 ownership proof required by RFC005 §29.6. Every field is copied verbatim from RFC003 authority; a missing field is a hard error, not a null owner.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_bundle_id",
+        "target_bundle_hash",
+        "fragment_id",
+        "fragment_schema_version",
+        "fragment_sequence_index",
+        "node_id",
+        "structure_owner",
+        "typed_target_owner",
+        "text_range_owner",
+        "page_evidence",
+        "owned_char_ranges",
+        "ownership_projection_hash"
+      ],
+      "properties": {
+        "document_bundle_id": { "type": "string", "minLength": 1 },
+        "target_bundle_hash": { "$ref": "#/$defs/sha256" },
+        "fragment_id": {
+          "$comment": "None only when owner_scope == global_target.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "fragment_schema_version": { "type": ["string", "null"], "minLength": 1 },
+        "fragment_sequence_index": { "type": ["integer", "null"], "minimum": 0 },
+        "node_id": { "type": "string", "minLength": 1 },
+        "structure_owner": { "type": ["boolean", "null"] },
+        "typed_target_owner": { "type": ["boolean", "null"] },
+        "text_range_owner": { "type": ["boolean", "null"] },
+        "page_evidence": { "type": ["string", "null"], "minLength": 1 },
+        "owned_char_ranges": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              { "type": "integer", "minimum": 0 },
+              { "type": "integer", "minimum": 0 }
+            ]
+          }
+        },
+        "ownership_projection_hash": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

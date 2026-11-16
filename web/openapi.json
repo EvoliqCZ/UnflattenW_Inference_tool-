@@ -1,0 +1,3443 @@
+{
+  "components": {
+    "schemas": {
+      "ArtifactEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "page_index": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Index"
+          },
+          "role": {
+            "enum": [
+              "diagnostic_docx",
+              "docx_preview",
+              "prediction_ir",
+              "source_preview"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "url": {
+            "pattern": "^/",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "page_index",
+          "url"
+        ],
+        "title": "ArtifactEntry",
+        "type": "object"
+      },
+      "ConversionStatus": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._conversion_status`.",
+        "properties": {
+          "artifacts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ArtifactEntry"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Artifacts"
+          },
+          "attempt": {
+            "minimum": 0.0,
+            "title": "Attempt",
+            "type": "integer"
+          },
+          "claim_scope": {
+            "const": "diagnostic",
+            "title": "Claim Scope",
+            "type": "string"
+          },
+          "created_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+            "title": "Created At",
+            "type": "string"
+          },
+          "current_page": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Page"
+          },
+          "diagnostic_outcome": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiagnosticOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "const": "native",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Problem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "input_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "image",
+                  "pdf"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Kind"
+          },
+          "job_id": {
+            "pattern": "^job_.+$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "model_variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Variant"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PageReport"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          },
+          "pages_done": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages Done"
+          },
+          "pages_total": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages Total"
+          },
+          "product_quality_claim": {
+            "const": false,
+            "title": "Product Quality Claim",
+            "type": "boolean"
+          },
+          "requested_output": {
+            "enum": [
+              "diagnostic_docx",
+              "prediction_ir"
+            ],
+            "title": "Requested Output",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "admission_complete",
+              "artifact_finalization",
+              "ast_promotion",
+              "feature_extraction",
+              "loading_model",
+              "model_decode",
+              "model_input_projection",
+              "pdf_inspection",
+              "pdf_rasterization",
+              "png_validation",
+              "prediction_ir_sealing",
+              "renderer_gate"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "cancelled",
+              "expired",
+              "failed",
+              "queued",
+              "running",
+              "succeeded"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "terminal_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terminal At"
+          },
+          "updated_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "job_id",
+          "state",
+          "stage",
+          "attempt",
+          "requested_output",
+          "claim_scope",
+          "product_quality_claim",
+          "diagnostic_outcome",
+          "artifacts",
+          "error",
+          "model_variant",
+          "pages_total",
+          "pages_done",
+          "current_page",
+          "pages",
+          "label",
+          "input_kind",
+          "engine",
+          "created_at",
+          "updated_at",
+          "terminal_at",
+          "expires_at"
+        ],
+        "title": "ConversionStatus",
+        "type": "object"
+      },
+      "DiagnosticOutcome": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._diagnostic_outcome`.",
+        "properties": {
+          "canonical_ast_produced": {
+            "title": "Canonical Ast Produced",
+            "type": "boolean"
+          },
+          "claim_scope": {
+            "const": "diagnostic",
+            "title": "Claim Scope",
+            "type": "string"
+          },
+          "docx_chain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DocxChain"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "docx_produced": {
+            "title": "Docx Produced",
+            "type": "boolean"
+          },
+          "prediction_ir_status": {
+            "enum": [
+              "sealed",
+              "not_produced"
+            ],
+            "title": "Prediction Ir Status",
+            "type": "string"
+          },
+          "reason_codes": {
+            "items": {
+              "enum": [
+                "DIAGNOSTIC_DOCX_NOT_REQUESTED",
+                "DOCX_AST_NOT_STRICT",
+                "DOCX_CHAIN_ERROR",
+                "DOCX_FONT_SUBSTITUTED",
+                "DOCX_OUTPUT_TOO_LARGE",
+                "DOCX_PAGE_NOT_TERMINATED",
+                "DOCX_PAGE_STREAM_INVALID",
+                "DOCX_RENDER_NOT_READY",
+                "HEADLESS_DEFAULTS_V0_APPLIED",
+                "PREVIEW_RENDER_FAILED"
+              ],
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "prediction_ir_status",
+          "claim_scope",
+          "canonical_ast_produced",
+          "docx_produced",
+          "reason_codes",
+          "docx_chain"
+        ],
+        "title": "DiagnosticOutcome",
+        "type": "object"
+      },
+      "DocxChain": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._docx_chain`.",
+        "properties": {
+          "ast_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ast Status"
+          },
+          "error_class": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Class"
+          },
+          "failure_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Codes"
+          },
+          "page_outcome": {
+            "minLength": 1,
+            "title": "Page Outcome",
+            "type": "string"
+          },
+          "policies": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DocxChainPolicy"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policies"
+          },
+          "policy_counts": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Counts"
+          },
+          "policy_id": {
+            "const": "headless-defaults.v0",
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "policy_status": {
+            "const": "RATIFIED",
+            "title": "Policy Status",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "enum": [
+                  "word-core-v0",
+                  "word-visual-v1",
+                  "word-visual-v1.1"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
+          },
+          "renderer_approximations": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Renderer Approximations"
+          },
+          "renderer_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Renderer Status"
+          }
+        },
+        "required": [
+          "policy_id",
+          "policy_status",
+          "page_outcome"
+        ],
+        "title": "DocxChain",
+        "type": "object"
+      },
+      "DocxChainPolicy": {
+        "additionalProperties": false,
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counts",
+            "type": "object"
+          },
+          "policy_id": {
+            "minLength": 1,
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "policy_status": {
+            "const": "RATIFIED",
+            "title": "Policy Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_id",
+          "policy_status",
+          "counts"
+        ],
+        "title": "DocxChainPolicy",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "JobList": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._job_list`: the `GET /v1/conversions` envelope.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/JobSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "items",
+          "next_cursor"
+        ],
+        "title": "JobList",
+        "type": "object"
+      },
+      "JobSummary": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._job_summary`: one `GET /v1/conversions` list row.",
+        "properties": {
+          "created_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+            "title": "Created At",
+            "type": "string"
+          },
+          "docx_produced": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Docx Produced"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "input_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "image",
+                  "pdf"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Kind"
+          },
+          "job_id": {
+            "pattern": "^job_.+$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "model_variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Variant"
+          },
+          "pages_done": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages Done"
+          },
+          "pages_total": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages Total"
+          },
+          "requested_output": {
+            "enum": [
+              "diagnostic_docx",
+              "prediction_ir"
+            ],
+            "title": "Requested Output",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "admission_complete",
+              "artifact_finalization",
+              "ast_promotion",
+              "feature_extraction",
+              "loading_model",
+              "model_decode",
+              "model_input_projection",
+              "pdf_inspection",
+              "pdf_rasterization",
+              "png_validation",
+              "prediction_ir_sealing",
+              "renderer_gate"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "cancelled",
+              "expired",
+              "failed",
+              "queued",
+              "running",
+              "succeeded"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "terminal_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terminal At"
+          },
+          "updated_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "state",
+          "stage",
+          "requested_output",
+          "model_variant",
+          "label",
+          "input_kind",
+          "created_at",
+          "updated_at",
+          "terminal_at",
+          "expires_at",
+          "pages_total",
+          "pages_done",
+          "docx_produced",
+          "error_code"
+        ],
+        "title": "JobSummary",
+        "type": "object"
+      },
+      "ModelCommandAccepted": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._model_command_accepted` (design §3.9).",
+        "properties": {
+          "bytes_done": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes Done"
+          },
+          "bytes_total": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes Total"
+          },
+          "command_id": {
+            "minLength": 1,
+            "title": "Command Id",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "kind": {
+            "enum": [
+              "delete",
+              "download",
+              "load"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "enum": [
+                  "deleting",
+                  "downloading",
+                  "loading",
+                  "verifying"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "requested_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "state": {
+            "enum": [
+              "failed",
+              "queued",
+              "running",
+              "succeeded"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "variant_id": {
+            "minLength": 1,
+            "title": "Variant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "command_id",
+          "kind",
+          "variant_id",
+          "state",
+          "phase",
+          "bytes_done",
+          "bytes_total",
+          "error_code",
+          "requested_at",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "ModelCommandAccepted",
+        "type": "object"
+      },
+      "ModelVariantDownload": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._model_variant_download` (design §3.8).",
+        "properties": {
+          "bytes_done": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes Done"
+          },
+          "bytes_total": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes Total"
+          },
+          "command_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Command Id"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "state": {
+            "enum": [
+              "absent",
+              "downloading",
+              "failed",
+              "loading",
+              "ready",
+              "verifying"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "bytes_done",
+          "bytes_total",
+          "error_code",
+          "command_id"
+        ],
+        "title": "ModelVariantDownload",
+        "type": "object"
+      },
+      "ModelVariantEntry": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._models_response`'s per-variant entry.",
+        "properties": {
+          "availability": {
+            "enum": [
+              "planned",
+              "published",
+              "unpublished"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "bundle_manifest_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bundle Manifest Sha256"
+          },
+          "download": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelVariantDownload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "download_size_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Size Bytes"
+          },
+          "downloaded": {
+            "title": "Downloaded",
+            "type": "boolean"
+          },
+          "engine": {
+            "const": "native",
+            "title": "Engine",
+            "type": "string"
+          },
+          "engine_available": {
+            "title": "Engine Available",
+            "type": "boolean"
+          },
+          "engine_unavailable_reason": {
+            "anyOf": [
+              {
+                "const": "worker_not_published",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Unavailable Reason"
+          },
+          "estimated_peak_vram_mib": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Peak Vram Mib"
+          },
+          "fits": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fits"
+          },
+          "fits_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "compute_capability",
+                  "vram"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fits Reason"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "kv_cache": {
+            "anyOf": [
+              {
+                "enum": [
+                  "bf16",
+                  "fp8"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kv Cache"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "precision": {
+            "anyOf": [
+              {
+                "enum": [
+                  "bf16",
+                  "int8",
+                  "fp8",
+                  "int4"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision"
+          },
+          "resident": {
+            "title": "Resident",
+            "type": "boolean"
+          },
+          "source_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "hf",
+                  "local"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Kind"
+          },
+          "variant_id": {
+            "minLength": 1,
+            "title": "Variant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variant_id",
+          "label",
+          "precision",
+          "kv_cache",
+          "bundle_manifest_sha256",
+          "estimated_peak_vram_mib",
+          "fits",
+          "resident",
+          "source_kind",
+          "downloaded",
+          "download_size_bytes",
+          "is_default",
+          "fits_reason",
+          "engine",
+          "engine_available",
+          "engine_unavailable_reason",
+          "download",
+          "availability"
+        ],
+        "title": "ModelVariantEntry",
+        "type": "object"
+      },
+      "ModelsResponse": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._models_response`.",
+        "properties": {
+          "default_variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Variant"
+          },
+          "default_variant_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "user",
+                  "config",
+                  "auto"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Variant Source"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelsResponseDevice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resident_variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resident Variant"
+          },
+          "schema_version": {
+            "const": "1.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/ModelVariantEntry"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_version",
+          "default_variant",
+          "default_variant_source",
+          "resident_variant",
+          "device",
+          "variants"
+        ],
+        "title": "ModelsResponse",
+        "type": "object"
+      },
+      "ModelsResponseDevice": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._models_response_device` (design §3.8).",
+        "properties": {
+          "compute_capability": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Compute Capability",
+            "type": "array"
+          },
+          "free_vram_mib": {
+            "minimum": 0.0,
+            "title": "Free Vram Mib",
+            "type": "number"
+          },
+          "observed_at": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "total_vram_mib": {
+            "minimum": 0.0,
+            "title": "Total Vram Mib",
+            "type": "number"
+          }
+        },
+        "required": [
+          "total_vram_mib",
+          "free_vram_mib",
+          "compute_capability",
+          "observed_at"
+        ],
+        "title": "ModelsResponseDevice",
+        "type": "object"
+      },
+      "PageReport": {
+        "additionalProperties": false,
+        "properties": {
+          "decode_steps": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decode Steps"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "index": {
+            "minimum": 0.0,
+            "title": "Index",
+            "type": "integer"
+          },
+          "seconds": {
+            "minimum": 0.0,
+            "title": "Seconds",
+            "type": "number"
+          },
+          "state": {
+            "enum": [
+              "succeeded",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "state",
+          "error_code",
+          "decode_steps",
+          "seconds"
+        ],
+        "title": "PageReport",
+        "type": "object"
+      },
+      "Problem": {
+        "additionalProperties": false,
+        "description": "Mirrors `errors.validate_problem_response`'s closed, content-free shape.",
+        "properties": {
+          "blockers": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "PRODUCT_CHECKPOINT_UNAVAILABLE",
+                    "AST_PROMOTER_UNAVAILABLE",
+                    "TYPED_PROPERTY_HEADS_UNAVAILABLE",
+                    "RESOURCE_BRANCH_UNAVAILABLE",
+                    "RFC004_RENDERER_GATE_UNAVAILABLE"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blockers"
+          },
+          "code": {
+            "enum": [
+              "ARTIFACT_EXPIRED",
+              "AST_PROMOTION_FAILED",
+              "AST_PROMOTION_UNAVAILABLE",
+              "AUTHENTICATION_FAILED",
+              "CAPABILITY_DENIED",
+              "CAPABILITY_NOT_READY",
+              "HOST_NOT_ALLOWED",
+              "IDEMPOTENCY_KEY_REUSED",
+              "IMAGE_INPUT_INVALID",
+              "INTERNAL_ERROR",
+              "JOB_ACTIVE",
+              "JOB_CANCELLED",
+              "JOB_TERMINAL",
+              "MODEL_CHECKPOINT_UNVERIFIED",
+              "MODEL_COMMAND_CONFLICT",
+              "MODEL_COMPONENT_LOCK_MISMATCH",
+              "MODEL_DECODE_MAX_STEPS",
+              "MODEL_DECODE_VOCABULARY_EXHAUSTED",
+              "MODEL_DOWNLOAD_FAILED",
+              "MODEL_ENGINE_UNAVAILABLE",
+              "MODEL_INPUT_FORBIDDEN_CHANNEL",
+              "MODEL_VARIANT_DOES_NOT_FIT",
+              "MODEL_VARIANT_NOT_DOWNLOADABLE",
+              "MODEL_VARIANT_NOT_PUBLISHED",
+              "MODEL_VARIANT_PLANNED",
+              "PDF_ACTIVE_CONTENT",
+              "PDF_ANNOTATION_UNSUPPORTED",
+              "PDF_EMBEDDED_FILE",
+              "PDF_ENCRYPTED",
+              "PDF_HIDDEN_TEXT",
+              "PDF_MALFORMED",
+              "PDF_PAGE_DIMENSIONS_EXCEEDED",
+              "PDF_SIGNATURE_INVALID",
+              "PDF_TEXT_VISIBILITY_AMBIGUOUS",
+              "PNG_INVALID",
+              "POPPLER_RESOURCE_LIMIT",
+              "POPPLER_TIMEOUT",
+              "PREDICTION_IR_INVALID",
+              "QUEUE_CAPACITY_EXCEEDED",
+              "RASTER_OUTPUT_INVALID",
+              "RASTER_PIXEL_LIMIT_EXCEEDED",
+              "RATE_LIMITED",
+              "RENDERER_FAILED",
+              "REQUEST_INVALID",
+              "RESOURCE_NOT_FOUND",
+              "RUNTIME_POLICY_MISMATCH",
+              "SETUP_ALREADY_COMPLETE",
+              "SETUP_REQUIRED",
+              "TOO_MANY_PAGES",
+              "UNKNOWN_MODEL_VARIANT",
+              "UNSUPPORTED_MEDIA_TYPE",
+              "UNSUPPORTED_PAGE_COUNT",
+              "UPLOAD_TOO_LARGE",
+              "WEB_REQUEST_REJECTED"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "max_pages": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Pages"
+          },
+          "retry_after_seconds": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry After Seconds"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "status": {
+            "maximum": 599.0,
+            "minimum": 400.0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "status",
+          "retryable"
+        ],
+        "title": "Problem",
+        "type": "object"
+      },
+      "SessionInfo": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._session_info`.",
+        "properties": {
+          "auth_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "bearer",
+                  "session"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Kind"
+          },
+          "authenticated": {
+            "title": "Authenticated",
+            "type": "boolean"
+          },
+          "capabilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "principal_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Principal Id"
+          },
+          "schema_version": {
+            "const": "1.1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "setup_required": {
+            "title": "Setup Required",
+            "type": "boolean"
+          },
+          "setup_tokenless": {
+            "title": "Setup Tokenless",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "authenticated",
+          "setup_required",
+          "setup_tokenless",
+          "principal_id",
+          "capabilities",
+          "auth_kind",
+          "expires_at"
+        ],
+        "title": "SessionInfo",
+        "type": "object"
+      },
+      "SettingsDefaultVariant": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._settings_response`'s nested `default_variant`.",
+        "properties": {
+          "configured": {
+            "minLength": 1,
+            "title": "Configured",
+            "type": "string"
+          },
+          "effective": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective"
+          },
+          "override": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Override"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "user",
+                  "config",
+                  "auto"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "required": [
+          "configured",
+          "override",
+          "effective",
+          "source"
+        ],
+        "title": "SettingsDefaultVariant",
+        "type": "object"
+      },
+      "SettingsResponse": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._settings_response` (design §3.10): `GET /v1/settings`.",
+        "properties": {
+          "default_variant": {
+            "$ref": "#/components/schemas/SettingsDefaultVariant"
+          },
+          "sandbox": {
+            "$ref": "#/components/schemas/SettingsSandbox"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "service_version": {
+            "$ref": "#/components/schemas/SettingsServiceVersion"
+          },
+          "session": {
+            "$ref": "#/components/schemas/SettingsSession"
+          }
+        },
+        "required": [
+          "schema_version",
+          "service_version",
+          "session",
+          "default_variant",
+          "sandbox"
+        ],
+        "title": "SettingsResponse",
+        "type": "object"
+      },
+      "SettingsSandbox": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._settings_response`'s nested `sandbox`.",
+        "properties": {
+          "rootful": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rootful"
+          }
+        },
+        "required": [
+          "rootful"
+        ],
+        "title": "SettingsSandbox",
+        "type": "object"
+      },
+      "SettingsServiceVersion": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._settings_response`'s nested `service_version`.",
+        "properties": {
+          "api_version": {
+            "const": "1.1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "git_sha": {
+            "minLength": 1,
+            "title": "Git Sha",
+            "type": "string"
+          }
+        },
+        "required": [
+          "git_sha",
+          "api_version"
+        ],
+        "title": "SettingsServiceVersion",
+        "type": "object"
+      },
+      "SettingsSession": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._settings_response`'s nested `session`.",
+        "properties": {
+          "idle_seconds": {
+            "exclusiveMinimum": 0.0,
+            "title": "Idle Seconds",
+            "type": "integer"
+          },
+          "max_seconds": {
+            "title": "Max Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "idle_seconds",
+          "max_seconds"
+        ],
+        "title": "SettingsSession",
+        "type": "object"
+      },
+      "SubmissionResponse": {
+        "additionalProperties": false,
+        "description": "Mirrors `contracts._submission_response`.",
+        "properties": {
+          "claim_scope": {
+            "const": "diagnostic",
+            "title": "Claim Scope",
+            "type": "string"
+          },
+          "job_id": {
+            "pattern": "^job_.+$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "product_quality_claim": {
+            "const": false,
+            "title": "Product Quality Claim",
+            "type": "boolean"
+          },
+          "requested_output": {
+            "enum": [
+              "diagnostic_docx",
+              "prediction_ir"
+            ],
+            "title": "Requested Output",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "state": {
+            "const": "queued",
+            "title": "State",
+            "type": "string"
+          },
+          "status_url": {
+            "title": "Status Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "job_id",
+          "state",
+          "requested_output",
+          "claim_scope",
+          "product_quality_claim",
+          "status_url"
+        ],
+        "title": "SubmissionResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "description": "Configured service token. Paste the token without the Bearer prefix into Authorize.",
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "SessionCookie": {
+        "description": "Browser session cookies are also accepted. Cookie requests require Sec-Fetch-Site: same-origin or none, and writes additionally require X-Unflatten-Client: web. Send exactly one credential: a Bearer token or a session cookie; sending both is rejected. Browser-managed HttpOnly cookie; Swagger cannot set it manually.",
+        "in": "cookie",
+        "name": "unflatten_session",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "Private asynchronous PDF/image conversion service. Authorize with a configured Bearer token, submit a conversion, poll status_url, then download available artifacts. Browser session cookies are also accepted. Cookie requests require Sec-Fetch-Site: same-origin or none, and writes additionally require X-Unflatten-Client: web. Send exactly one credential: a Bearer token or a session cookie; sending both is rejected.",
+    "title": "Unflatten private diagnostic service",
+    "version": "1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "_liveness_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response  Liveness Health Live Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [],
+        "summary": "Check process liveness",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "_operational_readiness_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [],
+        "summary": "Check operational readiness",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/conversions": {
+      "get": {
+        "operationId": "_list_jobs_v1_conversions_get",
+        "parameters": [
+          {
+            "description": "Optional state filter; repeat state for multiple allowed values.",
+            "explode": true,
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "items": {
+                "enum": [
+                  "cancelled",
+                  "expired",
+                  "failed",
+                  "queued",
+                  "running",
+                  "succeeded"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Maximum jobs returned per page.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Opaque next_cursor from the previous page; omit for the first page.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Representation unchanged for the supplied If-None-Match ETag."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "List your conversion jobs",
+        "tags": [
+          "Conversions"
+        ]
+      },
+      "post": {
+        "description": "Authentication and required headers are checked before upload bytes are read. A 202 response admits an asynchronous job; it does not mean conversion succeeded. Follow status_url (also returned in Location) using GET until state is succeeded, failed, cancelled or expired. On success download only available artifacts from the status response. Stop polling at a client deadline; failed jobs expose a problem, and expired artifacts return 410. diagnostic_docx is a private diagnostic Word output, with no product-quality claim.",
+        "operationId": "_submit_v1_conversions_post",
+        "parameters": [
+          {
+            "description": "Unique visible-ASCII key for this submission. Reuse the same key only to retry the same input and settings. In this service's Swagger UI only, 'auto' is replaced with a fresh UUID on each Execute; headless clients must supply their own key. The server treats 'auto' as an ordinary literal key.",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "default": "auto",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[\\x21-\\x7e]{1,256}$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Supported conversion profile.",
+            "in": "header",
+            "name": "X-Unflatten-Profile",
+            "required": true,
+            "schema": {
+              "default": "word-core-v0",
+              "enum": [
+                "word-core-v0"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Requested output. diagnostic_docx produces Word and requires DOCX readiness; prediction_ir requests the diagnostic intermediate representation. Arbitrary generation settings and docx output are not supported.",
+            "in": "header",
+            "name": "X-Unflatten-Output",
+            "required": true,
+            "schema": {
+              "default": "diagnostic_docx",
+              "enum": [
+                "diagnostic_docx",
+                "prediction_ir"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional published variant_id from GET /v1/models; omit to use the effective default model. Selection remains subject to availability, engine and memory checks.",
+            "in": "header",
+            "name": "X-Unflatten-Model",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional percent-encoded UTF-8 label. After decoding, NFC normalization and trimming, use 1–120 Unicode code points without control characters or filename-unsafe characters (\\ / : * ? \" < > |).",
+            "in": "header",
+            "name": "X-Unflatten-Label",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "multipart/form-data": {
+              "encoding": {
+                "page": {
+                  "contentType": "application/pdf, image/png, image/jpeg"
+                }
+              },
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "page": {
+                    "items": {
+                      "format": "binary",
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "page"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Upload one PDF as a single page file, or repeat the page field for PNG/JPEG images in page order. A PDF cannot be mixed with images or other PDFs. Raw single PDF, PNG and JPEG bodies are also accepted. Runtime upload-byte and page limits are reported by GET /v1/readiness.",
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionResponse"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Location": {
+                "description": "Relative status_url for polling the accepted job.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Submit a PDF or page images",
+        "tags": [
+          "Conversions"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}": {
+      "delete": {
+        "operationId": "_cancel_v1_conversions__job_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "cancel requests cancellation and returns status. purge permanently removes an owned terminal job and its artifacts, returning 204; an active job returns 409.",
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "default": "cancel",
+              "enum": [
+                "cancel",
+                "purge"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversionStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "204": {
+            "description": "Terminal job and stored artifacts purged; no response body."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Cancel a job or purge a terminal job",
+        "tags": [
+          "Conversions"
+        ]
+      },
+      "get": {
+        "description": "Poll the owner's job until succeeded, failed, cancelled or expired. Inspect artifact availability before downloading; terminal state alone does not promise a Word artifact. If-None-Match is supported and may return 304. Use a polling deadline.",
+        "operationId": "_status_v1_conversions__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversionStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Representation unchanged for the supplied If-None-Match ETag."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Poll your conversion status",
+        "tags": [
+          "Conversions"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts.zip": {
+      "get": {
+        "description": "Design §3.6: `artifacts.zip` -- every downloadable artifact the caller's\ncapabilities permit, bundled with a `MANIFEST.json`.\n\nRequires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "_artifacts_zip_v1_conversions__job_id__artifacts_zip_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Download available artifacts as ZIP",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts/diagnostic_docx": {
+      "get": {
+        "description": "Requires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "handler_v1_conversions__job_id__artifacts_diagnostic_docx_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_index",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Download the diagnostic Word document",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts/docx_preview/{page_index}": {
+      "get": {
+        "description": "Requires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "handler_v1_conversions__job_id__artifacts_docx_preview__page_index__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "page_index",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/png": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "inline; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Preview unchanged for the supplied If-None-Match ETag."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "View a page preview PNG",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts/prediction_ir": {
+      "get": {
+        "description": "Requires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "handler_v1_conversions__job_id__artifacts_prediction_ir_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_index",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Download prediction IR JSON",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts/prediction_ir/{page_index}": {
+      "get": {
+        "description": "Requires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "handler_v1_conversions__job_id__artifacts_prediction_ir__page_index__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "page_index",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Download prediction IR JSON",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/conversions/{job_id}/artifacts/source_preview/{page_index}": {
+      "get": {
+        "description": "Requires job ownership and the artifact's download capability. Only published artifacts of succeeded, unexpired jobs are available. Page indices are zero-based; whole-document prediction_ir returns page 0 for multi-page input. Word is the assembled document. ZIP includes permitted artifacts and MANIFEST.json; expired artifacts return 410.",
+        "operationId": "handler_v1_conversions__job_id__artifacts_source_preview__page_index__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "page_index",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/png": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Binary artifact response.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "inline; filename identifies the downloaded artifact.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Preview unchanged for the supplied If-None-Match ETag."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Problem response (authentication, capability, ownership, availability or expiry)."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "View a page preview PNG",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "operationId": "_models_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Representation unchanged for the supplied If-None-Match ETag."
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "List model variants and command status",
+        "tags": [
+          "Models"
+        ]
+      }
+    },
+    "/v1/models/default": {
+      "put": {
+        "description": "Design §3.9: `PUT /v1/models/default {variant_id}` -- `null` clears\nthe user override (falls back to config/auto); an unknown variant is a\n422; never touches `runtime_policy` (`policy_hash` is unaffected).",
+        "operationId": "_models_default_put_v1_models_default_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "variant_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Published variant_id from GET /v1/models, or null to clear the override and restore config/auto selection."
+                  }
+                },
+                "required": [
+                  "variant_id"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Set or clear the default model variant",
+        "tags": [
+          "Models"
+        ]
+      }
+    },
+    "/v1/models/{variant_id}/download": {
+      "delete": {
+        "description": "Design §3.9: `DELETE /v1/models/{variant_id}/download`. The resident\nvariant is refused (`409 MODEL_COMMAND_CONFLICT`, `ModelCommandExecutor\n._run_delete`'s own second safety net mirrors this at the worker); a\nlocal `bundle` variant has no snapshot to delete (`422\nMODEL_VARIANT_NOT_DOWNLOADABLE`, same reason as `download`).",
+        "operationId": "_models_download_delete_v1_models__variant_id__download_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variant_id",
+            "required": true,
+            "schema": {
+              "title": "Variant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCommandAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Queue removal of a model download",
+        "tags": [
+          "Models"
+        ]
+      },
+      "post": {
+        "description": "Design §3.9: `POST /v1/models/{variant_id}/download`. A local `bundle`\nvariant has nothing to download -- `422 MODEL_VARIANT_NOT_DOWNLOADABLE`.",
+        "operationId": "_models_download_post_v1_models__variant_id__download_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variant_id",
+            "required": true,
+            "schema": {
+              "title": "Variant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCommandAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Queue a model download",
+        "tags": [
+          "Models"
+        ]
+      }
+    },
+    "/v1/models/{variant_id}/load": {
+      "post": {
+        "description": "Design §3.9/§17.5: `POST /v1/models/{variant_id}/load`. Same\nfit/engine gates as `_resolve_model_variant`'s submit-time checks: a\nvariant too big for the card is `422 MODEL_VARIANT_DOES_NOT_FIT`, an\nengine this worker cannot (yet) run is `422 MODEL_ENGINE_UNAVAILABLE`.",
+        "operationId": "_models_load_post_v1_models__variant_id__load_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "variant_id",
+            "required": true,
+            "schema": {
+              "title": "Variant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCommandAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Queue loading a model",
+        "tags": [
+          "Models"
+        ]
+      }
+    },
+    "/v1/readiness": {
+      "get": {
+        "operationId": "_detailed_readiness_v1_readiness_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Inspect readiness and upload limits",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/session": {
+      "delete": {
+        "description": "Accepts a browser session cookie only; a Bearer credential cannot sign out a session.",
+        "operationId": "_session_delete_v1_session_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Sign out the current browser session",
+        "tags": [
+          "Session"
+        ]
+      },
+      "get": {
+        "description": "Public without credentials; returns authenticated=false. Optional Bearer or browser cookie identifies the caller. Invalid credentials still return 401.",
+        "operationId": "_session_get_v1_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {},
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Inspect the current session",
+        "tags": [
+          "Session"
+        ]
+      },
+      "post": {
+        "operationId": "_session_post_v1_session_post",
+        "parameters": [
+          {
+            "description": "Required browser request context.",
+            "in": "header",
+            "name": "X-Unflatten-Client",
+            "required": true,
+            "schema": {
+              "default": "web",
+              "enum": [
+                "web"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required request context; browsers provide this header automatically.",
+            "in": "header",
+            "name": "Sec-Fetch-Site",
+            "required": true,
+            "schema": {
+              "default": "same-origin",
+              "enum": [
+                "same-origin",
+                "none"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "password": {
+                    "format": "password",
+                    "type": "string",
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "password"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [],
+        "summary": "Sign in with a password",
+        "tags": [
+          "Session"
+        ]
+      }
+    },
+    "/v1/settings": {
+      "get": {
+        "operationId": "_settings_v1_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Read service settings",
+        "tags": [
+          "Settings"
+        ]
+      }
+    },
+    "/v1/setup": {
+      "post": {
+        "description": "One-time password setup requires a bootstrap Bearer token. Loopback-only deployments explicitly configured for tokenless setup with one principal may omit it; GET /v1/session reports setup_tokenless. This creates a browser session cookie; it does not issue a Bearer token.",
+        "operationId": "_setup_post_v1_setup_post",
+        "parameters": [
+          {
+            "description": "Required browser request context.",
+            "in": "header",
+            "name": "X-Unflatten-Client",
+            "required": true,
+            "schema": {
+              "default": "web",
+              "enum": [
+                "web"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required request context; browsers provide this header automatically.",
+            "in": "header",
+            "name": "Sec-Fetch-Site",
+            "required": true,
+            "schema": {
+              "default": "same-origin",
+              "enum": [
+                "same-origin",
+                "none"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "password": {
+                    "description": "12–256 NFC-normalized Unicode code points.",
+                    "format": "password",
+                    "type": "string",
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "password"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Set the first browser password",
+        "tags": [
+          "Session"
+        ]
+      }
+    },
+    "/v1/setup/password": {
+      "put": {
+        "operationId": "_setup_password_put_v1_setup_password_put",
+        "parameters": [
+          {
+            "description": "Required browser request context.",
+            "in": "header",
+            "name": "X-Unflatten-Client",
+            "required": true,
+            "schema": {
+              "default": "web",
+              "enum": [
+                "web"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required request context; browsers provide this header automatically.",
+            "in": "header",
+            "name": "Sec-Fetch-Site",
+            "required": true,
+            "schema": {
+              "default": "same-origin",
+              "enum": [
+                "same-origin",
+                "none"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "current_password": {
+                    "format": "password",
+                    "type": "string",
+                    "writeOnly": true
+                  },
+                  "new_password": {
+                    "description": "12–256 NFC-normalized Unicode code points.",
+                    "format": "password",
+                    "type": "string",
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "current_password",
+                  "new_password"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Change the browser password",
+        "tags": [
+          "Session"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Liveness, worker readiness and input limits.",
+      "name": "Health"
+    },
+    {
+      "description": "Browser password and session management.",
+      "name": "Session"
+    },
+    {
+      "description": "Submit, poll, list and cancel your asynchronous jobs.",
+      "name": "Conversions"
+    },
+    {
+      "description": "Authenticated Word, IR, ZIP and PNG downloads.",
+      "name": "Artifacts"
+    },
+    {
+      "description": "Inspect configured variants and queue model commands.",
+      "name": "Models"
+    },
+    {
+      "description": "Read effective service settings.",
+      "name": "Settings"
+    }
+  ]
+}

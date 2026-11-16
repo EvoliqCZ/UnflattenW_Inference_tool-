@@ -1,0 +1,90 @@
+{
+ "adapters": [],
+ "ancestry_hash": "sha256:f5973bf50d2cc7d450da0c8f2126690d72da2aca7a3e295d816cdddbfe8c7b65",
+ "base_model": {
+  "model_id": "Qwen/Qwen3-VL-4B-Instruct",
+  "pinned_hashes": {
+   "path": "pinned_hashes.json",
+   "sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "processor": [
+   {
+    "path": "preprocessor_config.json",
+    "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  ],
+  "processor_set_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "revision": "ebb281ec70b05090aa6165b016eac8ec08e71b17",
+  "weights": [
+   {
+    "path": "model-00001.safetensors",
+    "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   }
+  ],
+  "weights_set_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ },
+ "base_model_decision": {
+  "decision_id": "DEC-010",
+  "path": "docs/DEC-010.md",
+  "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+ },
+ "checkpoint": {
+  "base_ancestry_hash": "sha256:559c633cda43f2682487206ca9c47e3aebe5a52c17023bc3dbc7f101ae921744",
+  "checkpoint_id": "ckpt_c3d2d79c770021251b7bbf1810cd5562c5c0dae7dd2b956eeba7d2fa19ffa876",
+  "checkpoint_sha256": "sha256:ac92da77b5f171b4cddea312bbc2ea541530a1f3800646c06b7f9ee17b449d0e",
+  "run_id": "s1run_5555555555555555555555555555555555555555555555555555555555555555",
+  "s1_run_manifest_hash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+  "step": 1
+ },
+ "checkpoint_ancestry_schema_version": "1.1.0",
+ "checkpoint_privacy_status": "approved",
+ "checkpoint_rights_status": "approved",
+ "component_lock_hash": "sha256:28b5ab5f31605af5f3fc611be33766821d6e5fa17aabe802c8ddd82d1e5d76a1",
+ "dataset_exposures": [
+  {
+   "decision": {
+    "decision_id": "DEC-006",
+    "path": "docs/DEC-006.md",
+    "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   },
+   "release_name": "release-v11",
+   "release_root_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "store_name": "m2a-v6"
+  }
+ ],
+ "distribution_allowed": false,
+ "distribution_decision": null,
+ "document_kind": "checkpoint",
+ "exposure_ledger": {
+  "kind": "not_produced",
+  "reason": "no released checkpoint distribution root exists in v1"
+ },
+ "initialization_kind": "clean_pretrained",
+ "legacy_ancestry": {
+  "evidence": {
+   "audited_roots": [
+    "/data/roots/a"
+   ],
+   "release_root_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "s0_report": {
+    "path": "/tmp/e2e-bundle-src2/s0_report.json",
+    "sha256": "sha256:2d804f6a07f2b7b501c2e9792e05ac378e55e740d071e6adc7cf0c1f45849c4e"
+   },
+   "s0_report_value": false
+  },
+  "value": false
+ },
+ "merge_history": [],
+ "parents": [],
+ "transitive_exposure_manifest": {
+  "kind": "not_produced",
+  "reason": "no transitive exposure manifest exists in v1"
+ },
+ "unknown_project_exposure": {
+  "reason": {
+   "code": "clean_pretrained_audited",
+   "detail": "S0 legacy_ancestry audit found no model checkpoints under audited_roots"
+  },
+  "value": false
+ }
+}

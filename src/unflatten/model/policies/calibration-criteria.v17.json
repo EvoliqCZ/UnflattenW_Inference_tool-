@@ -1,0 +1,32 @@
+{
+  "schema": "unflatten.calibration-criteria/1",
+  "decision": "DEC-083",
+  "decision_point": 5,
+  "frozen_before_measurement": true,
+  "criteria": {
+    "C1": {
+      "metric": "whole_page_image",
+      "model": "16k",
+      "v2_min": 8,
+      "v1_control_max": 4,
+      "of": 50
+    },
+    "C2": {
+      "metric": "median text_similarity_ppm of the v2 views / 1e6, family-wise (a view without a Word counts 0)",
+      "model": "v15b",
+      "scan_ratio_milli_min": 900,
+      "photo_ratio_milli_min": 850
+    },
+    "C3": {
+      "metric": "share of v2 views (made under envelope null) inside the envelope of the real captures; decile coverage per envelope statistic",
+      "in_envelope_milli_min": 900,
+      "min_views_per_real_decile": 1,
+      "envelope_percentiles": [5, 95]
+    },
+    "C4": {
+      "metric": "share of applied views (>= 1 applied op) whose report applied list holds the op",
+      "soft_resample_milli_min": 600,
+      "page_offset_milli_min": 500
+    }
+  }
+}

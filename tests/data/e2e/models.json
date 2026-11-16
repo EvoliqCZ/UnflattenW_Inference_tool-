@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "default_variant": "bundle-int8",
+  "variants": [
+    {
+      "variant_id": "bundle-int8",
+      "label": "INT8 (local bundle)",
+      "precision": "int8",
+      "kv_cache": "fp8",
+      "bundle": "tests/data/e2e/model-bundle"
+    },
+    {
+      "variant_id": "hf-fp8",
+      "label": "FP8 (Hugging Face)",
+      "precision": "fp8",
+      "kv_cache": "fp8",
+      "source": {
+        "kind": "hf",
+        "repo_id": "unflatten-e2e/fake-variant",
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "bundle_manifest_sha256": "sha256:bd9847ac29cbe1cbbb6259089af7d35b011a188e561abc589a34325dd781699a"
+      }
+    },
+    {
+      "variant_id": "bf16-unpublished",
+      "label": "BF16 (bf16 weights, bf16 KV cache)",
+      "precision": "bf16",
+      "kv_cache": "bf16",
+      "availability": "unpublished"
+    },
+    {
+      "variant_id": "unflatten-w-moe",
+      "label": "Unflatten W MoE (future model)",
+      "availability": "planned"
+    }
+  ]
+}

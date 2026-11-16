@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc005/s2_sampler_policy.schema.json",
+  "title": "RFC005 §30.3/§30.4 S2 Sampler Policy",
+  "$comment": "Closed envelope for the intra-cell weight bounds the §30.3 decomposition is clamped by: `w_lineage = bounded(w_feature_coverage × w_hardness)` where `bounded` is this policy's per-factor min/max, applied ONLY inside the chosen StageDataMatrix cell (cross-cell reweighting is forbidden). All quantities are integer MILLI-units: the deterministic CBOR profile these hashes are computed under (`rfc8949-core-det-nfc-int-v0`) has no float in its data model, so a factor of 1.5 is `1500`, never `1.5`. `w_rare_cap_milli` is the §30.4 cap on `w_rare(f) = 1/sqrt(max(count_lineages(f), 1))`, which the producer expresses in per-mille (1.0 = 1000). `virtual_epoch_size` is the number of lineage-root draws one ordered exposure plan carries; the caps themselves live in the separate exposure policy (§30.6), which is a different policy artefact and must never be merged into this one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "s2_sampler_policy_schema_version",
+    "policy_version",
+    "stage_id",
+    "feature_coverage_bounds",
+    "hardness_bounds",
+    "w_rare_cap_milli",
+    "virtual_epoch_size"
+  ],
+  "properties": {
+    "s2_sampler_policy_schema_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "stage_id": {
+      "$comment": "The S2 policy shape, reused by S3 (as S2) and by S4 with its own budget (owner 2026-09-21: 15 000 draws, 2 views); any other stage is a schema error rather than a silent cross-wire.",
+      "enum": ["S2", "S4"]
+    },
+    "feature_coverage_bounds": { "$ref": "#/$defs/bounds" },
+    "hardness_bounds": { "$ref": "#/$defs/bounds" },
+    "w_rare_cap_milli": {
+      "$comment": "§30.4: 'Presný cap je policy field'. Per-mille; the un-capped inverse-sqrt value is ≤ 1000 by construction, so a cap below 1000 is a legal tightening and one above 1000 is a declared ceiling the formula currently cannot reach.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "virtual_epoch_size": {
+      "$comment": "One ordered exposure plan is one virtual epoch: exactly this many lineage-root draws, mass applied BEFORE fragment/view/augmentation expansion (§30.2).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "bounds": {
+      "$comment": "Factor bounds in milli; `min ≤ max` is checked by the producer, which JSON Schema cannot express across fields.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_milli", "max_milli"],
+      "properties": {
+        "min_milli": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "max_milli": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    }
+  }
+}

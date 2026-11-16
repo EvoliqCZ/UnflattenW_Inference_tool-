@@ -1,0 +1,8 @@
+{
+  "expected_issues": [
+    {
+      "code": "NOTE_REF_IN_NOTE",
+      "path": "/footnotes/0/children/0/children/1"
+    }
+  ]
+}

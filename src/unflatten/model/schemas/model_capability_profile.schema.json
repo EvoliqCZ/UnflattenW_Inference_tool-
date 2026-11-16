@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unflatten.dev/schemas/rfc004/model_capability_profile.schema.json",
+  "title": "M1 Explicit Model Capability Profile (design §4.4)",
+  "$comment": "Closed envelope. Exact APIs never fall back to targets.DEFAULT_PROFILE. This is DEC-005 primary S1 scope, an explicit intersection with word-visual-v1.1; an excluded visible capability yields UNSUPPORTED_CAPABILITY and is never silently removed to admit a sample. Provisional RFC004 lock kind pending RR-4 (design §4.8).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_capability_profile_schema_version",
+    "profile_id",
+    "ast_profile",
+    "scope",
+    "allowed_node_types",
+    "allowed_leaf_controls",
+    "capability_excluded",
+    "exact_text",
+    "typed_properties",
+    "expert_adapter_mode",
+    "sparse_moe",
+    "visual_compressor",
+    "speculators"
+  ],
+  "properties": {
+    "model_capability_profile_schema_version": { "$ref": "#/$defs/semver" },
+    "profile_id": { "type": "string", "minLength": 1 },
+    "ast_profile": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "minLength": 1 },
+    "allowed_node_types": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "allowed_leaf_controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "capability_excluded": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "excluded_structural_tokens": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "exact_text": { "type": "boolean" },
+    "typed_properties": { "enum": ["not_applicable", "present_frozen"] },
+    "expert_adapter_mode": { "enum": ["dense", "sparse_moe"] },
+    "sparse_moe": { "type": "string", "minLength": 1 },
+    "visual_compressor": { "type": "string", "minLength": 1 },
+    "speculators": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "S4.5 RL training policy (RFC005-ERRATA-010 E7.1/E7.4; DEC-047 addendum A v2)",
+  "$comment": "Every gradient-affecting number is required. null = not frozen: allowed in a PROPOSED policy, refused in a RATIFIED one (checked in training_policy.py). lr_micro is in units of 1e-6 (S1 precedent). Integer micro units only; the CBOR profile has no floats.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "optimizer", "weight_decay_micro", "lr_micro",
+    "warmup_steps", "schedule", "grad_clip_micro", "accumulation_steps",
+    "max_update_steps", "checkpoint_every", "loss_policy", "supervised_weight_micro",
+    "execution_profile", "training_policy_hash"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "status": { "enum": ["PROPOSED", "RATIFIED"] },
+    "optimizer": { "const": "adamw" },
+    "weight_decay_micro": { "$ref": "#/$defs/micro_or_null" },
+    "lr_micro": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "null" },
+          { "type": "integer", "minimum": 1, "maximum": 1000000 }
+        ]
+      }
+    },
+    "warmup_steps": { "$ref": "#/$defs/count0_or_null" },
+    "schedule": {
+      "oneOf": [
+        { "type": "null" },
+        { "enum": ["constant_after_warmup", "linear_warmup_cosine"] }
+      ]
+    },
+    "grad_clip_micro": { "$ref": "#/$defs/count1_or_null" },
+    "accumulation_steps": { "$ref": "#/$defs/count1_or_null" },
+    "max_update_steps": { "$ref": "#/$defs/count1_or_null" },
+    "checkpoint_every": { "$ref": "#/$defs/count1_or_null" },
+    "loss_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clip_epsilon_micro", "kl_coefficient_micro", "length_normalisation",
+        "gate_failed_reward_micro"
+      ],
+      "properties": {
+        "clip_epsilon_micro": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "integer", "minimum": 1, "maximum": 999999 }
+          ]
+        },
+        "kl_coefficient_micro": { "$ref": "#/$defs/count0_or_null" },
+        "length_normalisation": {
+          "oneOf": [{ "type": "null" }, { "enum": ["token_mean", "sum"] }]
+        },
+        "gate_failed_reward_micro": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "integer", "minimum": -1000000, "maximum": 0 }
+          ]
+        }
+      }
+    },
+    "supervised_weight_micro": { "$ref": "#/$defs/micro_or_null" },
+    "execution_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kv_cache_mode", "quantization", "prefill_chunk_tokens", "deepstack"],
+      "properties": {
+        "kv_cache_mode": { "const": "bf16_dynamic" },
+        "quantization": { "const": "none" },
+        "prefill_chunk_tokens": {
+          "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }]
+        },
+        "deepstack": { "enum": ["from_checkpoint"] }
+      }
+    },
+    "training_policy_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "micro_or_null": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      ]
+    },
+    "count0_or_null": {
+      "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0 }]
+    },
+    "count1_or_null": {
+      "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }]
+    }
+  }
+}

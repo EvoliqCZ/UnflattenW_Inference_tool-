@@ -1,0 +1,341 @@
+{
+  "ast_version": "0.1.0",
+  "profile": "word-visual-v1",
+  "document_id": "doc",
+  "metadata": {
+    "language": "en-US",
+    "title": null,
+    "subject": null
+  },
+  "resources": [],
+  "sections": [
+    {
+      "id": "s1",
+      "type": "section",
+      "break_type": "next_page",
+      "page": {
+        "width_mpt": 595276,
+        "height_mpt": 841890,
+        "orientation": "portrait"
+      },
+      "margins": {
+        "top_mpt": 72000,
+        "right_mpt": 72000,
+        "bottom_mpt": 72000,
+        "left_mpt": 72000,
+        "gutter_mpt": 0
+      },
+      "columns": {
+        "count": 1,
+        "equal_width": true,
+        "gap_mpt": 18000,
+        "widths_mpt": []
+      },
+      "children": [
+        {
+          "id": "t1",
+          "type": "table",
+          "layout": {
+            "alignment": "left",
+            "indent_mpt": 0,
+            "width": {
+              "mode": "auto"
+            },
+            "autofit": true
+          },
+          "columns": [
+            {
+              "width_mpt": 200000
+            }
+          ],
+          "style": {
+            "background": null,
+            "borders": null
+          },
+          "rows": [
+            {
+              "id": "t1r1",
+              "type": "row",
+              "layout": {
+                "height": {
+                  "mode": "auto",
+                  "value_mpt": 0
+                },
+                "repeat_header": false,
+                "cant_split": false
+              },
+              "cells": [
+                {
+                  "id": "t1c1",
+                  "type": "cell",
+                  "grid_column": 0,
+                  "col_span": 1,
+                  "row_span": 1,
+                  "layout": {
+                    "width_mpt": 200000,
+                    "padding": {
+                      "top_mpt": 0,
+                      "right_mpt": 0,
+                      "bottom_mpt": 0,
+                      "left_mpt": 0
+                    },
+                    "vertical_alignment": "top",
+                    "text_direction": "horizontal"
+                  },
+                  "style": {
+                    "background": null,
+                    "borders": null
+                  },
+                  "children": [
+                    {
+                      "id": "cp1",
+                      "type": "paragraph",
+                      "semantic": {
+                        "role": "body",
+                        "heading_level": null,
+                        "outline_level": null
+                      },
+                      "layout": {
+                        "alignment": "left",
+                        "direction": "ltr",
+                        "indent": {
+                          "left_mpt": 0,
+                          "right_mpt": 0,
+                          "first_line_mpt": 0,
+                          "hanging_mpt": 0
+                        },
+                        "spacing": {
+                          "before_mpt": 0,
+                          "after_mpt": 0,
+                          "line": {
+                            "mode": "single"
+                          }
+                        },
+                        "pagination": {
+                          "keep_with_next": false,
+                          "keep_lines": false,
+                          "page_break_before": false,
+                          "widow_control": true
+                        },
+                        "tabs": []
+                      },
+                      "style": {
+                        "background": null,
+                        "borders": null
+                      },
+                      "children": [
+                        {
+                          "id": "cr1",
+                          "type": "run",
+                          "text": "Outer",
+                          "language": "en-US",
+                          "style": {
+                            "font_family": "Arial",
+                            "font_size_mpt": 11000,
+                            "bold": false,
+                            "italic": false,
+                            "underline": "none",
+                            "strike": false,
+                            "color": "#000000",
+                            "highlight": null,
+                            "superscript": false,
+                            "subscript": false,
+                            "character_spacing_mpt": 0,
+                            "small_caps": false,
+                            "all_caps": false
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "t2",
+                      "type": "table",
+                      "layout": {
+                        "alignment": "left",
+                        "indent_mpt": 0,
+                        "width": {
+                          "mode": "auto"
+                        },
+                        "autofit": true
+                      },
+                      "columns": [
+                        {
+                          "width_mpt": 200000
+                        }
+                      ],
+                      "style": {
+                        "background": null,
+                        "borders": null
+                      },
+                      "rows": [
+                        {
+                          "id": "t2r1",
+                          "type": "row",
+                          "layout": {
+                            "height": {
+                              "mode": "auto",
+                              "value_mpt": 0
+                            },
+                            "repeat_header": false,
+                            "cant_split": false
+                          },
+                          "cells": [
+                            {
+                              "id": "t2c1",
+                              "type": "cell",
+                              "grid_column": 0,
+                              "col_span": 1,
+                              "row_span": 1,
+                              "layout": {
+                                "width_mpt": 200000,
+                                "padding": {
+                                  "top_mpt": 0,
+                                  "right_mpt": 0,
+                                  "bottom_mpt": 0,
+                                  "left_mpt": 0
+                                },
+                                "vertical_alignment": "top",
+                                "text_direction": "horizontal"
+                              },
+                              "style": {
+                                "background": null,
+                                "borders": null
+                              },
+                              "children": [
+                                {
+                                  "id": "cp2",
+                                  "type": "paragraph",
+                                  "semantic": {
+                                    "role": "body",
+                                    "heading_level": null,
+                                    "outline_level": null
+                                  },
+                                  "layout": {
+                                    "alignment": "left",
+                                    "direction": "ltr",
+                                    "indent": {
+                                      "left_mpt": 0,
+                                      "right_mpt": 0,
+                                      "first_line_mpt": 0,
+                                      "hanging_mpt": 0
+                                    },
+                                    "spacing": {
+                                      "before_mpt": 0,
+                                      "after_mpt": 0,
+                                      "line": {
+                                        "mode": "single"
+                                      }
+                                    },
+                                    "pagination": {
+                                      "keep_with_next": false,
+                                      "keep_lines": false,
+                                      "page_break_before": false,
+                                      "widow_control": true
+                                    },
+                                    "tabs": []
+                                  },
+                                  "style": {
+                                    "background": null,
+                                    "borders": null
+                                  },
+                                  "children": [
+                                    {
+                                      "id": "cr2",
+                                      "type": "run",
+                                      "text": "Inner",
+                                      "language": "en-US",
+                                      "style": {
+                                        "font_family": "Arial",
+                                        "font_size_mpt": 11000,
+                                        "bold": false,
+                                        "italic": false,
+                                        "underline": "none",
+                                        "strike": false,
+                                        "color": "#000000",
+                                        "highlight": null,
+                                        "superscript": false,
+                                        "subscript": false,
+                                        "character_spacing_mpt": 0,
+                                        "small_caps": false,
+                                        "all_caps": false
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "cp3",
+                      "type": "paragraph",
+                      "semantic": {
+                        "role": "body",
+                        "heading_level": null,
+                        "outline_level": null
+                      },
+                      "layout": {
+                        "alignment": "left",
+                        "direction": "ltr",
+                        "indent": {
+                          "left_mpt": 0,
+                          "right_mpt": 0,
+                          "first_line_mpt": 0,
+                          "hanging_mpt": 0
+                        },
+                        "spacing": {
+                          "before_mpt": 0,
+                          "after_mpt": 0,
+                          "line": {
+                            "mode": "single"
+                          }
+                        },
+                        "pagination": {
+                          "keep_with_next": false,
+                          "keep_lines": false,
+                          "page_break_before": false,
+                          "widow_control": true
+                        },
+                        "tabs": []
+                      },
+                      "style": {
+                        "background": null,
+                        "borders": null
+                      },
+                      "children": [
+                        {
+                          "id": "cr3",
+                          "type": "run",
+                          "text": "After",
+                          "language": "en-US",
+                          "style": {
+                            "font_family": "Arial",
+                            "font_size_mpt": 11000,
+                            "bold": false,
+                            "italic": false,
+                            "underline": "none",
+                            "strike": false,
+                            "color": "#000000",
+                            "highlight": null,
+                            "superscript": false,
+                            "subscript": false,
+                            "character_spacing_mpt": 0,
+                            "small_caps": false,
+                            "all_caps": false
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "extensions": {}
+}
