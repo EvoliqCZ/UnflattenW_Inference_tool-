@@ -1,12 +1,13 @@
 # Unflatten W 1.0 release facts
 
-**Prepared release:** application `v1.0.0`, 16 November 2026.
+**Public release:** application `v1.0.0`, 16 November 2026.
 **Model:** Unflatten W Dense 1.0.
 **Publisher and licensor:** EVOLIQ s.r.o.
 
-> Prepublication note: this document prepares the public release. Anonymous
-> access to the model and application has not yet been confirmed. The date above
-> is the prepared release date, not evidence that publication has completed.
+> Public access was verified on 16 November 2026: both the application repository
+> and the ungated model are readable without signing in. Reciprocal links, model
+> documentation, the pinned model configuration and weight-download metadata were
+> checked anonymously. See the [publication verification](release/2026-11-16-public-release-verification.md).
 
 ## Model, application and documentation
 
@@ -227,8 +228,8 @@ firemné, profesionálne a komerčné použitie vyžaduje platenú dohodu s EVOL
 [Inferenčná aplikácia](https://github.com/EvoliqCZ/UnflattenW_Inference_tool-) ·
 [Komerčná licencia](https://www.evoliq.cz/sk)
 
-Pred zverejnením odkazu na stiahnutie overte verejnú dostupnosť oboch repozitárov.
-Dátum prípravy tejto stránky sám osebe nepotvrdzuje dokončenie publikovania.
+Verejná dostupnosť modelu aj kódu a ich vzájomné odkazy boli overené bez prihlásenia
+16. novembra 2026. Aplikáciu možno získať aj v [oficiálnom vydaní v1.0.0](https://github.com/EvoliqCZ/UnflattenW_Inference_tool-/releases/tag/v1.0.0).
 
 ## Public demonstration assets
 

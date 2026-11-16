@@ -19,4 +19,17 @@ Updated model documentation is committed at `7ddc0af6dddb05cf08ab7cd63a6b2a75c81
 
 ## Public access
 
-Publication and anonymous-access checks are pending until the coordinator completes the final visibility changes. This preparation record alone is not evidence of public availability.
+Anonymous access was verified on 16 November 2026:
+
+- GitHub repository metadata reports public visibility, and the default-branch README links the model.
+- Hugging Face reports `private=false` and `gated=false`; its model card links the application and API guide.
+- Model README, updated manifest and the application's pinned configuration were retrieved without a token.
+- Weight-download metadata for the 4,967,229,296-byte first backbone shard is accessible without a token.
+- The initial public repository contained exactly one clean commit whose complete Git tree matched the tested release source. Previous private commits and document blobs were not imported. This verification update adds documentation only.
+
+Public endpoints:
+
+- [Application source](https://github.com/EvoliqCZ/UnflattenW_Inference_tool-)
+- [Model and weights](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0)
+- [Application v1.0.0](https://github.com/EvoliqCZ/UnflattenW_Inference_tool-/releases/tag/v1.0.0)
+- [API and Swagger instructions](../API.md)
