@@ -33,3 +33,5 @@ Public endpoints:
 - [Model and weights](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0)
 - [Application v1.0.0](https://github.com/EvoliqCZ/UnflattenW_Inference_tool-/releases/tag/v1.0.0)
 - [API and Swagger instructions](../API.md)
+
+The model-card presentation was subsequently shortened in documentation revision `e5476f4b0090cab6bbc252dcb47861f5437076b1`, with matching manifest SHA-256 `233b4081dddd81963d094f9d32ff7f148d3cc0c364a95adeac575c5ec91509db`. The complete updated bundle was verified; weights, other model files and evaluation measurements remain unchanged.

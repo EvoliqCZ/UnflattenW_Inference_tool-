@@ -21,7 +21,7 @@
 - [Commercial licensing enquiries](https://www.evoliq.cz/sk)
 
 The model's updated documentation is recorded at
-[revision 7ddc0af6](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0/tree/7ddc0af6dddb05cf08ab7cd63a6b2a75c81a2e07).
+[revision e5476f4b](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0/tree/e5476f4b0090cab6bbc252dcb47861f5437076b1).
 That revision changes documentation and its integrity metadata, not the weights.
 The application retains its tested weight-bundle pin
 `9ebf7df1d6b01ae5d3a396f379fe454378a38ae7`; see the
@@ -52,7 +52,7 @@ Qwen3-VL-4B backbone.
 
 The Hugging Face package includes custom weights in `unflatten_heads.safetensors`,
 the frozen backbone/tokenizer/image processor, custom loading code, runtime source,
-decoding files, integrity metadata and export smoke evidence. It excludes source
+decoding files and integrity metadata. It excludes source
 training/validation documents and training optimizer state. The inference
 repository supplies the application and deployment source; weights are downloaded
 separately. Generic chat applications and a standard text-generation pipeline do
@@ -119,12 +119,7 @@ Rendered visual fidelity was not scored. Typed-property alignment covered only
 accuracy. The formal RL stage gate did not pass because the matched SFT
 continuation comparison arm was absent; `product_quality_claim` remains `false`.
 
-An additional offline export check on NVIDIA DGX Spark used **three validation
-pages**. All produced strictly valid structures and Word files, and accepted
-tokens matched the previously evaluated RL48 tokens exactly. This is export
-compatibility evidence, not another model-quality benchmark. See the
-[model-card evaluation](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0#evaluation)
-and [export evidence](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0/blob/main/export-smoke-test.json).
+See the [model-card evaluation](https://huggingface.co/Evoliq/Unflatten-W-Dense-1.0#evaluation).
 
 Application tests, browser checks and synthetic GPU conversions are engineering
 acceptance evidence, separate from these model-quality measurements. Their
